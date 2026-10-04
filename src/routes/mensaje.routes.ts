@@ -1,0 +1,25 @@
+﻿import { Router } from "express";
+import { sendMessageHandler, getMensajesHandler, marcarMensajeLeidoHandler, getNotificacionesHandler, marcarNotificacionLeidaHandler, marcarTodasNotificacionesLeidasHandler, getMensajesPredeterminadosHandler } from "@/controllers/mensaje.controller";
+import { authenticate } from "@/middleware/auth";
+import { validate } from "@/middleware/validation";
+import { sendMessageSchema, messageParamsSchema, messageQuerySchema, notificationParamsSchema, notificationQuerySchema } from "@/utils/mensaje.validation";
+
+const router = Router();
+
+// Todas requieren autenticacion
+router.use(authenticate);
+
+// Mensajes dentro de una negociacion
+router.post("/negociaciones/:id/mensajes", validate(messageParamsSchema), validate(sendMessageSchema), sendMessageHandler);
+router.get("/negociaciones/:id/mensajes", validate(messageParamsSchema), validate(messageQuerySchema), getMensajesHandler);
+router.patch("/mensajes/:id/leer", validate(messageParamsSchema), marcarMensajeLeidoHandler);
+
+// Mensajes predeterminados (publicos para usuarios autenticados)
+router.get("/mensajes-predeterminados", getMensajesPredeterminadosHandler);
+
+// Notificaciones
+router.get("/notificaciones", validate(notificationQuerySchema), getNotificacionesHandler);
+router.patch("/notificaciones/:id/leer", validate(notificationParamsSchema), marcarNotificacionLeidaHandler);
+router.patch("/notificaciones/leer-todas", marcarTodasNotificacionesLeidasHandler);
+
+export default router;
