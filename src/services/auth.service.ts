@@ -3,6 +3,8 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken, TokenPay
 import { AppError } from '@/middleware/errorHandler';
 import { Types } from 'mongoose';
 import { RegisterInput, LoginInput } from '@/utils/validation';
+import bcrypt from 'bcryptjs';
+import { env } from '@/config/env';
 
 export interface AuthTokens {
   accessToken: string;
@@ -23,10 +25,12 @@ export async function registerUser(data: RegisterInput): Promise<AuthTokens> {
     throw new AppError(409, 'EMAIL_EXISTS', 'El correo ya esta registrado');
   }
   
+  const password_hash = await bcrypt.hash(data.password, env.BCRYPT_ROUNDS);
+  
   const user = await Usuario.create({
     nombre: data.nombre,
     email: data.email,
-    password_hash: data.password,
+    password_hash,
     carrera: data.carrera,
     semestre: data.semestre,
     institucion: data.institucion,

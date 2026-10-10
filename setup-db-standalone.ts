@@ -12,12 +12,12 @@ if (!MONGODB_URI) {
 const USUARIOS_VALIDATION = {
   $jsonSchema: {
     bsonType: "object",
-    required: ["email", "password_hash", "nombre", "tipo_usuario"],
+    required: ["email", "password_hash", "nombre", "tipo_usuario", "estado_cuenta"],
     properties: {
       _id: { bsonType: "objectId" },
       nombre: { bsonType: "string", maxLength: 100 },
       email: { bsonType: "string", pattern: "^.+@.+\\..+$" },
-      password_hash: { bsonType: "string" },
+      password_hash: { bsonType: "string", minLength: 8 },
       foto_perfil_url: { bsonType: "string" },
       carrera: { bsonType: "string" },
       semestre: { bsonType: "int", minimum: 1, maximum: 20 },

@@ -17,6 +17,14 @@ export class AppError extends Error {
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
   console.error('Error:', err);
   
+  // Log detailed MongoDB validation errors (code 121)
+  const mongoErr = err as any;
+  if (mongoErr.code === 121 && mongoErr.errInfo?.details) {
+    console.error('=== MongoDB Validation Error Details ===');
+    console.error(JSON.stringify(mongoErr.errInfo.details, null, 2));
+    console.error('========================================');
+  }
+  
   if (err instanceof ZodError) {
     return res.status(400).json({
       error: 'VALIDATION_ERROR',
@@ -53,6 +61,15 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     return res.status(409).json({
       error: 'DUPLICATE_KEY',
       message: field + ' ya existe',
+    });
+  }
+  
+  // Handle MongoDB validation error (code 121)
+  if (mongoErr.code === 121) {
+    return res.status(400).json({
+      error: 'VALIDATION_ERROR',
+      message: 'Documento no pasa validacion de MongoDB',
+      details: mongoErr.errInfo?.details,
     });
   }
   

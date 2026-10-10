@@ -40,9 +40,20 @@ async function start() {
   try {
     await connectDB();
     
-    app.listen(env.PORT, () => {
+    const server = app.listen(env.PORT, '0.0.0.0', () => {
       console.log("Servidor corriendo en http://localhost:" + env.PORT);
       console.log("Entorno: " + env.NODE_ENV);
+    });
+    
+    server.on('error', (error) => {
+      console.error('Server error:', error);
+      process.exit(1);
+    });
+    
+    server.on('listening', () => {
+      console.log('Server is actually listening on port ' + env.PORT);
+      const address = server.address();
+      console.log('Server address:', JSON.stringify(address));
     });
   } catch (error) {
     console.error("Error iniciando servidor:", error);
