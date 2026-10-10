@@ -1,0 +1,138 @@
+﻿{
+  "info": {
+    "name": "Academico API",
+    "description": "Backend para aplicacion de apoyo academico entre estudiantes universitarios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000/api", "type": "string" },
+    { "key": "access_token", "value": "", "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"email\": \"juan@test.com\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\",\n  \"carrera\": \"Ingenieria\",\n  \"semestre\": 5,\n  \"institucion\": \"Universidad X\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"juan@test.com\",\n  \"password\": \"Password123\"\n}" },
+            "event": [{ "listen": "test", "script": { "exec": ["pm.test(\"Login successful\", function () {", "  pm.expect(pm.response.code).to.equal(200);", "  const res = pm.response.json();", "  if (res.accessToken) {", "    pm.environment.set(\"access_token\", res.accessToken);", "  }", "});"] } }]
+          }
+        },
+        {
+          "name": "Me",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] } }
+        },
+        {
+          "name": "Refresh Token",
+          "request": { "method": "POST", "url": { "raw": "{{base_url}}/auth/refresh", "host": ["{{base_url}}"], "path": ["auth", "refresh"] } }
+        },
+        {
+          "name": "Logout",
+          "request": { "method": "POST", "url": { "raw": "{{base_url}}/auth/logout", "host": ["{{base_url}}"], "path": ["auth", "logout"] } }
+        }
+      ]
+    },
+    {
+      "name": "Categorias (Admin)",
+      "item": [
+        { "name": "Listar", "request": { "method": "GET", "url": { "raw": "{{base_url}}/categorias?page=1&limit=20", "host": ["{{base_url}}"], "path": ["categorias"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] } } },
+        { "name": "Crear", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/categorias", "host": ["{{base_url}}"], "path": ["categorias"] }, "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Matematicas\",\n  \"carrera_asociada\": \"Ingenieria\",\n  \"categoria_padre_id\": \"\"\n}" } } },
+        { "name": "Obtener una", "request": { "method": "GET", "url": { "raw": "{{base_url}}/categorias/:id", "host": ["{{base_url}}"], "path": ["categorias", ":id"] } } },
+        { "name": "Actualizar", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/categorias/:id", "host": ["{{base_url}}"], "path": ["categorias", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Calculo\"\n}" } } },
+        { "name": "Eliminar", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/categorias/:id", "host": ["{{base_url}}"], "path": ["categorias", ":id"] } } }
+      ]
+    },
+    {
+      "name": "Perfiles",
+      "item": [
+        { "name": "Crear perfil prestador", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/perfiles/prestador", "host": ["{{base_url}}"], "path": ["perfiles", "prestador"] }, "body": { "mode": "raw", "raw": "{\n  \"categorias_ids\": [\"<categoria_id>\"]\n}" } } },
+        { "name": "Mi perfil", "request": { "method": "GET", "url": { "raw": "{{base_url}}/perfiles/prestador", "host": ["{{base_url}}"], "path": ["perfiles", "prestador"] } } },
+        { "name": "Actualizar mi perfil", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/perfiles/prestador", "host": ["{{base_url}}"], "path": ["perfiles", "prestador"] }, "body": { "mode": "raw", "raw": "{\n  \"descripcion\": \"Experto en matematicas\",\n  \"tarifa_referencia\": { \"monto\": 150, \"moneda\": \"MXN\", \"unidad\": \"hora\" }\n}" } } },
+        { "name": "Publicar trabajo portafolio", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/perfiles/prestador/portafolio", "host": ["{{base_url}}"], "path": ["perfiles", "prestador", "portafolio"] }, "body": { "mode": "raw", "raw": "{\n  \"categoria_id\": \"<categoria_id>\",\n  \"titulo\": \"Resolucion de ecuaciones diferenciales\",\n  \"descripcion\": \"Trabajo completo con explicacion paso a paso\",\n  \"habilidades_usadas\": [\"Matematicas\", \"LaTeX\"],\n  \"imagenes_urls\": [\"https://ejemplo.com/img1.jpg\"]\n}" } } },
+        { "name": "Mi portafolio", "request": { "method": "GET", "url": { "raw": "{{base_url}}/perfiles/prestador/portafolio?page=1&limit=10", "host": ["{{base_url}}"], "path": ["perfiles", "prestador", "portafolio"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] } } },
+        { "name": "Perfil publico (solo Activo)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/perfiles/prestador/:id", "host": ["{{base_url}}"], "path": ["perfiles", "prestador", ":id"] } } },
+        { "name": "Trabajo publico", "request": { "method": "GET", "url": { "raw": "{{base_url}}/perfiles/portafolio/:id", "host": ["{{base_url}}"], "path": ["perfiles", "portafolio", ":id"] } } }
+      ]
+    },
+    {
+      "name": "Busquedas",
+      "item": [
+        { "name": "Buscar prestadores por categoria", "request": { "method": "GET", "url": { "raw": "{{base_url}}/busquedas/prestadores?categoria_id=<categoria_id>&page=1&limit=10&sort=rating&termino=matematicas", "host": ["{{base_url}}"], "path": ["busquedas", "prestadores"], "query": [{ "key": "categoria_id", "value": "<categoria_id>" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "sort", "value": "rating" }, { "key": "termino", "value": "matematicas" }] } } },
+        { "name": "Prestadores destacados", "request": { "method": "GET", "url": { "raw": "{{base_url}}/busquedas/destacados?limit=10&min_calificaciones=3", "host": ["{{base_url}}"], "path": ["busquedas", "destacados"], "query": [{ "key": "limit", "value": "10" }, { "key": "min_calificaciones", "value": "3" }] } } }
+      ]
+    },
+    {
+      "name": "Negociaciones",
+      "item": [
+        { "name": "Iniciar negociacion", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/negociaciones", "host": ["{{base_url}}"], "path": ["negociaciones"] }, "body": { "mode": "raw", "raw": "{\n  \"prestador_id\": \"<prestador_id>\",\n  \"categoria_id\": \"<categoria_id>\",\n  \"descripcion_trabajo\": \"Necesito ayuda con calculo integral\",\n  \"precio_propuesto\": 500,\n  \"forma_pago\": \"Transferencia\"\n}" } } },
+        { "name": "Mis negociaciones", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/mis?page=1&limit=10&estado=Acordado", "host": ["{{base_url}}"], "path": ["negociaciones", "mis"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "estado", "value": "Acordado" }] } } },
+        { "name": "Ver negociacion", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/:id", "host": ["{{base_url}}"], "path": ["negociaciones", ":id"] } } },
+        { "name": "Acordar (solo prestador)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/negociaciones/:id/acordar", "host": ["{{base_url}}"], "path": ["negociaciones", ":id", "acordar"] }, "body": { "mode": "raw", "raw": "{\n  \"precio_acordado\": 450,\n  \"forma_pago\": \"Transferencia Bancaria\"\n}" } } },
+        { "name": "Marcar en progreso", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/negociaciones/:id/en-progreso", "host": ["{{base_url}}"], "path": ["negociaciones", ":id", "en-progreso"] } } },
+        { "name": "Completar negociacion", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/negociaciones/:id/completar", "host": ["{{base_url}}"], "path": ["negociaciones", ":id", "completar"] } } },
+        { "name": "Tracking publico (sin auth)", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/track/:codigo", "host": ["{{base_url}}"], "path": ["negociaciones", "track", ":codigo"] } } }
+      ]
+    },
+    {
+      "name": "Mensajes",
+      "item": [
+        { "name": "Enviar mensaje (libre)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"] }, "body": { "mode": "raw", "raw": "{\n  \"contenido\": \"Hola, ¿cuando podemos empezar?\"\n}" } } },
+        { "name": "Enviar mensaje (predeterminado)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"] }, "body": { "mode": "raw", "raw": "{\n  \"mensaje_predeterminado_id\": \"<mensaje_predeterminado_id>\"\n}" } } },
+        { "name": "Ver mensajes de negociacion", "request": { "method": "GET", "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes?page=1&limit=20", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] } } },
+        { "name": "Marcar mensaje leido", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/mensajes/mensajes/:id/leer", "host": ["{{base_url}}"], "path": ["mensajes", "mensajes", ":id", "leer"] } } },
+        { "name": "Mensajes predeterminados", "request": { "method": "GET", "url": { "raw": "{{base_url}}/mensajes/mensajes-predeterminados?tipo_usuario=Solicitante&categoria=inicial", "host": ["{{base_url}}"], "path": ["mensajes", "mensajes-predeterminados"], "query": [{ "key": "tipo_usuario", "value": "Solicitante" }, { "key": "categoria", "value": "inicial" }] } } }
+      ]
+    },
+    {
+      "name": "Notificaciones",
+      "item": [
+        { "name": "Listar notificaciones", "request": { "method": "GET", "url": { "raw": "{{base_url}}/mensajes/notificaciones?leido=false&page=1&limit=20", "host": ["{{base_url}}"], "path": ["mensajes", "notificaciones"], "query": [{ "key": "leido", "value": "false" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] } } },
+        { "name": "Marcar notificacion leida", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/mensajes/notificaciones/:id/leer", "host": ["{{base_url}}"], "path": ["mensajes", "notificaciones", ":id", "leer"] } } },
+        { "name": "Marcar todas leidas", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/mensajes/notificaciones/leer-todas", "host": ["{{base_url}}"], "path": ["mensajes", "notificaciones", "leer-todas"] } } }
+      ]
+    },
+    {
+      "name": "Calificaciones",
+      "item": [
+        { "name": "Calificar (solo Completado)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/calificaciones", "host": ["{{base_url}}"], "path": ["calificaciones"] }, "body": { "mode": "raw", "raw": "{\n  \"negociacion_id\": \"<negociacion_id>\",\n  \"puntaje\": 5,\n  \"comentario\": \"Excelente trabajo, muy claro\"\n}" } } },
+        { "name": "Mis calificaciones recibidas", "request": { "method": "GET", "url": { "raw": "{{base_url}}/calificaciones/mis?page=1&limit=10", "host": ["{{base_url}}"], "path": ["calificaciones", "mis"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] } } }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        { "name": "Crear reporte", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/reportes", "host": ["{{base_url}}"], "path": ["reportes"] }, "body": { "mode": "raw", "raw": "{\n  \"reportado_id\": \"<usuario_id>\",\n  \"negociacion_id\": \"<negociacion_id>\",\n  \"motivo\": \"No entrego el trabajo a tiempo\",\n  \"categoria_reporte\": \"incumplimiento\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Favoritos",
+      "item": [
+        { "name": "Toggle favorito", "request": { "method": "POST", "url": { "raw": "{{base_url}}/favoritos/:prestadorId", "host": ["{{base_url}}"], "path": ["favoritos", ":prestadorId"] } } },
+        { "name": "Mis favoritos", "request": { "method": "GET", "url": { "raw": "{{base_url}}/favoritos?page=1&limit=10", "host": ["{{base_url}}"], "path": ["favoritos"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] } } }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        { "name": "Verificar usuario (Admin)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/admin/usuarios/:id/verificar", "host": ["{{base_url}}"], "path": ["admin", "usuarios", ":id", "verificar"] }, "body": { "mode": "raw", "raw": "{\n  \"verificado\": true\n}" } } }
+      ]
+    }
+  ]
+}
