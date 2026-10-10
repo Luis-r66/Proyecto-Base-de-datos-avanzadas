@@ -22,7 +22,7 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] },
-            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"email\": \"juan@test.com\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\",\n  \"carrera\": \"Ingenieria\",\n  \"semestre\": 5,\n  \"institucion\": \"Universidad X\n}" }
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"email\": \"juan@test.com\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\",\n  \"carrera\": \"Ingenieria\",\n  \"semestre\": 5,\n  \"institucion\": \"Universidad X\"}" }
           }
         },
         {
