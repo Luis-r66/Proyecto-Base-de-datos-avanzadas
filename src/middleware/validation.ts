@@ -7,11 +7,7 @@ type ZodSchema = AnyZodObject | ZodEffects<AnyZodObject>;
 export function validate(schema: ZodSchema) {
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
+      await schema.parseAsync(req.body);
       next();
     } catch (err) {
       if (err instanceof ZodError) {

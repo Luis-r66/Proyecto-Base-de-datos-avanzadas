@@ -1,0 +1,317 @@
+# Academico API - REST Client
+# Extension: REST Client (Huachao Mao) en VS Code
+# Click "Send Request" encima de cada bloque
+
+# Variables
+@base_url = http://localhost:3000/api
+@access_token =
+
+---
+
+### ============ AUTH ============
+
+### Register
+POST {{base_url}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Juan Perez",
+  "email": "juan@test.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "carrera": "Ingenieria",
+  "semestre": 5,
+  "institucion": "Universidad X"
+}
+
+### Login
+POST {{base_url}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "juan@test.com",
+  "password": "Password123"
+}
+
+### Me (requiere token)
+GET {{base_url}}/auth/me
+Authorization: Bearer {{access_token}}
+
+### Refresh Token
+POST {{base_url}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+### Logout
+POST {{base_url}}/auth/logout
+Authorization: Bearer {{access_token}}
+
+---
+
+### ============ CATEGORÍAS (Admin) ============
+
+### Listar categorías
+GET {{base_url}}/categorias?page=1&limit=20
+Authorization: Bearer {{access_token}}
+
+### Crear categoría (Admin)
+POST {{base_url}}/categorias
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "nombre": "Matematicas",
+  "carrera_asociada": "Ingenieria",
+  "categoria_padre_id": ""
+}
+
+### Obtener una categoría
+GET {{base_url}}/categorias/:id
+Authorization: Bearer {{access_token}}
+
+### Actualizar categoría
+PATCH {{base_url}}/categorias/:id
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "nombre": "Calculo"
+}
+
+### Eliminar categoría
+DELETE {{base_url}}/categorias/:id
+Authorization: Bearer {{access_token}}
+
+---
+
+### ============ PERFILES ============
+
+### Crear perfil prestador
+POST {{base_url}}/perfiles/prestador
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "categorias_ids": ["<categoria_id>"],
+  "tipos_actividad": ["Clases", "Tutorias"],
+  "disponibilidad": [
+    { "dia": 1, "hora_inicio": "18:00", "hora_fin": "22:00" }
+  ],
+  "descripcion": "Experto en matematicas",
+  "tarifa_referencia": { "monto": 150, "moneda": "MXN", "unidad": "hora" },
+  "metodos_pago_aceptados": ["Transferencia", "Efectivo"]
+}
+
+### Mi perfil
+GET {{base_url}}/perfiles/prestador
+Authorization: Bearer {{access_token}}
+
+### Actualizar mi perfil
+PATCH {{base_url}}/perfiles/prestador
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "descripcion": "Experto en matematicas y fisica",
+  "tarifa_referencia": { "monto": 200, "moneda": "MXN", "unidad": "hora" }
+}
+
+### Publicar trabajo en portafolio
+POST {{base_url}}/perfiles/prestador/portafolio
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "categoria_id": "<categoria_id>",
+  "titulo": "Resolucion de ecuaciones diferenciales",
+  "descripcion": "Trabajo completo con explicacion paso a paso",
+  "habilidades_usadas": ["Matematicas", "LaTeX"],
+  "imagenes_urls": ["https://ejemplo.com/img1.jpg"]
+}
+
+### Mi portafolio
+GET {{base_url}}/perfiles/prestador/portafolio?page=1&limit=10
+Authorization: Bearer {{access_token}}
+
+### Perfil público (solo Activo)
+GET {{base_url}}/perfiles/prestador/:id
+
+### Trabajo público
+GET {{base_url}}/perfiles/portafolio/:id
+
+---
+
+### ============ BÚSQUEDAS ============
+
+### Buscar prestadores por categoría
+GET {{base_url}}/busquedas/prestadores?categoria_id=<categoria_id>&page=1&limit=10&sort=rating&termino=matematicas
+Authorization: Bearer {{access_token}}
+
+### Prestadores destacados (público)
+GET {{base_url}}/busquedas/destacados?limit=10&min_calificaciones=3
+
+---
+
+### ============ NEGOCIACIONES ============
+
+### Iniciar negociación
+POST {{base_url}}/negociaciones
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "prestador_id": "<prestador_id>",
+  "categoria_id": "<categoria_id>",
+  "descripcion_trabajo": "Necesito ayuda con calculo integral",
+  "precio_propuesto": 500,
+  "forma_pago": "Transferencia"
+}
+
+### Mis negociaciones
+GET {{base_url}}/negociaciones/mis?page=1&limit=10&estado=Acordado
+Authorization: Bearer {{access_token}}
+
+### Ver negociación
+GET {{base_url}}/negociaciones/:id
+Authorization: Bearer {{access_token}}
+
+### Acordar (solo prestador)
+PATCH {{base_url}}/negociaciones/:id/acordar
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "precio_acordado": 450,
+  "forma_pago": "Transferencia Bancaria"
+}
+
+### Marcar en progreso
+PATCH {{base_url}}/negociaciones/:id/en-progreso
+Authorization: Bearer {{access_token}}
+
+### Completar negociación
+PATCH {{base_url}}/negociaciones/:id/completar
+Authorization: Bearer {{access_token}}
+
+### Tracking público (sin auth)
+GET {{base_url}}/negociaciones/track/:codigo
+
+---
+
+### ============ MENSAJES ============
+
+### Enviar mensaje (libre)
+POST {{base_url}}/mensajes/negociaciones/:id/mensajes
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "contenido": "Hola, ¿cuándo podemos empezar?"
+}
+
+### Enviar mensaje (predeterminado)
+POST {{base_url}}/mensajes/negociaciones/:id/mensajes
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "mensaje_predeterminado_id": "<mensaje_predeterminado_id>"
+}
+
+### Ver mensajes de negociación
+GET {{base_url}}/mensajes/negociaciones/:id/mensajes?page=1&limit=20
+Authorization: Bearer {{access_token}}
+
+### Marcar mensaje leído
+PATCH {{base_url}}/mensajes/mensajes/:id/leer
+Authorization: Bearer {{access_token}}
+
+### Mensajes predeterminados
+GET {{base_url}}/mensajes/mensajes-predeterminados?tipo_usuario=Solicitante&categoria=inicial
+Authorization: Bearer {{access_token}}
+
+---
+
+### ============ NOTIFICACIONES ============
+
+### Listar notificaciones
+GET {{base_url}}/mensajes/notificaciones?leido=false&page=1&limit=20
+Authorization: Bearer {{access_token}}
+
+### Marcar notificación leída
+PATCH {{base_url}}/mensajes/notificaciones/:id/leer
+Authorization: Bearer {{access_token}}
+
+### Marcar todas leídas
+PATCH {{base_url}}/mensajes/notificaciones/leer-todas
+Authorization: Bearer {{access_token}}
+
+---
+
+### ============ CALIFICACIONES ============
+
+### Calificar (solo Completado)
+POST {{base_url}}/calificaciones
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "negociacion_id": "<negociacion_id>",
+  "puntaje": 5,
+  "comentario": "Excelente trabajo, muy claro"
+}
+
+### Mis calificaciones recibidas
+GET {{base_url}}/calificaciones/mis?page=1&limit=10
+Authorization: Bearer {{access_token}}
+
+---
+
+### ============ REPORTES ============
+
+### Crear reporte
+POST {{base_url}}/reportes
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "reportado_id": "<usuario_id>",
+  "negociacion_id": "<negociacion_id>",
+  "motivo": "No entregó el trabajo a tiempo",
+  "categoria_reporte": "incumplimiento"
+}
+
+---
+
+### ============ FAVORITOS ============
+
+### Toggle favorito (agrega/quita)
+POST {{base_url}}/favoritos/:prestadorId
+Authorization: Bearer {{access_token}}
+
+### Mis favoritos
+GET {{base_url}}/favoritos?page=1&limit=10
+Authorization: Bearer {{access_token}}
+
+---
+
+### ============ ADMIN ============
+
+### Verificar usuario (Admin)
+PATCH {{base_url}}/admin/usuarios/:id/verificar
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "verificado": true
+}
+
+---
+
+### ============ HEALTH ============
+
+### Health check
+GET http://localhost:3000/health

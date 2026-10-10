@@ -8,10 +8,10 @@ export async function connectDB(): Promise<Connection> {
     return cachedConnection;
   }
   
-  try {
+try {
     const conn = await mongoose.connect(env.MONGODB_URI, {
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 60000,
       socketTimeoutMS: 45000,
     });
     

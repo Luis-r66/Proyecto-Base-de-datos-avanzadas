@@ -3,7 +3,7 @@
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(3000),
-  MONGODB_URI: z.string().url().min(1, 'MONGODB_URI es requerido'),
+  MONGODB_URI: z.string().regex(/^mongodb(\+srv)?:\/\//).min(1, 'MONGODB_URI es requerido'),
   JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET debe tener al menos 32 caracteres'),
   JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET debe tener al menos 32 caracteres'),
   JWT_ACCESS_EXPIRY: z.string().default('15m'),
