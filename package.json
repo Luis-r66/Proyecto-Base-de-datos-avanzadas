@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "academico-backend",
   "version": "1.0.0",
   "description": "Backend para aplicacion de apoyo academico entre estudiantes universitarios",
@@ -13,7 +13,13 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext .ts"
   },
-  "keywords": ["academic", "student", "support", "mongodb", "express"],
+  "keywords": [
+    "academic",
+    "student",
+    "support",
+    "mongodb",
+    "express"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -33,13 +39,14 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/node": "^20.14.12",
-    "tsx": "^4.16.2",
-    "typescript": "^5.5.4",
-    "vitest": "^2.0.5",
+    "@types/node": "^20.19.43",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "@vitest/coverage-v8": "^2.0.5",
     "eslint": "^8.57.0",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   }
 }
