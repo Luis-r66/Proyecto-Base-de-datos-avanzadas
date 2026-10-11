@@ -4,7 +4,7 @@
 
 # Variables
 @base_url = http://localhost:3001/api
-@access_token =
+@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YWNhZWU5NzVlNjU0Yjk4MDJhNTIxNDIiLCJlbWFpbCI6Imp1YW5AdGVzdC5jb20iLCJ0aXBvX3VzdWFyaW8iOlsiU29saWNpdGFudGUiXSwiaWF0IjoxNzkxNjg0MjQ3LCJleHAiOjE3OTE2ODUxNDd9.dJf6jlfPBPqYShzfHipejfNhaAxMoDKqi4978_YCa48
 
 ---
 
