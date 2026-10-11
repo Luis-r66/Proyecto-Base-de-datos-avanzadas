@@ -15,14 +15,23 @@ export class AppError extends Error {
 }
 
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
-  console.error('Error:', err);
-  
-  // Log detailed MongoDB validation errors (code 121)
   const mongoErr = err as any;
-  if (mongoErr.code === 121 && mongoErr.errInfo?.details) {
-    console.error('=== MongoDB Validation Error Details ===');
-    console.error(JSON.stringify(mongoErr.errInfo.details, null, 2));
-    console.error('========================================');
+  const isMongoValidation = mongoErr.code === 121;
+  const isAppError = err instanceof AppError;
+  const isExpectedClientError =
+    err instanceof ZodError ||
+    (isAppError && (err as AppError).statusCode < 500) ||
+    err instanceof mongoose.Error.ValidationError ||
+    err instanceof mongoose.Error.CastError ||
+    mongoErr.code === 11000 ||
+    isMongoValidation;
+
+  // Solo loguear errores no esperados (5xx). Los 4xx son respuestas normales del cliente.
+  if (!isExpectedClientError) {
+    console.error('Error:', err);
+  }
+  if (isMongoValidation && mongoErr.errInfo?.details) {
+    console.error('MongoDB validation details:', JSON.stringify(mongoErr.errInfo.details));
   }
   
   if (err instanceof ZodError) {

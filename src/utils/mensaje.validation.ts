@@ -1,8 +1,14 @@
 ﻿import { z } from 'zod';
 
+const optionalObjectId = (msg: string) =>
+  z.preprocess(
+    (v) => (v === '' || v === null ? undefined : v),
+    z.string().regex(/^[0-9a-fA-F]{24}$/, msg).optional()
+  );
+
 export const sendMessageSchema = z.object({
   contenido: z.string().min(1).max(5000).trim().optional(),
-  mensaje_predeterminado_id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido').optional(),
+  mensaje_predeterminado_id: optionalObjectId('ID invalido'),
 }).refine(data => data.contenido || data.mensaje_predeterminado_id, {
   message: 'Debe proporcionar contenido o mensaje_predeterminado_id',
   path: ['contenido'],

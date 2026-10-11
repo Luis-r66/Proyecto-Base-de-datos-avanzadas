@@ -1,5 +1,11 @@
 ﻿import { z } from 'zod';
 
+const optionalObjectId = (msg: string) =>
+  z.preprocess(
+    (v) => (v === '' || v === null ? undefined : v),
+    z.string().regex(/^[0-9a-fA-F]{24}$/, msg).optional()
+  );
+
 export const createPerfilPrestadorSchema = z.object({
   categorias_ids: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID de categoria invalido')).min(1, 'Al menos una categoria requerida'),
   tipos_actividad: z.array(z.string().trim().min(1)).optional(),
@@ -45,7 +51,7 @@ export const createTrabajoPortafolioSchema = z.object({
 });
 
 export const updateTrabajoPortafolioSchema = z.object({
-  categoria_id: z.string().regex(/^[0-9a-fA-F]{24}$/).optional(),
+  categoria_id: optionalObjectId('ID de categoria invalido'),
   titulo: z.string().min(1).max(200).trim().optional(),
   descripcion: z.string().min(1).max(5000).trim().optional(),
   habilidades_usadas: z.array(z.string().trim()).optional(),
