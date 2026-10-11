@@ -1,16 +1,12 @@
 ﻿import { z } from 'zod';
 
 export const favoritoParamsSchema = z.object({
-  params: z.object({
-    prestadorId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID de prestador invalido'),
-  }),
+  prestadorId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID de prestador invalido'),
 });
 
 export const favoritoQuerySchema = z.object({
-  query: z.object({
-    page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(50).default(10),
-  }),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
 });
 
 export const verifyUsuarioSchema = z.object({
@@ -18,7 +14,5 @@ export const verifyUsuarioSchema = z.object({
 });
 
 export const verifyParamsSchema = z.object({
-  params: z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
-  }),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
 });

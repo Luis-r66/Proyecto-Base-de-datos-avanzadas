@@ -6,17 +6,17 @@ import { iniciarNegociacionSchema, acordarNegociacionSchema, negociacionParamsSc
 
 const router = Router();
 
-// Todas requieren autenticacion excepto tracking publico
+// Publico por codigo de seguimiento (sin auth) - debe ir ANTES del middleware authenticate
+router.get("/track/:codigo", validate(trackingParamsSchema, 'params'), getNegociacionByCodigoHandler);
+
+// Todas las demás requieren autenticacion
 router.use(authenticate);
 
-router.post("/", validate(iniciarNegociacionSchema), iniciarNegociacionHandler);
+router.post("/", validate(iniciarNegociacionSchema, 'body'), iniciarNegociacionHandler);
 router.get("/mis", getMisNegociacionesHandler);
-router.get("/:id", validate(negociacionParamsSchema), getNegociacionHandler);
-router.patch("/:id/acordar", validate(acordarNegociacionSchema), acordarNegociacionHandler);
+router.get("/:id", validate(negociacionParamsSchema, 'params'), getNegociacionHandler);
+router.patch("/:id/acordar", validate(acordarNegociacionSchema, 'body'), acordarNegociacionHandler);
 router.patch("/:id/en-progreso", marcarEnProgresoHandler);
 router.patch("/:id/completar", completarNegociacionHandler);
-
-// Publico por codigo de seguimiento (sin auth)
-router.get("/track/:codigo", validate(trackingParamsSchema), getNegociacionByCodigoHandler);
 
 export default router;

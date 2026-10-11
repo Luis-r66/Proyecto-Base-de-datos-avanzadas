@@ -13,9 +13,7 @@ export const updateCategoriaSchema = z.object({
 });
 
 export const categoriaParamsSchema = z.object({
-  params: z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
-  }),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
 });
 
 export type CreateCategoriaInput = z.infer<typeof createCategoriaSchema>;

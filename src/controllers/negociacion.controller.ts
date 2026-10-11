@@ -11,7 +11,7 @@ export async function iniciarNegociacionHandler(req: Request, res: Response) {
 }
 
 export async function acordarNegociacionHandler(req: Request, res: Response) {
-  const { params } = negociacionParamsSchema.parse(req.params);
+  const params = negociacionParamsSchema.parse(req.params);
   const data = acordarNegociacionSchema.parse(req.body);
   
   const perfil = await PerfilPrestador.findOne({ usuario_id: req.user!.sub });
@@ -24,25 +24,25 @@ export async function acordarNegociacionHandler(req: Request, res: Response) {
 }
 
 export async function marcarEnProgresoHandler(req: Request, res: Response) {
-  const { params } = negociacionParamsSchema.parse(req.params);
+  const params = negociacionParamsSchema.parse(req.params);
   const negociacion = await marcarEnProgreso(new Types.ObjectId(params.id), req.user!.sub);
   res.json(negociacion);
 }
 
 export async function completarNegociacionHandler(req: Request, res: Response) {
-  const { params } = negociacionParamsSchema.parse(req.params);
+  const params = negociacionParamsSchema.parse(req.params);
   const negociacion = await completarNegociacion(new Types.ObjectId(params.id), req.user!.sub);
   res.json(negociacion);
 }
 
 export async function getNegociacionHandler(req: Request, res: Response) {
-  const { params } = negociacionParamsSchema.parse(req.params);
+  const params = negociacionParamsSchema.parse(req.params);
   const negociacion = await getNegociacionById(new Types.ObjectId(params.id), req.user!.sub);
   res.json(negociacion);
 }
 
 export async function getNegociacionByCodigoHandler(req: Request, res: Response) {
-  const { params } = trackingParamsSchema.parse(req.params);
+  const params = trackingParamsSchema.parse(req.params);
   const negociacion = await getNegociacionByCodigo(params.codigo);
   res.json(negociacion);
 }

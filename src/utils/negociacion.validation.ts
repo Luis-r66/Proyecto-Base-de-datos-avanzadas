@@ -14,15 +14,11 @@ export const acordarNegociacionSchema = z.object({
 });
 
 export const negociacionParamsSchema = z.object({
-  params: z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
-  }),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
 });
 
 export const trackingParamsSchema = z.object({
-  params: z.object({
-    codigo: z.string().regex(/^NEG-\d{4}-\d{4}$/, 'Codigo de seguimiento invalido'),
-  }),
+  codigo: z.string().regex(/^NEG-\d{4}-\d{4}$/, 'Codigo de seguimiento invalido'),
 });
 
 export type IniciarNegociacionInput = z.infer<typeof iniciarNegociacionSchema>;

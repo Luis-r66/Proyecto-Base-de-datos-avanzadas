@@ -8,10 +8,10 @@ const router = Router();
 
 router.use(authenticate, requireRole("Admin"));
 
-router.post("/", validate(createCategoriaSchema), createCategoriaHandler);
+router.post("/", validate(createCategoriaSchema, 'body'), createCategoriaHandler);
 router.get("/", getCategoriasHandler);
-router.get("/:id", validate(categoriaParamsSchema), getCategoriaHandler);
-router.patch("/:id", validate(updateCategoriaSchema), updateCategoriaHandler);
-router.delete("/:id", validate(categoriaParamsSchema), deleteCategoriaHandler);
+router.get("/:id", validate(categoriaParamsSchema, 'params'), getCategoriaHandler);
+router.patch("/:id", validate(updateCategoriaSchema, 'body'), updateCategoriaHandler);
+router.delete("/:id", validate(categoriaParamsSchema, 'params'), deleteCategoriaHandler);
 
 export default router;

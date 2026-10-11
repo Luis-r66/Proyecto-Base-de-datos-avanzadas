@@ -9,10 +9,10 @@ const router = Router();
 // Favoritos (usuario autenticado)
 router.use(authenticate);
 
-router.post("/favoritos/:prestadorId", validate(favoritoParamsSchema), toggleFavoritoHandler);
-router.get("/favoritos", validate(favoritoQuerySchema), getFavoritosHandler);
+router.post("/favoritos/:prestadorId", validate(favoritoParamsSchema, 'params'), toggleFavoritoHandler);
+router.get("/favoritos", validate(favoritoQuerySchema, 'query'), getFavoritosHandler);
 
 // Verificacion institucional (Admin)
-router.patch("/admin/usuarios/:id/verificar", requireRole("Admin"), validate(verifyParamsSchema), validate(verifyUsuarioSchema), verificarUsuarioHandler);
+router.patch("/admin/usuarios/:id/verificar", requireRole("Admin"), validate(verifyParamsSchema, 'params'), validate(verifyUsuarioSchema, 'body'), verificarUsuarioHandler);
 
 export default router;

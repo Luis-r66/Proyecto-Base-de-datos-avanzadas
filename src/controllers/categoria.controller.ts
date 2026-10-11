@@ -19,20 +19,20 @@ export async function getCategoriasHandler(req: Request, res: Response) {
 }
 
 export async function getCategoriaHandler(req: Request, res: Response) {
-  const { params } = categoriaParamsSchema.parse(req.params);
+  const params = categoriaParamsSchema.parse(req.params);
   const categoria = await getCategoriaById(new Types.ObjectId(params.id));
   res.json(categoria);
 }
 
 export async function updateCategoriaHandler(req: Request, res: Response) {
-  const { params } = categoriaParamsSchema.parse(req.params);
+  const params = categoriaParamsSchema.parse(req.params);
   const data = updateCategoriaSchema.parse(req.body);
   const categoria = await updateCategoria(new Types.ObjectId(params.id), data);
   res.json(categoria);
 }
 
 export async function deleteCategoriaHandler(req: Request, res: Response) {
-  const { params } = categoriaParamsSchema.parse(req.params);
+  const params = categoriaParamsSchema.parse(req.params);
   await deleteCategoria(new Types.ObjectId(params.id));
   res.status(204).send();
 }
