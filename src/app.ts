@@ -7,7 +7,7 @@ import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { env } from "./config/env";
 import authRoutes from "./routes/auth.routes";
 import categoriasRoutes from "./routes/categorias.routes";
-import perfilRoutes from "./routes/perfil.routes";import negociacionRoutes from "./routes/negociacion.routes";import mensajeRoutes from "./routes/mensaje.routes";import calificacionRoutes from "./routes/calificacion.routes";
+import perfilRoutes from "./routes/perfil.routes";import negociacionRoutes from "./routes/negociacion.routes";import mensajeRoutes from "./routes/mensaje.routes";import calificacionRoutes from "./routes/calificacion.routes";import busquedaRoutes from "./routes/busqueda.routes";import favoritoRoutes from "./routes/favorito.routes";
 
 const app = express();
 app.use(cors({ origin: true }));
@@ -17,7 +17,7 @@ app.get("/health", (_req: Request, res: Response) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/categorias", categoriasRoutes);
-app.use("/api/perfiles", perfilRoutes);app.use("/api/negociaciones", negociacionRoutes);app.use("/api/mensajes", mensajeRoutes);app.use("/api", calificacionRoutes);
+app.use("/api/perfiles", perfilRoutes);app.use("/api/negociaciones", negociacionRoutes);app.use("/api/mensajes", mensajeRoutes);app.use("/api", calificacionRoutes);app.use("/api/busquedas", busquedaRoutes);app.use("/api", favoritoRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
