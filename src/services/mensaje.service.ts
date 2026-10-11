@@ -2,10 +2,33 @@
 import { MensajePredeterminado } from "@/models/MensajePredeterminado";
 import { Negociacion } from "@/models/Negociacion";
 import { Notificacion } from "@/models/Notificacion";
+import { PerfilPrestador } from "@/models/PerfilPrestador";
 import { AppError } from "@/middleware/errorHandler";
 import { Types } from "mongoose";
 import { withTransaction } from "@/config/db";
 import { SendMessageInput } from "@/utils/mensaje.validation";
+
+async function esParteDeNegociacion(
+  negociacion: { solicitante_id: Types.ObjectId; prestador_id: Types.ObjectId },
+  usuarioId: Types.ObjectId,
+  session?: any
+): Promise<boolean> {
+  if (negociacion.solicitante_id.toString() === usuarioId.toString()) return true;
+  if (negociacion.prestador_id.toString() === usuarioId.toString()) return true;
+  const query = PerfilPrestador.findOne({ usuario_id: usuarioId });
+  const perfil = session ? await query.session(session) : await query;
+  return !!perfil && perfil._id.toString() === negociacion.prestador_id.toString();
+}
+
+async function getUsuarioIdDelPrestador(
+  prestadorId: Types.ObjectId,
+  session?: any
+): Promise<Types.ObjectId> {
+  const query = PerfilPrestador.findById(prestadorId);
+  const perfil = session ? await query.session(session) : await query;
+  if (!perfil) throw new AppError(404, "PRESTADOR_NOT_FOUND", "Prestador no encontrado");
+  return perfil.usuario_id;
+}
 
 export interface MensajeResponse {
   _id: Types.ObjectId;
@@ -58,9 +81,7 @@ export async function sendMessage(remitenteId: Types.ObjectId, negociacionId: Ty
       throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
     }
     
-    const esParte = negociacion.solicitante_id.toString() === remitenteId.toString() || 
-                    negociacion.prestador_id.toString() === remitenteId.toString();
-    if (!esParte) {
+    if (!(await esParteDeNegociacion(negociacion, remitenteId, session))) {
       throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
     }
     
@@ -87,9 +108,11 @@ export async function sendMessage(remitenteId: Types.ObjectId, negociacionId: Ty
       leido: false,
     }], { session });
     
-    // Determinar el otro participante
-    const destinatarioId = negociacion.solicitante_id.toString() === remitenteId.toString()
-      ? negociacion.prestador_id
+    // Determinar el otro participante (siempre Usuario ID para la notificacion)
+    const esRemitenteSolicitante =
+      negociacion.solicitante_id.toString() === remitenteId.toString();
+    const destinatarioId = esRemitenteSolicitante
+      ? await getUsuarioIdDelPrestador(negociacion.prestador_id, session)
       : negociacion.solicitante_id;
     
     // Crear notificacion para el otro participante
@@ -110,9 +133,7 @@ export async function getMensajes(usuarioId: Types.ObjectId, negociacionId: Type
     throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
   }
   
-  const esParte = negociacion.solicitante_id.toString() === usuarioId.toString() || 
-                  negociacion.prestador_id.toString() === usuarioId.toString();
-  if (!esParte) {
+  if (!(await esParteDeNegociacion(negociacion, usuarioId))) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
   }
   
@@ -144,9 +165,7 @@ export async function marcarMensajeLeido(mensajeId: Types.ObjectId, usuarioId: T
     throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
   }
   
-  const esParte = negociacion.solicitante_id.toString() === usuarioId.toString() || 
-                  negociacion.prestador_id.toString() === usuarioId.toString();
-  if (!esParte) {
+  if (!(await esParteDeNegociacion(negociacion, usuarioId))) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
   }
   

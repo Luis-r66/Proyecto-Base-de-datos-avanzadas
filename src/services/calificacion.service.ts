@@ -3,10 +3,33 @@ import { Negociacion } from "@/models/Negociacion";
 import { Usuario } from "@/models/Usuario";
 import { Reporte } from "@/models/Reporte";
 import { Notificacion } from "@/models/Notificacion";
+import { PerfilPrestador } from "@/models/PerfilPrestador";
 import { AppError } from "@/middleware/errorHandler";
 import { Types } from "mongoose";
 import { withTransaction } from "@/config/db";
 import { CalificarInput, ReporteInput } from "@/utils/calificacion.validation";
+
+async function esParteDeNegociacion(
+  negociacion: { solicitante_id: Types.ObjectId; prestador_id: Types.ObjectId },
+  usuarioId: Types.ObjectId,
+  session?: any
+): Promise<boolean> {
+  if (negociacion.solicitante_id.toString() === usuarioId.toString()) return true;
+  if (negociacion.prestador_id.toString() === usuarioId.toString()) return true;
+  const query = PerfilPrestador.findOne({ usuario_id: usuarioId });
+  const perfil = session ? await query.session(session) : await query;
+  return !!perfil && perfil._id.toString() === negociacion.prestador_id.toString();
+}
+
+async function getUsuarioIdDelPrestador(
+  prestadorId: Types.ObjectId,
+  session?: any
+): Promise<Types.ObjectId> {
+  const query = PerfilPrestador.findById(prestadorId);
+  const perfil = session ? await query.session(session) : await query;
+  if (!perfil) throw new AppError(404, "PRESTADOR_NOT_FOUND", "Prestador no encontrado");
+  return perfil.usuario_id;
+}
 
 export interface CalificacionResponse {
   _id: Types.ObjectId;
@@ -65,14 +88,14 @@ export async function crearCalificacion(calificadorId: Types.ObjectId, data: Cal
       throw new AppError(409, "INVALID_STATE", "Solo se puede calificar negociaciones completadas");
     }
     
-    const esParte = negociacion.solicitante_id.toString() === calificadorId.toString() || 
-                    negociacion.prestador_id.toString() === calificadorId.toString();
-    if (!esParte) {
+    if (!(await esParteDeNegociacion(negociacion, calificadorId, session))) {
       throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
     }
     
-    const calificadoId = negociacion.solicitante_id.toString() === calificadorId.toString()
-      ? negociacion.prestador_id
+    const esCalificadorSolicitante =
+      negociacion.solicitante_id.toString() === calificadorId.toString();
+    const calificadoId = esCalificadorSolicitante
+      ? await getUsuarioIdDelPrestador(negociacion.prestador_id, session)
       : negociacion.solicitante_id;
     
     const existing = await Calificacion.findOne({ 
@@ -139,9 +162,7 @@ export async function crearReporte(reportanteId: Types.ObjectId, data: ReporteIn
     throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
   }
   
-  const esParte = negociacion.solicitante_id.toString() === reportanteId.toString() || 
-                  negociacion.prestador_id.toString() === reportanteId.toString();
-  if (!esParte) {
+  if (!(await esParteDeNegociacion(negociacion, reportanteId))) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
   }
   

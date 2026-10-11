@@ -1,4 +1,5 @@
-﻿import { connectDB, getConnection } from "@/config/db";
+﻿import 'dotenv/config';
+import { connectDB, getConnection } from "@/config/db";
 import { indexDefinitions } from "@/config/indexes";
 import { Usuario } from "@/models/Usuario";
 import { PerfilPrestador } from "@/models/PerfilPrestador";
@@ -24,11 +25,11 @@ const USUARIOS_VALIDATION = {
       password_hash: { bsonType: "string" },
       foto_perfil_url: { bsonType: "string" },
       carrera: { bsonType: "string" },
-      semestre: { bsonType: "int", minimum: 1, maximum: 20 },
+      semestre: { bsonType: "number", minimum: 1, maximum: 20 },
       institucion: { bsonType: "string" },
       tipo_usuario: {
         bsonType: "array",
-        items: { bsonType: "string", enum: ["Solicitante", "Prestador"] },
+        items: { bsonType: "string", enum: ["Solicitante", "Prestador", "Admin"] },
         minItems: 1,
         uniqueItems: true,
       },
@@ -42,12 +43,12 @@ const USUARIOS_VALIDATION = {
           properties: {
             institucion: { bsonType: "string" },
             titulo: { bsonType: "string" },
-            anio: { bsonType: "int", minimum: 1900, maximum: 2100 },
+            anio: { bsonType: "number", minimum: 1900, maximum: 2100 },
           },
         },
       },
-      calificacion_promedio: { bsonType: "double", minimum: 0, maximum: 5 },
-      total_calificaciones: { bsonType: "int", minimum: 0 },
+      calificacion_promedio: { bsonType: "number", minimum: 0, maximum: 5 },
+      total_calificaciones: { bsonType: "number", minimum: 0 },
       verificado: { bsonType: "bool" },
       estado_cuenta: { bsonType: "string", enum: ["activo", "inactivo", "suspendido"] },
       fecha_registro: { bsonType: "date" },
@@ -66,8 +67,8 @@ const NEGOCIACIONES_VALIDATION = {
       prestador_id: { bsonType: "objectId" },
       categoria_id: { bsonType: "objectId" },
       descripcion_trabajo: { bsonType: "string", maxLength: 5000 },
-      precio_propuesto: { bsonType: "double", minimum: 0 },
-      precio_acordado: { bsonType: "double", minimum: 0 },
+      precio_propuesto: { bsonType: "number", minimum: 0 },
+      precio_acordado: { bsonType: "number", minimum: 0 },
       forma_pago: { bsonType: "string" },
       estado: {
         bsonType: "string",
@@ -151,11 +152,13 @@ async function createIndexes(db: any) {
     const coll = db.collection(collectionName);
     for (const index of indexes) {
       try {
-        await coll.createIndex(index.key, { name: index.name, unique: index.unique });
-        console.log("  " + collectionName + "." + index.name);
+        const options: any = { name: (index as any).name };
+        if ((index as any).unique === true) options.unique = true;
+        await coll.createIndex((index as any).key, options);
+        console.log("  " + collectionName + "." + (index as any).name);
       } catch (e: any) {
         if (e.codeName === "IndexOptionsConflict" || e.codeName === "IndexAlreadyExists") {
-          console.log("  " + collectionName + "." + index.name + " (ya existe)");
+          console.log("  " + collectionName + "." + (index as any).name + " (ya existe)");
         } else {
           throw e;
         }

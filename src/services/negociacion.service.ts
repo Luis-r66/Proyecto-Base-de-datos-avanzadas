@@ -131,9 +131,13 @@ export async function marcarEnProgreso(negociacionId: Types.ObjectId, usuarioId:
     throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
   }
   
-  const esParte = negociacion.solicitante_id.toString() === usuarioId.toString() || 
-                  negociacion.prestador_id.toString() === usuarioId.toString();
-  if (!esParte) {
+  const esSolicitante = negociacion.solicitante_id.toString() === usuarioId.toString();
+  let esPrestador = negociacion.prestador_id.toString() === usuarioId.toString();
+  if (!esPrestador) {
+    const perfil = await PerfilPrestador.findOne({ usuario_id: usuarioId });
+    esPrestador = !!perfil && perfil._id.toString() === negociacion.prestador_id.toString();
+  }
+  if (!esSolicitante && !esPrestador) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
   }
   
@@ -152,9 +156,13 @@ export async function completarNegociacion(negociacionId: Types.ObjectId, usuari
     throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
   }
   
-  const esParte = negociacion.solicitante_id.toString() === usuarioId.toString() || 
-                  negociacion.prestador_id.toString() === usuarioId.toString();
-  if (!esParte) {
+  const esSolicitante = negociacion.solicitante_id.toString() === usuarioId.toString();
+  let esPrestador = negociacion.prestador_id.toString() === usuarioId.toString();
+  if (!esPrestador) {
+    const perfil = await PerfilPrestador.findOne({ usuario_id: usuarioId });
+    esPrestador = !!perfil && perfil._id.toString() === negociacion.prestador_id.toString();
+  }
+  if (!esSolicitante && !esPrestador) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
   }
   
@@ -179,9 +187,15 @@ export async function getNegociacionById(negociacionId: Types.ObjectId, usuarioI
   
   // Si se pasa usuarioId, verificar que sea parte
   if (usuarioId) {
-    const esParte = negociacion.solicitante_id._id.toString() === usuarioId.toString() || 
-                    negociacion.prestador_id._id.toString() === usuarioId.toString();
-    if (!esParte) {
+    const solicitanteId = (negociacion.solicitante_id as any)._id || negociacion.solicitante_id;
+    const prestadorId = (negociacion.prestador_id as any)._id || negociacion.prestador_id;
+    const esSolicitante = solicitanteId.toString() === usuarioId.toString();
+    let esPrestador = prestadorId.toString() === usuarioId.toString();
+    if (!esPrestador) {
+      const perfil = await PerfilPrestador.findOne({ usuario_id: usuarioId });
+      esPrestador = !!perfil && perfil._id.toString() === prestadorId.toString();
+    }
+    if (!esSolicitante && !esPrestador) {
       throw new AppError(403, "FORBIDDEN", "No tienes acceso a esta negociacion");
     }
   }
