@@ -104,6 +104,19 @@ export async function porCodigo(codigo: string) {
   return neg;
 }
 
+export async function porId(negId: Types.ObjectId, userId: Types.ObjectId) {
+  const neg: any = await Negociacion.findById(negId);
+  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+  if (!(await esParte(neg, userId))) {
+    throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
+  }
+  const populated: any = await Negociacion.findById(negId)
+    .populate("solicitante_id", "nombre foto_perfil_url verificado")
+    .populate({ path: "prestador_id", populate: { path: "usuario_id", select: "nombre foto_perfil_url verificado" } })
+    .populate("categoria_id", "nombre");
+  return populated;
+}
+
 export async function misNegociaciones(userId: Types.ObjectId, page = 1, limit = 10, estado?: string) {
   const perfil = await PerfilPrestador.findOne({ usuario_id: userId });
   const or: any[] = [{ solicitante_id: userId }];

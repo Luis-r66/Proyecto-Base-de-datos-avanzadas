@@ -1,6 +1,6 @@
 ﻿import { Request, Response } from "express";
 import { PerfilPrestador } from "../models/PerfilPrestador";
-import { iniciar, acordar, aEnProgreso, completar, porCodigo, misNegociaciones } from "../services/negociacion.service";
+import { iniciar, acordar, aEnProgreso, completar, porCodigo, porId, misNegociaciones } from "../services/negociacion.service";
 import { iniciarSchema, acordarSchema } from "../utils/negociacion.validation";
 import { isObjectIdOr400 } from "../middleware/validateBody";
 
@@ -31,6 +31,10 @@ export async function porCodigoHandler(req: Request, res: Response) {
     return res.status(400).json({ error: "INVALID_CODE", message: "Codigo invalido" });
   }
   res.json(await porCodigo(codigo));
+}
+
+export async function verUnaHandler(req: Request, res: Response) {
+  res.json(await porId(isObjectIdOr400(req.params.id), req.user!.sub));
 }
 
 export async function misHandler(req: Request, res: Response) {
