@@ -1,25 +1,25 @@
-﻿import 'dotenv/config';
-import { connectDB, getConnection } from "@/config/db";
-import { indexDefinitions } from "@/config/indexes";
-import { Usuario } from "@/models/Usuario";
-import { PerfilPrestador } from "@/models/PerfilPrestador";
-import { TrabajoPortafolio } from "@/models/TrabajoPortafolio";
-import { Categoria } from "@/models/Categoria";
-import { Negociacion } from "@/models/Negociacion";
-import { Mensaje } from "@/models/Mensaje";
-import { MensajePredeterminado } from "@/models/MensajePredeterminado";
-import { Busqueda } from "@/models/Busqueda";
-import { Calificacion } from "@/models/Calificacion";
-import { Favorito } from "@/models/Favorito";
-import { Notificacion } from "@/models/Notificacion";
-import { Reporte } from "@/models/Reporte";
+import 'dotenv/config';
+import { connectDB, getConnection } from "../config/db";
+import { indexDefinitions } from "../config/indexes";
+import "../models/Usuario";
+import "../models/PerfilPrestador";
+import "../models/TrabajoPortafolio";
+import "../models/Categoria";
+import "../models/Negociacion";
+import "../models/Mensaje";
+import "../models/MensajePredeterminado";
+import "../models/Busqueda";
+import "../models/Calificacion";
+import "../models/Favorito";
+import "../models/Notificacion";
+import "../models/Reporte";
+import { MensajePredeterminado } from "../models/MensajePredeterminado";
 
 const USUARIOS_VALIDATION = {
-  "$jsonSchema": {
+  $jsonSchema: {
     bsonType: "object",
-    required: ["email", "password_hash", "nombre", "tipo_usuario"],
+    required: ["email", "password_hash", "nombre", "tipo_usuario", "estado_cuenta"],
     properties: {
-      _id: { bsonType: "objectId" },
       nombre: { bsonType: "string", maxLength: 100 },
       email: { bsonType: "string", pattern: "^.+@.+\\..+$" },
       password_hash: { bsonType: "string" },
@@ -31,22 +31,10 @@ const USUARIOS_VALIDATION = {
         bsonType: "array",
         items: { bsonType: "string", enum: ["Solicitante", "Prestador", "Admin"] },
         minItems: 1,
-        uniqueItems: true,
       },
       biografia: { bsonType: "string", maxLength: 1000 },
       habilidades: { bsonType: "array", items: { bsonType: "string" } },
-      educacion: {
-        bsonType: "array",
-        items: {
-          bsonType: "object",
-          required: ["institucion", "titulo", "anio"],
-          properties: {
-            institucion: { bsonType: "string" },
-            titulo: { bsonType: "string" },
-            anio: { bsonType: "number", minimum: 1900, maximum: 2100 },
-          },
-        },
-      },
+      educacion: { bsonType: "array" },
       calificacion_promedio: { bsonType: "number", minimum: 0, maximum: 5 },
       total_calificaciones: { bsonType: "number", minimum: 0 },
       verificado: { bsonType: "bool" },
@@ -57,11 +45,10 @@ const USUARIOS_VALIDATION = {
 };
 
 const NEGOCIACIONES_VALIDATION = {
-  "$jsonSchema": {
+  $jsonSchema: {
     bsonType: "object",
     required: ["codigo_seguimiento", "solicitante_id", "prestador_id", "categoria_id", "descripcion_trabajo", "estado"],
     properties: {
-      _id: { bsonType: "objectId" },
       codigo_seguimiento: { bsonType: "string", pattern: "^NEG-\\d{4}-\\d{4}$" },
       solicitante_id: { bsonType: "objectId" },
       prestador_id: { bsonType: "objectId" },
@@ -82,21 +69,12 @@ const NEGOCIACIONES_VALIDATION = {
 };
 
 const COLLECTIONS = [
-  { name: "usuarios", validation: USUARIOS_VALIDATION },
-  { name: "perfiles_prestador", validation: null },
-  { name: "trabajos_portafolio", validation: null },
-  { name: "categorias", validation: null },
-  { name: "negociaciones", validation: NEGOCIACIONES_VALIDATION },
-  { name: "mensajes", validation: null },
-  { name: "mensajes_predeterminados", validation: null },
-  { name: "busquedas", validation: null },
-  { name: "calificaciones", validation: null },
-  { name: "favoritos", validation: null },
-  { name: "notificaciones", validation: null },
-  { name: "reportes", validation: null },
+  "usuarios", "perfiles_prestador", "trabajos_portafolio", "categorias",
+  "negociaciones", "mensajes", "mensajes_predeterminados", "busquedas",
+  "calificaciones", "favoritos", "notificaciones", "reportes",
 ];
 
-const MENSAJES_PREDETERMINADOS = [
+const MENSAJES = [
   { texto: "Hola, me interesa tu servicio. ¿Podrías darme más detalles?", tipo_usuario: "Solicitante", categoria: "inicial" },
   { texto: "¿Cuál sería tu disponibilidad para esta semana?", tipo_usuario: "Solicitante", categoria: "disponibilidad" },
   { texto: "¿Qué precio me podrías ofrecer?", tipo_usuario: "Solicitante", categoria: "precio" },
@@ -113,95 +91,55 @@ const MENSAJES_PREDETERMINADOS = [
   { texto: "Te envié los archivos por email/Drive.", tipo_usuario: "Ambos", categoria: "entrega" },
 ];
 
-async function createCollections(db: any) {
-  console.log("Creando colecciones...");
-  for (const coll of COLLECTIONS) {
+async function main() {
+  console.log("Setup iniciando...");
+  await connectDB();
+  const db = getConnection()!.db!;
+
+  for (const name of COLLECTIONS) {
     try {
-      await db.createCollection(coll.name);
-      console.log("  " + coll.name);
+      await db.createCollection(name);
+      console.log("  " + name);
     } catch (e: any) {
-      if (e.codeName === "NamespaceExists") {
-        console.log("  " + coll.name + " (ya existe)");
-      } else {
-        throw e;
-      }
+      if (e.codeName === "NamespaceExists") console.log("  " + name + " (ya existe)");
+      else throw e;
     }
   }
-}
 
-async function applyValidations(db: any) {
-  console.log("Aplicando validaciones $jsonSchema...");
-  try {
-    await db.command({ collMod: "usuarios", validator: USUARIOS_VALIDATION, validationLevel: "strict" });
-    console.log("  usuarios");
-  } catch (e: any) {
-    if (e.codeName !== "NamespaceNotFound") throw e;
-  }
-  
-  try {
-    await db.command({ collMod: "negociaciones", validator: NEGOCIACIONES_VALIDATION, validationLevel: "strict" });
-    console.log("  negociaciones");
-  } catch (e: any) {
-    if (e.codeName !== "NamespaceNotFound") throw e;
-  }
-}
+  await db.command({ collMod: "usuarios", validator: USUARIOS_VALIDATION, validationLevel: "strict" });
+  console.log("  validacion usuarios");
+  await db.command({ collMod: "negociaciones", validator: NEGOCIACIONES_VALIDATION, validationLevel: "strict" });
+  console.log("  validacion negociaciones");
 
-async function createIndexes(db: any) {
-  console.log("Creando indices...");
-  for (const [collectionName, indexes] of Object.entries(indexDefinitions)) {
-    const coll = db.collection(collectionName);
-    for (const index of indexes) {
+  for (const [collName, indexes] of Object.entries(indexDefinitions)) {
+    const coll = db.collection(collName);
+    for (const idx of indexes) {
       try {
-        const options: any = { name: (index as any).name };
-        if ((index as any).unique === true) options.unique = true;
-        await coll.createIndex((index as any).key, options);
-        console.log("  " + collectionName + "." + (index as any).name);
+        const opts: any = { name: idx.name };
+        if (idx.unique === true) opts.unique = true;
+        await coll.createIndex(idx.key, opts);
+        console.log(`  ${collName}.${idx.name}`);
       } catch (e: any) {
         if (e.codeName === "IndexOptionsConflict" || e.codeName === "IndexAlreadyExists") {
-          console.log("  " + collectionName + "." + (index as any).name + " (ya existe)");
-        } else {
-          throw e;
-        }
+          console.log(`  ${collName}.${idx.name} (ya existe)`);
+        } else throw e;
       }
     }
   }
-}
 
-async function seedMensajesPredeterminados() {
-  console.log("Insertando mensajes predeterminados...");
   const count = await MensajePredeterminado.countDocuments();
-  if (count > 0) {
-    console.log("  Ya existen " + count + " mensajes predeterminados");
-    return;
+  if (count === 0) {
+    await MensajePredeterminado.insertMany(MENSAJES);
+    console.log(`  ${MENSAJES.length} mensajes predeterminados`);
+  } else {
+    console.log(`  mensajes predeterminados (ya existen ${count})`);
   }
-  await MensajePredeterminado.insertMany(MENSAJES_PREDETERMINADOS);
-  console.log("  " + MENSAJES_PREDETERMINADOS.length + " mensajes insertados");
-}
 
-async function main() {
-  console.log("Iniciando setup de base de datos...");
-  console.log("");
-  
-  await connectDB();
-  const db = getConnection()!.db;
-  
-  await createCollections(db);
-  console.log("");
-  
-  await applyValidations(db);
-  console.log("");
-  
-  await createIndexes(db);
-  console.log("");
-  
-  await seedMensajesPredeterminados();
-  console.log("");
-  
-  console.log("Base de datos lista para usar");
+  console.log("Setup listo.");
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error("Error en setup:", err);
+main().catch((e) => {
+  console.error("Error en setup:", e);
   process.exit(1);
 });

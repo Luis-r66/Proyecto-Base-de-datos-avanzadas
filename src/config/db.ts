@@ -1,60 +1,34 @@
-﻿import mongoose, { Connection, ClientSession } from 'mongoose';
-import { env } from './env';
+import mongoose, { Connection, ClientSession } from "mongoose";
+import { env } from "./env";
 
-let cachedConnection: Connection | null = null;
+let cached: Connection | null = null;
 
 export async function connectDB(): Promise<Connection> {
-  if (cachedConnection && cachedConnection.readyState === 1) {
-    return cachedConnection;
-  }
-  
-try {
-    const conn = await mongoose.connect(env.MONGODB_URI, {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 60000,
-      socketTimeoutMS: 45000,
-    });
-    
-    cachedConnection = conn.connection;
-    
-    conn.connection.on('connected', () => {
-      console.log('✅ MongoDB conectado');
-    });
-    
-    conn.connection.on('error', (err) => {
-      console.error('❌ Error MongoDB:', err);
-    });
-    
-    conn.connection.on('disconnected', () => {
-      console.warn('⚠️ MongoDB desconectado');
-      cachedConnection = null;
-    });
-    
-    return cachedConnection;
-  } catch (error) {
-    console.error('❌ Error conectando a MongoDB:', error);
-    process.exit(1);
-  }
+  if (cached && cached.readyState === 1) return cached;
+  const conn = await mongoose.connect(env.MONGODB_URI, {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 60000,
+    socketTimeoutMS: 45000,
+  });
+  cached = conn.connection;
+  return cached;
 }
 
-export async function withTransaction<T>(
-  callback: (session: ClientSession) => Promise<T>
-): Promise<T> {
+export async function withTransaction<T>(cb: (s: ClientSession) => Promise<T>): Promise<T> {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
   try {
-    const result = await callback(session);
+    const r = await cb(session);
     await session.commitTransaction();
-    return result;
-  } catch (error) {
+    return r;
+  } catch (e) {
     await session.abortTransaction();
-    throw error;
+    throw e;
   } finally {
     await session.endSession();
   }
 }
 
 export function getConnection(): Connection | null {
-  return cachedConnection;
+  return cached;
 }

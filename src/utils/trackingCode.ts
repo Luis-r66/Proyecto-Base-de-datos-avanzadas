@@ -1,24 +1,15 @@
-﻿import { getConnection } from "@/config/db";
-import { Filter } from "mongodb";
-
-const COUNTER_COLLECTION = "counters";
+import { getConnection } from "../config/db";
 
 export async function generateTrackingCode(): Promise<string> {
   const db = getConnection();
-  if (!db) throw new Error("DB no conectada");
-  
+  if (!db || !db.db) throw new Error("DB no conectada");
   const year = new Date().getFullYear();
-  const counterName = "negociacion_" + year;
-  
-  const filter: Filter<any> = { _id: counterName };
-  
-  const result = await db.collection(COUNTER_COLLECTION).findOneAndUpdate(
-    filter,
-    { "$inc": { seq: 1 } },
-    { upsert: true, returnDocument: "after" }
+  const name = "negociacion_" + year;
+  const r: any = await db.db.collection("counters").findOneAndUpdate(
+    { _id: name } as any,
+    { $inc: { seq: 1 } } as any,
+    { upsert: true, returnDocument: "after" } as any
   );
-  
-  const seq = result?.seq ?? 1;
-  const padded = String(seq).padStart(4, "0");
-  return "NEG-" + year + "-" + padded;
+  const seq = r?.seq ?? 1;
+  return "NEG-" + year + "-" + String(seq).padStart(4, "0");
 }

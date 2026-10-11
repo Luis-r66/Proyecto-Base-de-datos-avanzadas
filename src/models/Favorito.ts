@@ -1,4 +1,4 @@
-﻿import { Schema, model, models, Document, Types } from 'mongoose';
+import { Schema, model, models, Document, Types } from "mongoose";
 
 export interface IFavorito extends Document {
   _id: Types.ObjectId;
@@ -7,13 +7,13 @@ export interface IFavorito extends Document {
   fecha: Date;
 }
 
-const favoritoSchema = new Schema<IFavorito>({
-  usuario_id: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
-  prestador_id: { type: Schema.Types.ObjectId, ref: 'PerfilPrestador', required: true },
-  fecha: { type: Date, default: Date.now },
-}, {
-  timestamps: false,
-  versionKey: false,
-});
+const s = new Schema<IFavorito>(
+  {
+    usuario_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
+    prestador_id: { type: Schema.Types.ObjectId, ref: "PerfilPrestador", required: true },
+    fecha: { type: Date, default: Date.now },
+  },
+  { timestamps: false, versionKey: false }
+);
 
-export const Favorito = models.Favorito || model<IFavorito>('Favorito', favoritoSchema, 'favoritos');
+export const Favorito = models.Favorito || model<IFavorito>("Favorito", s, "favoritos");

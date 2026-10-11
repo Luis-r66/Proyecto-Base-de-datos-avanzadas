@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { ZodError } from 'zod';
-import mongoose from 'mongoose';
+import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
+import mongoose from "mongoose";
 
 export class AppError extends Error {
   constructor(
@@ -15,82 +15,43 @@ export class AppError extends Error {
 }
 
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
-  const mongoErr = err as any;
-  const isMongoValidation = mongoErr.code === 121;
-  const isAppError = err instanceof AppError;
-  const isExpectedClientError =
+  const e: any = err;
+  const isApp = err instanceof AppError;
+  const expected =
     err instanceof ZodError ||
-    (isAppError && (err as AppError).statusCode < 500) ||
+    (isApp && (err as AppError).statusCode < 500) ||
     err instanceof mongoose.Error.ValidationError ||
     err instanceof mongoose.Error.CastError ||
-    mongoErr.code === 11000 ||
-    isMongoValidation;
+    e.code === 11000 ||
+    e.code === 121;
+  if (!expected) console.error("Error:", err);
+  if (e.code === 121 && e.errInfo?.details) {
+    console.error("MongoDB validation:", JSON.stringify(e.errInfo.details));
+  }
 
-  // Solo loguear errores no esperados (5xx). Los 4xx son respuestas normales del cliente.
-  if (!isExpectedClientError) {
-    console.error('Error:', err);
-  }
-  if (isMongoValidation && mongoErr.errInfo?.details) {
-    console.error('MongoDB validation details:', JSON.stringify(mongoErr.errInfo.details));
-  }
-  
   if (err instanceof ZodError) {
-    return res.status(400).json({
-      error: 'VALIDATION_ERROR',
-      message: 'Datos de entrada invalidos',
-      details: err.flatten().fieldErrors,
-    });
+    return res.status(400).json({ error: "VALIDATION_ERROR", message: "Datos de entrada invalidos", details: err.flatten().fieldErrors });
   }
-  
-  if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
-      error: err.code,
-      message: err.message,
-      details: err.details,
-    });
+  if (isApp) {
+    const a = err as AppError;
+    return res.status(a.statusCode).json({ error: a.code, message: a.message, details: a.details });
   }
-  
   if (err instanceof mongoose.Error.ValidationError) {
-    return res.status(400).json({
-      error: 'VALIDATION_ERROR',
-      message: 'Error de validacion de Mongoose',
-      details: Object.values(err.errors).map(e => e.message),
-    });
+    return res.status(400).json({ error: "VALIDATION_ERROR", message: "Error de validacion", details: Object.values(err.errors).map((x: any) => x.message) });
   }
-  
   if (err instanceof mongoose.Error.CastError) {
-    return res.status(400).json({
-      error: 'INVALID_ID',
-      message: 'ID invalido: ' + err.path,
-    });
+    return res.status(400).json({ error: "INVALID_ID", message: "ID invalido: " + err.path });
   }
-  
-  if ((err as any).code === 11000) {
-    const field = Object.keys((err as any).keyValue)[0];
-    return res.status(409).json({
-      error: 'DUPLICATE_KEY',
-      message: field + ' ya existe',
-    });
+  if (e.code === 11000) {
+    const field = Object.keys(e.keyValue || {})[0] || "campo";
+    return res.status(409).json({ error: "DUPLICATE_KEY", message: field + " ya existe" });
   }
-  
-  // Handle MongoDB validation error (code 121)
-  if (mongoErr.code === 121) {
-    return res.status(400).json({
-      error: 'VALIDATION_ERROR',
-      message: 'Documento no pasa validacion de MongoDB',
-      details: mongoErr.errInfo?.details,
-    });
+  if (e.code === 121) {
+    return res.status(400).json({ error: "VALIDATION_ERROR", message: "Documento no pasa validacion de MongoDB", details: e.errInfo?.details });
   }
-  
-  return res.status(500).json({
-    error: 'INTERNAL_ERROR',
-    message: 'Error interno del servidor',
-  });
+  return res.status(500).json({ error: "INTERNAL_ERROR", message: "Error interno del servidor" });
 }
 
 export function notFoundHandler(_req: Request, res: Response) {
-  res.status(404).json({
-    error: 'NOT_FOUND',
-    message: 'Recurso no encontrado',
-  });
+  res.status(404).json({ error: "NOT_FOUND", message: "Recurso no encontrado" });
 }
