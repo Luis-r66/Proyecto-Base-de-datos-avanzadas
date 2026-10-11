@@ -1,6 +1,5 @@
 ﻿import { Schema, model, models, Document, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { env } from '@/config/env';
 
 export interface IEducacion {
   institucion: string;
@@ -71,12 +70,5 @@ const usuarioSchema = new Schema<IUsuario>({
 usuarioSchema.methods.compararPassword = async function (password: string): Promise<boolean> {
   return bcrypt.compare(password, this.password_hash);
 };
-
-usuarioSchema.pre('save', async function (next) {
-  if (!this.isModified('password_hash')) return next();
-  const rounds = env.BCRYPT_ROUNDS;
-  this.password_hash = await bcrypt.hash(this.password_hash, rounds);
-  next();
-});
 
 export const Usuario = models.Usuario || model<IUsuario>('Usuario', usuarioSchema, 'usuarios');
