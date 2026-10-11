@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Academico API",
-    "description": "Backend apoyo academico - puerto 3001",
+    "description": "Backend apoyo academico - puerto 3001. H001-H017.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -37,27 +37,99 @@
         {
           "name": "Me",
           "request": { "method": "GET", "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] } }
+        },
+        {
+          "name": "Refresh",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/refresh", "host": ["{{base_url}}"], "path": ["auth", "refresh"] },
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"<pegar_refreshToken_del_login>\"\n}" }
+          }
         }
       ]
     },
     {
-      "name": "Categorias",
+      "name": "Categorias (Admin)",
       "item": [
         { "name": "Listar", "request": { "method": "GET", "url": { "raw": "{{base_url}}/categorias", "host": ["{{base_url}}"], "path": ["categorias"] } } },
-        { "name": "Crear", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/categorias", "host": ["{{base_url}}"], "path": ["categorias"] }, "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Fisica\",\n  \"carrera_asociada\": \"Ingenieria\"\n}" } } }
+        { "name": "Crear", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/categorias", "host": ["{{base_url}}"], "path": ["categorias"] }, "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Fisica\",\n  \"carrera_asociada\": \"Ingenieria\"\n}" } } },
+        { "name": "Obtener una", "request": { "method": "GET", "url": { "raw": "{{base_url}}/categorias/:id", "host": ["{{base_url}}"], "path": ["categorias", ":id"] } } },
+        { "name": "Actualizar", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/categorias/:id", "host": ["{{base_url}}"], "path": ["categorias", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Calculo\"\n}" } } },
+        { "name": "Eliminar", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/categorias/:id", "host": ["{{base_url}}"], "path": ["categorias", ":id"] } } }
       ]
     },
     {
-      "name": "Negociaciones",
+      "name": "Perfiles",
       "item": [
-        { "name": "Tracking NEG-2026-0003", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/track/NEG-2026-0003", "host": ["{{base_url}}"], "path": ["negociaciones", "track", "NEG-2026-0003"] } } },
-        { "name": "Mis negociaciones", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/mis", "host": ["{{base_url}}"], "path": ["negociaciones", "mis"] } } }
+        { "name": "Crear perfil prestador", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/perfiles/prestador", "host": ["{{base_url}}"], "path": ["perfiles", "prestador"] }, "body": { "mode": "raw", "raw": "{\n  \"categorias_ids\": [\"<categoria_id>\"]\n}" } } },
+        { "name": "Mi perfil", "request": { "method": "GET", "url": { "raw": "{{base_url}}/perfiles/prestador", "host": ["{{base_url}}"], "path": ["perfiles", "prestador"] } } },
+        { "name": "Actualizar mi perfil", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/perfiles/prestador", "host": ["{{base_url}}"], "path": ["perfiles", "prestador"] }, "body": { "mode": "raw", "raw": "{\n  \"descripcion\": \"Experto en matematicas\",\n  \"tarifa_referencia\": { \"monto\": 150, \"moneda\": \"MXN\", \"unidad\": \"hora\" }\n}" } } },
+        { "name": "Publicar portafolio", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/perfiles/prestador/portafolio", "host": ["{{base_url}}"], "path": ["perfiles", "prestador", "portafolio"] }, "body": { "mode": "raw", "raw": "{\n  \"categoria_id\": \"<categoria_id>\",\n  \"titulo\": \"Resolucion de ecuaciones\",\n  \"descripcion\": \"Trabajo documentado paso a paso\"\n}" } } },
+        { "name": "Mi portafolio", "request": { "method": "GET", "url": { "raw": "{{base_url}}/perfiles/prestador/portafolio?page=1&limit=10", "host": ["{{base_url}}"], "path": ["perfiles", "prestador", "portafolio"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] } } },
+        { "name": "Perfil publico", "request": { "method": "GET", "url": { "raw": "{{base_url}}/perfiles/prestador/:id", "host": ["{{base_url}}"], "path": ["perfiles", "prestador", ":id"] } } }
       ]
     },
     {
       "name": "Busquedas",
       "item": [
+        { "name": "Buscar prestadores", "request": { "method": "GET", "url": { "raw": "{{base_url}}/busquedas/prestadores?categoria_id=<categoria_id>&page=1&limit=10&sort=rating", "host": ["{{base_url}}"], "path": ["busquedas", "prestadores"], "query": [{ "key": "categoria_id", "value": "<categoria_id>" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "sort", "value": "rating" }] } } },
         { "name": "Destacados", "request": { "method": "GET", "url": { "raw": "{{base_url}}/busquedas/destacados?limit=5&min_calificaciones=1", "host": ["{{base_url}}"], "path": ["busquedas", "destacados"], "query": [{ "key": "limit", "value": "5" }, { "key": "min_calificaciones", "value": "1" }] } } }
+      ]
+    },
+    {
+      "name": "Negociaciones",
+      "item": [
+        { "name": "Iniciar", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/negociaciones", "host": ["{{base_url}}"], "path": ["negociaciones"] }, "body": { "mode": "raw", "raw": "{\n  \"prestador_id\": \"<prestador_id>\",\n  \"categoria_id\": \"<categoria_id>\",\n  \"descripcion_trabajo\": \"Necesito ayuda con calculo\",\n  \"precio_propuesto\": 500,\n  \"forma_pago\": \"Transferencia\"\n}" } } },
+        { "name": "Mis negociaciones", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/mis", "host": ["{{base_url}}"], "path": ["negociaciones", "mis"] } } },
+        { "name": "Ver una", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/:id", "host": ["{{base_url}}"], "path": ["negociaciones", ":id"] } } },
+        { "name": "Acordar (prestador)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/negociaciones/:id/acordar", "host": ["{{base_url}}"], "path": ["negociaciones", ":id", "acordar"] }, "body": { "mode": "raw", "raw": "{\n  \"precio_acordado\": 450,\n  \"forma_pago\": \"Transferencia\"\n}" } } },
+        { "name": "En progreso", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/negociaciones/:id/en-progreso", "host": ["{{base_url}}"], "path": ["negociaciones", ":id", "en-progreso"] } } },
+        { "name": "Completar", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/negociaciones/:id/completar", "host": ["{{base_url}}"], "path": ["negociaciones", ":id", "completar"] } } },
+        { "name": "Tracking publico", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/track/NEG-2026-0001", "host": ["{{base_url}}"], "path": ["negociaciones", "track", "NEG-2026-0001"] } } }
+      ]
+    },
+    {
+      "name": "Mensajes",
+      "item": [
+        { "name": "Enviar libre", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"] }, "body": { "mode": "raw", "raw": "{\n  \"contenido\": \"Hola, cuando empezamos?\"\n}" } } },
+        { "name": "Enviar predeterminado", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"] }, "body": { "mode": "raw", "raw": "{\n  \"mensaje_predeterminado_id\": \"<id>\"\n}" } } },
+        { "name": "Listar mensajes", "request": { "method": "GET", "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"] } } },
+        { "name": "Predeterminados", "request": { "method": "GET", "url": { "raw": "{{base_url}}/mensajes/mensajes-predeterminados", "host": ["{{base_url}}"], "path": ["mensajes", "mensajes-predeterminados"] } } }
+      ]
+    },
+    {
+      "name": "Notificaciones",
+      "item": [
+        { "name": "Listar", "request": { "method": "GET", "url": { "raw": "{{base_url}}/mensajes/notificaciones", "host": ["{{base_url}}"], "path": ["mensajes", "notificaciones"] } } },
+        { "name": "Marcar leida", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/mensajes/notificaciones/:id/leer", "host": ["{{base_url}}"], "path": ["mensajes", "notificaciones", ":id", "leer"] } } },
+        { "name": "Marcar todas", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/mensajes/notificaciones/leer-todas", "host": ["{{base_url}}"], "path": ["mensajes", "notificaciones", "leer-todas"] } } }
+      ]
+    },
+    {
+      "name": "Calificaciones",
+      "item": [
+        { "name": "Calificar", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/calificaciones", "host": ["{{base_url}}"], "path": ["calificaciones"] }, "body": { "mode": "raw", "raw": "{\n  \"negociacion_id\": \"<negociacion_id>\",\n  \"puntaje\": 5,\n  \"comentario\": \"Excelente\"\n}" } } },
+        { "name": "Mis recibidas", "request": { "method": "GET", "url": { "raw": "{{base_url}}/calificaciones/mis", "host": ["{{base_url}}"], "path": ["calificaciones", "mis"] } } }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        { "name": "Crear", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/reportes", "host": ["{{base_url}}"], "path": ["reportes"] }, "body": { "mode": "raw", "raw": "{\n  \"reportado_id\": \"<usuario_id>\",\n  \"negociacion_id\": \"<negociacion_id>\",\n  \"motivo\": \"Prueba demo\",\n  \"categoria_reporte\": \"otro\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Favoritos",
+      "item": [
+        { "name": "Toggle", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/favoritos", "host": ["{{base_url}}"], "path": ["favoritos"] }, "body": { "mode": "raw", "raw": "{\n  \"prestador_id\": \"<prestador_id>\"\n}" } } },
+        { "name": "Listar", "request": { "method": "GET", "url": { "raw": "{{base_url}}/favoritos", "host": ["{{base_url}}"], "path": ["favoritos"] } } }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        { "name": "Verificar usuario", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/admin/usuarios/:id/verificar", "host": ["{{base_url}}"], "path": ["admin", "usuarios", ":id", "verificar"] }, "body": { "mode": "raw", "raw": "{\n  \"verificado\": true\n}" } } }
       ]
     }
   ]
