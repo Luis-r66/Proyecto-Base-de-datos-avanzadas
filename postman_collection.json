@@ -1,0 +1,64 @@
+{
+  "info": {
+    "name": "Academico API",
+    "description": "Backend apoyo academico - puerto 3001",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3001/api", "type": "string" },
+    { "key": "access_token", "value": "", "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Test\",\n  \"email\": \"test@test.com\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\"\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"santiago.morales@test.com\",\n  \"password\": \"Santiago123\"\n}" }
+          }
+        },
+        {
+          "name": "Me",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] } }
+        }
+      ]
+    },
+    {
+      "name": "Categorias",
+      "item": [
+        { "name": "Listar", "request": { "method": "GET", "url": { "raw": "{{base_url}}/categorias", "host": ["{{base_url}}"], "path": ["categorias"] } } },
+        { "name": "Crear", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/categorias", "host": ["{{base_url}}"], "path": ["categorias"] }, "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Fisica\",\n  \"carrera_asociada\": \"Ingenieria\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Negociaciones",
+      "item": [
+        { "name": "Tracking NEG-2026-0003", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/track/NEG-2026-0003", "host": ["{{base_url}}"], "path": ["negociaciones", "track", "NEG-2026-0003"] } } },
+        { "name": "Mis negociaciones", "request": { "method": "GET", "url": { "raw": "{{base_url}}/negociaciones/mis", "host": ["{{base_url}}"], "path": ["negociaciones", "mis"] } } }
+      ]
+    },
+    {
+      "name": "Busquedas",
+      "item": [
+        { "name": "Destacados", "request": { "method": "GET", "url": { "raw": "{{base_url}}/busquedas/destacados?limit=5&min_calificaciones=1", "host": ["{{base_url}}"], "path": ["busquedas", "destacados"], "query": [{ "key": "limit", "value": "5" }, { "key": "min_calificaciones", "value": "1" }] } } }
+      ]
+    }
+  ]
+}
