@@ -39,6 +39,7 @@ app.use(errorHandler);
 async function start() {
   try {
     await connectDB();
+    console.log("DB connected successfully");
     
     const server = app.listen(env.PORT, '0.0.0.0', () => {
       console.log("Servidor corriendo en http://localhost:" + env.PORT);
@@ -54,6 +55,10 @@ async function start() {
       console.log('Server is actually listening on port ' + env.PORT);
       const address = server.address();
       console.log('Server address:', JSON.stringify(address));
+    });
+    
+    server.on('close', () => {
+      console.log('Server closed');
     });
   } catch (error) {
     console.error("Error iniciando servidor:", error);

@@ -27,16 +27,18 @@ export async function registerUser(data: RegisterInput): Promise<AuthTokens> {
   
   const password_hash = await bcrypt.hash(data.password, env.BCRYPT_ROUNDS);
   
-  const user = await Usuario.create({
+  const createData: any = {
     nombre: data.nombre,
     email: data.email,
     password_hash,
-    carrera: data.carrera,
-    semestre: data.semestre,
-    institucion: data.institucion,
     tipo_usuario: ['Solicitante'],
     estado_cuenta: 'activo',
-  });
+  };
+  if (data.carrera !== undefined) createData.carrera = data.carrera;
+  if (data.semestre !== undefined) createData.semestre = data.semestre;
+  if (data.institucion !== undefined) createData.institucion = data.institucion;
+  
+  const user = await Usuario.create(createData);
   
   const payload: TokenPayload = {
     sub: user._id,

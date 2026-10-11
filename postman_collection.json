@@ -1,11 +1,11 @@
-{
+﻿{
   "info": {
     "name": "Academico API",
     "description": "Backend para aplicacion de apoyo academico entre estudiantes universitarios",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url", "value": "http://localhost:3000/api", "type": "string" },
+    { "key": "base_url", "value": "http://localhost:3001/api", "type": "string" },
     { "key": "access_token", "value": "", "type": "string" }
   ],
   "auth": {
@@ -92,7 +92,7 @@
     {
       "name": "Mensajes",
       "item": [
-        { "name": "Enviar mensaje (libre)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"] }, "body": { "mode": "raw", "raw": "{\n  \"contenido\": \"Hola, ¿cuando podemos empezar?\"\n}" } } },
+        { "name": "Enviar mensaje (libre)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"] }, "body": { "mode": "raw", "raw": "{\n  \"contenido\": \"Hola, Â¿cuando podemos empezar?\"\n}" } } },
         { "name": "Enviar mensaje (predeterminado)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"] }, "body": { "mode": "raw", "raw": "{\n  \"mensaje_predeterminado_id\": \"<mensaje_predeterminado_id>\"\n}" } } },
         { "name": "Ver mensajes de negociacion", "request": { "method": "GET", "url": { "raw": "{{base_url}}/mensajes/negociaciones/:id/mensajes?page=1&limit=20", "host": ["{{base_url}}"], "path": ["mensajes", "negociaciones", ":id", "mensajes"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] } } },
         { "name": "Marcar mensaje leido", "request": { "method": "PATCH", "url": { "raw": "{{base_url}}/mensajes/mensajes/:id/leer", "host": ["{{base_url}}"], "path": ["mensajes", "mensajes", ":id", "leer"] } } },

@@ -1,9 +1,9 @@
-# Academico API - REST Client
+﻿# Academico API - REST Client
 # Extension: REST Client (Huachao Mao) en VS Code
 # Click "Send Request" encima de cada bloque
 
 # Variables
-@base_url = http://localhost:3000/api
+@base_url = http://localhost:3001/api
 @access_token =
 
 ---
@@ -51,13 +51,13 @@ Authorization: Bearer {{access_token}}
 
 ---
 
-### ============ CATEGORÍAS (Admin) ============
+### ============ CATEGORÃAS (Admin) ============
 
-### Listar categorías
+### Listar categorÃ­as
 GET {{base_url}}/categorias?page=1&limit=20
 Authorization: Bearer {{access_token}}
 
-### Crear categoría (Admin)
+### Crear categorÃ­a (Admin)
 POST {{base_url}}/categorias
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
@@ -68,11 +68,11 @@ Authorization: Bearer {{access_token}}
   "categoria_padre_id": ""
 }
 
-### Obtener una categoría
+### Obtener una categorÃ­a
 GET {{base_url}}/categorias/:id
 Authorization: Bearer {{access_token}}
 
-### Actualizar categoría
+### Actualizar categorÃ­a
 PATCH {{base_url}}/categorias/:id
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
@@ -81,7 +81,7 @@ Authorization: Bearer {{access_token}}
   "nombre": "Calculo"
 }
 
-### Eliminar categoría
+### Eliminar categorÃ­a
 DELETE {{base_url}}/categorias/:id
 Authorization: Bearer {{access_token}}
 
@@ -136,28 +136,28 @@ Authorization: Bearer {{access_token}}
 GET {{base_url}}/perfiles/prestador/portafolio?page=1&limit=10
 Authorization: Bearer {{access_token}}
 
-### Perfil público (solo Activo)
+### Perfil pÃºblico (solo Activo)
 GET {{base_url}}/perfiles/prestador/:id
 
-### Trabajo público
+### Trabajo pÃºblico
 GET {{base_url}}/perfiles/portafolio/:id
 
 ---
 
-### ============ BÚSQUEDAS ============
+### ============ BÃšSQUEDAS ============
 
-### Buscar prestadores por categoría
+### Buscar prestadores por categorÃ­a
 GET {{base_url}}/busquedas/prestadores?categoria_id=<categoria_id>&page=1&limit=10&sort=rating&termino=matematicas
 Authorization: Bearer {{access_token}}
 
-### Prestadores destacados (público)
+### Prestadores destacados (pÃºblico)
 GET {{base_url}}/busquedas/destacados?limit=10&min_calificaciones=3
 
 ---
 
 ### ============ NEGOCIACIONES ============
 
-### Iniciar negociación
+### Iniciar negociaciÃ³n
 POST {{base_url}}/negociaciones
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
@@ -174,7 +174,7 @@ Authorization: Bearer {{access_token}}
 GET {{base_url}}/negociaciones/mis?page=1&limit=10&estado=Acordado
 Authorization: Bearer {{access_token}}
 
-### Ver negociación
+### Ver negociaciÃ³n
 GET {{base_url}}/negociaciones/:id
 Authorization: Bearer {{access_token}}
 
@@ -192,11 +192,11 @@ Authorization: Bearer {{access_token}}
 PATCH {{base_url}}/negociaciones/:id/en-progreso
 Authorization: Bearer {{access_token}}
 
-### Completar negociación
+### Completar negociaciÃ³n
 PATCH {{base_url}}/negociaciones/:id/completar
 Authorization: Bearer {{access_token}}
 
-### Tracking público (sin auth)
+### Tracking pÃºblico (sin auth)
 GET {{base_url}}/negociaciones/track/:codigo
 
 ---
@@ -209,7 +209,7 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "contenido": "Hola, ¿cuándo podemos empezar?"
+  "contenido": "Hola, Â¿cuÃ¡ndo podemos empezar?"
 }
 
 ### Enviar mensaje (predeterminado)
@@ -221,11 +221,11 @@ Authorization: Bearer {{access_token}}
   "mensaje_predeterminado_id": "<mensaje_predeterminado_id>"
 }
 
-### Ver mensajes de negociación
+### Ver mensajes de negociaciÃ³n
 GET {{base_url}}/mensajes/negociaciones/:id/mensajes?page=1&limit=20
 Authorization: Bearer {{access_token}}
 
-### Marcar mensaje leído
+### Marcar mensaje leÃ­do
 PATCH {{base_url}}/mensajes/mensajes/:id/leer
 Authorization: Bearer {{access_token}}
 
@@ -241,11 +241,11 @@ Authorization: Bearer {{access_token}}
 GET {{base_url}}/mensajes/notificaciones?leido=false&page=1&limit=20
 Authorization: Bearer {{access_token}}
 
-### Marcar notificación leída
+### Marcar notificaciÃ³n leÃ­da
 PATCH {{base_url}}/mensajes/notificaciones/:id/leer
 Authorization: Bearer {{access_token}}
 
-### Marcar todas leídas
+### Marcar todas leÃ­das
 PATCH {{base_url}}/mensajes/notificaciones/leer-todas
 Authorization: Bearer {{access_token}}
 
@@ -280,7 +280,7 @@ Authorization: Bearer {{access_token}}
 {
   "reportado_id": "<usuario_id>",
   "negociacion_id": "<negociacion_id>",
-  "motivo": "No entregó el trabajo a tiempo",
+  "motivo": "No entregÃ³ el trabajo a tiempo",
   "categoria_reporte": "incumplimiento"
 }
 
@@ -314,4 +314,4 @@ Authorization: Bearer {{access_token}}
 ### ============ HEALTH ============
 
 ### Health check
-GET http://localhost:3000/health
+GET http://localhost:3001/health
