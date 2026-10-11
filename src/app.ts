@@ -6,6 +6,8 @@ import { connectDB } from "./config/db";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { env } from "./config/env";
 import authRoutes from "./routes/auth.routes";
+import categoriasRoutes from "./routes/categorias.routes";
+import perfilRoutes from "./routes/perfil.routes";
 
 const app = express();
 app.use(cors({ origin: true }));
@@ -14,6 +16,8 @@ app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 app.use("/api/auth", authRoutes);
+app.use("/api/categorias", categoriasRoutes);
+app.use("/api/perfiles", perfilRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
