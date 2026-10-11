@@ -6,12 +6,12 @@ import { searchPrestadoresSchema, destacadosQuerySchema } from "@/utils/busqueda
 
 const router = Router();
 
+// Prestadores destacados (publico, sin autenticacion) - antes del middleware auth
+router.get("/destacados", validate(destacadosQuerySchema, 'query'), getDestacadosHandler);
+
 // Buscar prestadores por categoria (requiere autenticacion)
 router.use(authenticate);
 
-router.get("/prestadores", validate(searchPrestadoresSchema), searchPrestadoresHandler);
-
-// Prestadores destacados (publico, sin autenticacion)
-router.get("/destacados", validate(destacadosQuerySchema), getDestacadosHandler);
+router.get("/prestadores", validate(searchPrestadoresSchema, 'query'), searchPrestadoresHandler);
 
 export default router;

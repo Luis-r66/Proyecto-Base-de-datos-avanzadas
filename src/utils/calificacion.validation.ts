@@ -14,23 +14,17 @@ export const reporteSchema = z.object({
 });
 
 export const calificacionParamsSchema = z.object({
-  params: z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
-  }),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
 });
 
 export const reporteParamsSchema = z.object({
-  params: z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
-  }),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
 });
 
 export const reporteQuerySchema = z.object({
-  query: z.object({
-    estado: z.enum(['Abierto', 'En_revision', 'Cerrado']).optional(),
-    page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(50).default(20),
-  }),
+  estado: z.enum(['Abierto', 'En_revision', 'Cerrado']).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
 });
 
 export type CalificarInput = z.infer<typeof calificarSchema>;

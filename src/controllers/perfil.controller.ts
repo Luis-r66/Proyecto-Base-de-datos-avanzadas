@@ -18,7 +18,7 @@ export async function getMyPerfilPrestadorHandler(req: Request, res: Response) {
 }
 
 export async function getPerfilPrestadorPublicHandler(req: Request, res: Response) {
-  const { params } = prestadorParamsSchema.parse(req.params);
+  const params = prestadorParamsSchema.parse(req.params);
   const perfil = await getPerfilPrestadorById(new Types.ObjectId(params.id));
   if (perfil.estado !== "Activo") {
     return res.status(404).json({ error: "PERFIL_NOT_FOUND", message: "Perfil no encontrado" });
@@ -39,26 +39,26 @@ export async function createTrabajoPortafolioHandler(req: Request, res: Response
 }
 
 export async function getMyTrabajosPortafolioHandler(req: Request, res: Response) {
-  const { query } = portafolioQuerySchema.parse(req.query);
+  const query = portafolioQuerySchema.parse(req.query);
   const result = await getTrabajosPortafolio(req.user!.sub, query.page, query.limit);
   res.json(result);
 }
 
 export async function getTrabajoPortafolioPublicHandler(req: Request, res: Response) {
-  const { params } = prestadorParamsSchema.parse(req.params);
+  const params = prestadorParamsSchema.parse(req.params);
   const trabajo = await getTrabajoPortafolioById(new Types.ObjectId(params.id));
   res.json(trabajo);
 }
 
 export async function updateTrabajoPortafolioHandler(req: Request, res: Response) {
-  const { params } = prestadorParamsSchema.parse(req.params);
+  const params = prestadorParamsSchema.parse(req.params);
   const data = updateTrabajoPortafolioSchema.parse(req.body);
   const trabajo = await updateTrabajoPortafolio(req.user!.sub, new Types.ObjectId(params.id), data);
   res.json(trabajo);
 }
 
 export async function deleteTrabajoPortafolioHandler(req: Request, res: Response) {
-  const { params } = prestadorParamsSchema.parse(req.params);
+  const params = prestadorParamsSchema.parse(req.params);
   await deleteTrabajoPortafolio(req.user!.sub, new Types.ObjectId(params.id));
   res.status(204).send();
 }

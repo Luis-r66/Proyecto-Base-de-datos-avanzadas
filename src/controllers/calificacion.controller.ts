@@ -23,13 +23,13 @@ export async function crearReporteHandler(req: Request, res: Response) {
 }
 
 export async function getReportesHandler(req: Request, res: Response) {
-  const { query } = reporteQuerySchema.parse(req.query);
+  const query = reporteQuerySchema.parse(req.query);
   const result = await getReportes(query.page, query.limit, query.estado);
   res.json(result);
 }
 
 export async function updateReporteHandler(req: Request, res: Response) {
-  const { params } = reporteParamsSchema.parse(req.params);
+  const params = reporteParamsSchema.parse(req.params);
   const estado = req.body.estado;
   if (!["Abierto", "En_revision", "Cerrado"].includes(estado)) {
     return res.status(400).json({ error: "INVALID_ESTADO", message: "Estado invalido" });

@@ -9,14 +9,14 @@ const router = Router();
 // Calificaciones (usuario autenticado)
 router.use(authenticate);
 
-router.post("/calificaciones", validate(calificarSchema), calificarHandler);
+router.post("/calificaciones", validate(calificarSchema, 'body'), calificarHandler);
 router.get("/calificaciones/mis", getMisCalificacionesHandler);
 
 // Reportes (usuario autenticado)
-router.post("/reportes", validate(reporteSchema), crearReporteHandler);
+router.post("/reportes", validate(reporteSchema, 'body'), crearReporteHandler);
 
 // Admin para gestionar reportes
-router.get("/reportes", authenticate, requireRole("Admin"), validate(reporteQuerySchema), getReportesHandler);
-router.patch("/reportes/:id", authenticate, requireRole("Admin"), validate(reporteParamsSchema), updateReporteHandler);
+router.get("/reportes", authenticate, requireRole("Admin"), validate(reporteQuerySchema, 'query'), getReportesHandler);
+router.patch("/reportes/:id", authenticate, requireRole("Admin"), validate(reporteParamsSchema, 'params'), updateReporteHandler);
 
 export default router;

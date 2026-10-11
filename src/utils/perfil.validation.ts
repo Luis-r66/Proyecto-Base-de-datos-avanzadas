@@ -54,16 +54,12 @@ export const updateTrabajoPortafolioSchema = z.object({
 });
 
 export const portafolioQuerySchema = z.object({
-  query: z.object({
-    page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(50).default(10),
-  }),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
 });
 
 export const prestadorParamsSchema = z.object({
-  params: z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
-  }),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID invalido'),
 });
 
 export type CreatePerfilPrestadorInput = z.infer<typeof createPerfilPrestadorSchema>;

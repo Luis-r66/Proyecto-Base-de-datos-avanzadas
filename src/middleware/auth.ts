@@ -46,8 +46,3 @@ export function requireRole(...roles: string[]) {
     next();
   };
 }
-
-export function requireActiveAccount(req: Request, _res: Response, next: NextFunction) {
-  // Se validará en el servicio/controller consultando el usuario
-  next();
-};

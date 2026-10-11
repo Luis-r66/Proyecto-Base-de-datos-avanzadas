@@ -1,4 +1,4 @@
-﻿import jwt, { SignOptions, JwtPayload } from 'jsonwebtoken';
+﻿import jwt, { SignOptions } from 'jsonwebtoken';
 import { env } from '@/config/env';
 import { Types } from 'mongoose';
 import { TipoUsuario } from '@/models/Usuario';
@@ -33,11 +33,3 @@ export function verifyRefreshToken(token: string): RefreshTokenPayload {
   const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET);
   return decoded as unknown as RefreshTokenPayload;
 }
-
-export function decodeToken(token: string): TokenPayload | null {
-  try {
-    return jwt.decode(token) as unknown as TokenPayload;
-  } catch {
-    return null;
-  }
-};
