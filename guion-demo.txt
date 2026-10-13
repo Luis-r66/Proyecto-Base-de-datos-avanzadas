@@ -1,0 +1,90 @@
+GUION SUSTENTACION - 10 FUNCIONALIDADES EN 5 MINUTOS
+Reparto sugerido: P1 pasos 1-3, P2 pasos 4-7, P3 pasos 8-10.
+Servidor corriendo (npm run dev, puerto 3001). Postman con la
+coleccion importada. Atlas abierto en academico.
+
+ANTES DE EMPEZAR (fuera del tiempo)
+- access_token vacio. Tener a mano: categoria_id de Programacion,
+  perfil_id de Santiago, un email fresco (demo@test.com).
+- Login Luis listo para copiar su token rapido (paso 3).
+
+[0:00-0:30] PASO 1 - H003 Registro
+Decir: "Como estudiante nuevo, quiero registrarme con mi correo,
+para acceder a la plataforma."
+Hacer: POST /api/auth/register con email fresco.
+Mostrar: 201 + accessToken + tipo_usuario Solicitante.
+Atlas: documento nuevo en usuarios (password con hash).
+Guardar el token en access_token.
+
+[0:30-1:00] PASO 2 - H004 Perfil prestador
+Decir: "Como estudiante, quiero publicar mi perfil de prestador,
+para ofrecer mis conocimientos."
+Hacer: POST /api/perfiles/prestador con categorias_ids (token paso 1).
+Mostrar: 201, estado Activo.
+
+[1:00-1:30] PASO 3 - H002 Categoria admin
+Decir: "Como administrador, quiero crear categorias,
+para organizar las areas de apoyo."
+Hacer: Login Luis, cambiar a su token, POST /api/categorias
+{nombre Fisica, carrera Ingenieria}.
+Mostrar: 201. Repetir igual: 409 nombre unico por carrera.
+Atlas: documento en categorias.
+
+[1:30-2:00] PASO 4 - H006 Buscar
+Decir: "Como solicitante, quiero buscar prestadores por categoria,
+para encontrar ayuda."
+Hacer: GET /api/busquedas/prestadores?categoria_id=<id>&sort=rating.
+Mostrar: 200 solo activos. Atlas: documento nuevo en busquedas.
+
+[2:00-2:30] PASO 5 - H008 Iniciar negociacion
+Decir: "Como solicitante, quiero iniciar una negociacion,
+para acordar precio y condiciones."
+Hacer: POST /api/negociaciones con prestador, categoria y descripcion.
+Mostrar: 201 + codigo NEG + estado Propuesta. Anotar codigo e id.
+Atlas: documento en negociaciones.
+
+[2:30-3:00] PASO 6 - H009 Mensaje
+Decir: "Como participante, quiero enviar mensajes,
+para coordinar el trabajo."
+Hacer: POST /api/mensajes/negociaciones/:id/mensajes {contenido}.
+Mostrar: 201. Mencionar que crea notificacion al otro participante.
+
+[3:00-3:30] PASO 7 - H010 Acordar
+Decir: "Como prestador, quiero acordar la negociacion,
+para fijar precio y forma de pago."
+Hacer: cambiar a token del prestador de la negociacion del paso 5.
+PATCH /api/negociaciones/:id/acordar {precio_acordado, forma_pago}.
+Mostrar: 200, Acordado + fecha_acuerdo. Mencionar cupo de 5 y rollback.
+
+[3:30-4:00] PASO 8 - H011 Completar
+Decir: "Como participante, quiero marcar el trabajo completado,
+para habilitar la calificacion."
+Hacer: PATCH /:id/en-progreso (200) y PATCH /:id/completar (200).
+Presentarlos como un solo paso.
+
+[4:00-4:30] PASO 9 - H012 Calificar
+Decir: "Como participante, quiero calificar,
+para reconocer el trabajo recibido."
+Hacer: POST /api/calificaciones {negociacion_id, puntaje 5}.
+Mostrar: 201. Atlas: promedio y total recalculados en el usuario.
+
+[4:30-5:00] PASO 10 - H014 Tracking publico
+Decir: "Como visitante, quiero consultar por codigo,
+para hacer seguimiento sin cuenta."
+Hacer: quitar el token y GET /api/negociaciones/track/<codigo>.
+Mostrar: 200. Cierre: endpoint publico funcionando.
+
+SI ALGO DA 4XX EN VIVO (leer como evidencia, no como fallo)
+- 409 en Register o categoria: "validacion de unico funcionando".
+- 403 con token no-admin: "control de roles funcionando".
+- 401 sin token: "autenticacion funcionando".
+- El servidor sigue vivo en todos los casos.
+
+CHECKLIST NOCHE ANTERIOR
+- git pull + npm install + npm run build OK.
+- .env colocado (no esta en git) + IP con acceso en Atlas.
+- npm run db:seed corrido (idempotente, no duplica).
+- Coleccion Postman importada con base_url http://localhost:3001/api.
+- Emails frescos listos + IDs pre-copiados (categoria, prestador).
+- 2 ensayos con cronometro.
+- Enlace del repo enviado al correo del profesor.
