@@ -12,7 +12,7 @@ export interface IBusqueda extends Document {
 const s = new Schema<IBusqueda>(
   {
     usuario_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
-    termino_busqueda: { type: String, required: true, trim: true },
+    termino_busqueda: { type: String, default: "", trim: true },
     categoria_id: { type: Schema.Types.ObjectId, ref: "Categoria" },
     fecha_busqueda: { type: Date, default: Date.now },
     resultados_cantidad: { type: Number, default: 0, min: 0 },
