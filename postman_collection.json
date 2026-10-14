@@ -633,7 +633,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"mensaje_predeterminado_id\": \"<id>\"\n}"
+              "raw": "{\n  \"mensaje_predeterminado_id\": \"6aca7b52f3f925847effab45\"\n}"
             }
           }
         },
