@@ -14,6 +14,31 @@
       "key": "access_token",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "neg_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "neg_codigo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cat_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_a",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "perfil_id",
+      "value": "",
+      "type": "string"
     }
   ],
   "auth": {
@@ -52,9 +77,21 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Test\",\n  \"email\": \"test@test.com\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\"\n}"
+              "raw": "{\n  \"nombre\": \"Test\",\n  \"email\": \"demo{{$timestamp}}@test.com\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\"\n}"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.accessToken) { pm.collectionVariables.set('access_token', r.accessToken); pm.collectionVariables.set('token_a', r.accessToken); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Login",
@@ -80,7 +117,57 @@
               "mode": "raw",
               "raw": "{\n  \"email\": \"santiago.morales@test.com\",\n  \"password\": \"Santiago123\"\n}"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.accessToken) pm.collectionVariables.set('access_token', r.accessToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Luis (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"luis.riascos@test.com\",\n  \"password\": \"Luis1234\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.accessToken) pm.collectionVariables.set('access_token', r.accessToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Me",
@@ -165,22 +252,34 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Fisica\",\n  \"carrera_asociada\": \"Ingenieria\"\n}"
+              "raw": "{\n  \"nombre\": \"Fisica{{$timestamp}}\",\n  \"carrera_asociada\": \"Ingenieria\"\n}"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r._id) pm.collectionVariables.set('cat_id', r._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Obtener una",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/categorias/6ace8ae3157a052cf8e11cbc",
+              "raw": "{{base_url}}/categorias/{{cat_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "categorias",
-                "6ace8ae3157a052cf8e11cbc"
+                "{{cat_id}}"
               ]
             }
           }
@@ -196,13 +295,13 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/categorias/6ace8ae3157a052cf8e11cbc",
+              "raw": "{{base_url}}/categorias/{{cat_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "categorias",
-                "6ace8ae3157a052cf8e11cbc"
+                "{{cat_id}}"
               ]
             },
             "body": {
@@ -216,13 +315,13 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{base_url}}/categorias/6ace8ae3157a052cf8e11cbc",
+              "raw": "{{base_url}}/categorias/{{cat_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "categorias",
-                "6ace8ae3157a052cf8e11cbc"
+                "{{cat_id}}"
               ]
             }
           }
@@ -256,7 +355,19 @@
               "mode": "raw",
               "raw": "{\n  \"categorias_ids\": [\"6ace8ae3157a052cf8e11cbc\"]\n}"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r._id) pm.collectionVariables.set('perfil_id', r._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Mi perfil",
@@ -368,6 +479,9 @@
                 "prestador",
                 "6ace8ae6157a052cf8e11cce"
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }
@@ -433,6 +547,9 @@
                   "value": "1"
                 }
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }
@@ -462,9 +579,22 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"prestador_id\": \"6ace8ae6157a052cf8e11cce\",\n  \"categoria_id\": \"6ace8ae3157a052cf8e11cbc\",\n  \"descripcion_trabajo\": \"Necesito ayuda con calculo\",\n  \"precio_propuesto\": 500,\n  \"forma_pago\": \"Transferencia\"\n}"
+              "raw": "{\n  \"prestador_id\": \"{{perfil_id}}\",\n  \"categoria_id\": \"6ace8ae3157a052cf8e11cbc\",\n  \"descripcion_trabajo\": \"Necesito ayuda con calculo\",\n  \"precio_propuesto\": 500,\n  \"forma_pago\": \"Transferencia\"\n}"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r._id) pm.collectionVariables.set('neg_id', r._id);",
+                  "if (r.codigo_seguimiento) pm.collectionVariables.set('neg_codigo', r.codigo_seguimiento);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Mis negociaciones",
@@ -485,59 +615,88 @@
         {
           "name": "Ver una",
           "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/negociaciones/6ace8aec157a052cf8e11d1d",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "negociaciones",
-                "6ace8aec157a052cf8e11d1d"
-              ]
+            "name": "Ver una",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{base_url}}/negociaciones/{{neg_id}}",
+                "host": [
+                  "{{base_url}}"
+                ],
+                "path": [
+                  "negociaciones",
+                  "{{neg_id}}"
+                ]
+              }
             }
           }
         },
         {
           "name": "Acordar (prestador)",
           "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/negociaciones/6ace8aec157a052cf8e11d1d/acordar",
-              "host": [
-                "{{base_url}}"
+            "name": "Acordar (prestador)",
+            "request": {
+              "method": "PATCH",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
               ],
-              "path": [
-                "negociaciones",
-                "6ace8aec157a052cf8e11d1d",
-                "acordar"
-              ]
+              "url": {
+                "raw": "{{base_url}}/negociaciones/{{neg_id}}/acordar",
+                "host": [
+                  "{{base_url}}"
+                ],
+                "path": [
+                  "negociaciones",
+                  "{{neg_id}}",
+                  "acordar"
+                ]
+              },
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"precio_acordado\": 450,\n  \"forma_pago\": \"Transferencia\"\n}"
+              }
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"precio_acordado\": 450,\n  \"forma_pago\": \"Transferencia\"\n}"
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_a}}",
+                  "type": "string"
+                }
+              ]
             }
           }
         },
         {
           "name": "En progreso",
           "request": {
-            "method": "PATCH",
-            "url": {
-              "raw": "{{base_url}}/negociaciones/6ace8aec157a052cf8e11d1d/en-progreso",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "negociaciones",
-                "6ace8aec157a052cf8e11d1d",
-                "en-progreso"
+            "name": "En progreso",
+            "request": {
+              "method": "PATCH",
+              "url": {
+                "raw": "{{base_url}}/negociaciones/{{neg_id}}/en-progreso",
+                "host": [
+                  "{{base_url}}"
+                ],
+                "path": [
+                  "negociaciones",
+                  "{{neg_id}}",
+                  "en-progreso"
+                ]
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_a}}",
+                  "type": "string"
+                }
               ]
             }
           }
@@ -545,16 +704,29 @@
         {
           "name": "Completar",
           "request": {
-            "method": "PATCH",
-            "url": {
-              "raw": "{{base_url}}/negociaciones/6ace8aec157a052cf8e11d1d/completar",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "negociaciones",
-                "6ace8aec157a052cf8e11d1d",
-                "completar"
+            "name": "Completar",
+            "request": {
+              "method": "PATCH",
+              "url": {
+                "raw": "{{base_url}}/negociaciones/{{neg_id}}/completar",
+                "host": [
+                  "{{base_url}}"
+                ],
+                "path": [
+                  "negociaciones",
+                  "{{neg_id}}",
+                  "completar"
+                ]
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_a}}",
+                  "type": "string"
+                }
               ]
             }
           }
@@ -564,15 +736,18 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/negociaciones/track/NEG-2026-0002",
+              "raw": "{{base_url}}/negociaciones/track/{{neg_codigo}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "negociaciones",
                 "track",
-                "NEG-2026-0002"
+                "{{neg_codigo}}"
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }
@@ -592,14 +767,14 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/mensajes/negociaciones/6ace8aec157a052cf8e11d1d/mensajes",
+              "raw": "{{base_url}}/mensajes/negociaciones/{{neg_id}}/mensajes",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "mensajes",
                 "negociaciones",
-                "6ace8aec157a052cf8e11d1d",
+                "{{neg_id}}",
                 "mensajes"
               ]
             },
@@ -620,14 +795,14 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/mensajes/negociaciones/6ace8aec157a052cf8e11d1d/mensajes",
+              "raw": "{{base_url}}/mensajes/negociaciones/{{neg_id}}/mensajes",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "mensajes",
                 "negociaciones",
-                "6ace8aec157a052cf8e11d1d",
+                "{{neg_id}}",
                 "mensajes"
               ]
             },
@@ -642,14 +817,14 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/mensajes/negociaciones/6ace8aec157a052cf8e11d1d/mensajes",
+              "raw": "{{base_url}}/mensajes/negociaciones/{{neg_id}}/mensajes",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "mensajes",
                 "negociaciones",
-                "6ace8aec157a052cf8e11d1d",
+                "{{neg_id}}",
                 "mensajes"
               ]
             }
@@ -753,7 +928,17 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"negociacion_id\": \"6ace8aec157a052cf8e11d1d\",\n  \"puntaje\": 5,\n  \"comentario\": \"Excelente\"\n}"
+              "raw": "{\n  \"negociacion_id\": \"{{neg_id}}\",\n  \"puntaje\": 5,\n  \"comentario\": \"Excelente\"\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_a}}",
+                  "type": "string"
+                }
+              ]
             }
           }
         },
@@ -799,7 +984,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"reportado_id\": \"6ace8ae5157a052cf8e11cc5\",\n  \"negociacion_id\": \"6ace8aec157a052cf8e11d1d\",\n  \"motivo\": \"Prueba demo\",\n  \"categoria_reporte\": \"otro\"\n}"
+              "raw": "{\n  \"reportado_id\": \"6ace8ae5157a052cf8e11cc5\",\n  \"negociacion_id\": \"{{neg_id}}\",\n  \"motivo\": \"Prueba demo\",\n  \"categoria_reporte\": \"otro\"\n}"
             }
           }
         }
