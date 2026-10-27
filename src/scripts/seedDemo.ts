@@ -12,7 +12,8 @@ import { Reporte } from "../models/Reporte";
 import { createCategoria } from "../services/categoria.service";
 import { createPerfil as createPerfilPrestador, createTrabajo as createTrabajoPortafolio } from "../services/perfil.service";
 import { searchPrestadores } from "../services/busqueda.service";
-import { toggleFavorito, verificarUsuario } from "../services/favorito.service";
+import { toggleFavorito } from "../services/favorito.service";
+import { verificarUsuario } from "../services/admin.service";
 import { iniciar as iniciarNegociacion, acordar as acordarNegociacion, aEnProgreso as marcarEnProgreso, completar as completarNegociacion } from "../services/negociacion.service";
 import { sendMessage } from "../services/mensaje.service";
 import { calificar as crearCalificacion, reportar as crearReporte } from "../services/calificacion.service";
@@ -44,19 +45,19 @@ async function main() {
   console.log("Seed iniciando...");
   await connectDB();
 
-  const prog: any = await ensureCat("Fundamentos de ProgramaciÃ³n", "IngenierÃ­a");
-  const ingles: any = await ensureCat("InglÃ©s AcadÃ©mico", "Humanidades");
+  const prog: any = await ensureCat("Fundamentos de Programación", "Ingeniería");
+  const ingles: any = await ensureCat("Inglés Académico", "Humanidades");
 
   const santiago = await ensureUser("Santiago Morales", "santiago.morales@test.com", "Santiago123", ["Solicitante"],
-    { carrera: "IngenierÃ­a de Sistemas", semestre: 6, institucion: "Universidad Demo", habilidades: ["Python"] });
+    { carrera: "Ingeniería de Sistemas", semestre: 6, institucion: "Universidad Demo", habilidades: ["Python"] });
   const luis = await ensureUser("Luis Riascos", "luis.riascos@test.com", "Luis1234", ["Solicitante", "Admin"],
-    { carrera: "IngenierÃ­a de Sistemas", semestre: 7, institucion: "Universidad Demo" });
+    { carrera: "Ingeniería de Sistemas", semestre: 7, institucion: "Universidad Demo" });
 
   let perfil: any = await PerfilPrestador.findOne({ usuario_id: santiago._id });
   if (!perfil) {
     const r: any = await createPerfilPrestador(santiago._id, {
       categorias_ids: [prog._id.toString(), ingles._id.toString()],
-      descripcion: "Ayudo con programaciÃ³n e inglÃ©s.",
+      descripcion: "Ayudo con programación e inglés.",
       tarifa_referencia: { monto: 150, moneda: "MXN", unidad: "hora" },
       metodos_pago_aceptados: ["Transferencia"],
     });
@@ -89,12 +90,12 @@ async function main() {
       descripcion_trabajo: "Ayuda con proyecto final de Python (demo).", precio_propuesto: 500, forma_pago: "Transferencia",
     });
     const id = new Types.ObjectId(c._id);
-    await sendMessage(luis._id, id, { contenido: "Hola, Â¿me ayudas con mi proyecto? (demo)" });
+    await sendMessage(luis._id, id, { contenido: "Hola, ¿me ayudas con mi proyecto? (demo)" });
     const pred = await MensajePredeterminado.findOne({ tipo_usuario: "Prestador" });
     if (pred) await sendMessage(santiago._id, id, { mensaje_predeterminado_id: pred._id.toString() });
     await acordarNegociacion(perfil._id, id, { precio_acordado: 450, forma_pago: "Transferencia" });
     await marcarEnProgreso(id, santiago._id);
-    await sendMessage(santiago._id, id, { contenido: "Avance listo para revisiÃ³n (demo)." });
+    await sendMessage(santiago._id, id, { contenido: "Avance listo para revisión (demo)." });
     await completarNegociacion(id, luis._id);
     await crearCalificacion(luis._id, { negociacion_id: id.toString(), puntaje: 5, comentario: "Excelente (demo)." });
     await crearCalificacion(santiago._id, { negociacion_id: id.toString(), puntaje: 5, comentario: "Puntual (demo)." });
@@ -102,13 +103,13 @@ async function main() {
     neg1 = await Negociacion.findById(id);
   } else console.log(`  Neg1 (ya existe ${neg1.codigo_seguimiento})`);
 
-  let neg2: any = await Negociacion.findOne({ solicitante_id: luis._id, prestador_id: perfil._id, descripcion_trabajo: /inglÃ©s acadÃ©mico/ });
+  let neg2: any = await Negociacion.findOne({ solicitante_id: luis._id, prestador_id: perfil._id, descripcion_trabajo: /inglés académico/ });
   if (!neg2) {
     const c: any = await iniciarNegociacion(luis._id, {
       prestador_id: perfil._id.toString(), categoria_id: ingles._id.toString(),
-      descripcion_trabajo: "TutorÃ­a de inglÃ©s acadÃ©mico (demo).", precio_propuesto: 300, forma_pago: "Transferencia",
+      descripcion_trabajo: "Tutoría de inglés académico (demo).", precio_propuesto: 300, forma_pago: "Transferencia",
     });
-    await sendMessage(luis._id, new Types.ObjectId(c._id), { contenido: "Â¿Disponibilidad esta semana? (demo)" });
+    await sendMessage(luis._id, new Types.ObjectId(c._id), { contenido: "¿Disponibilidad esta semana? (demo)" });
     console.log(`  Neg2 creada (${c.codigo_seguimiento})`);
     neg2 = await Negociacion.findById(c._id);
   } else console.log(`  Neg2 (ya existe ${neg2.codigo_seguimiento})`);

@@ -5,19 +5,45 @@ import cors from "cors";
 import { connectDB } from "./config/db";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { env } from "./config/env";
+
 import authRoutes from "./routes/auth.routes";
 import categoriasRoutes from "./routes/categorias.routes";
-import perfilRoutes from "./routes/perfil.routes";import negociacionRoutes from "./routes/negociacion.routes";import mensajeRoutes from "./routes/mensaje.routes";import calificacionRoutes from "./routes/calificacion.routes";import busquedaRoutes from "./routes/busqueda.routes";import favoritoRoutes from "./routes/favorito.routes";
+import perfilRoutes from "./routes/perfil.routes";
+import negociacionRoutes from "./routes/negociacion.routes";
+import mensajeRoutes from "./routes/mensaje.routes";
+import calificacionRoutes from "./routes/calificacion.routes";
+import busquedaRoutes from "./routes/busqueda.routes";
+import favoritoRoutes from "./routes/favorito.routes";
+import reportesRoutes from "./routes/reportes.routes";
+import adminRoutes from "./routes/admin.routes";
 
 const app = express();
-app.use(cors({ origin: true }));
+
+const allowedOrigins = env.CORS_ORIGIN.split(",").map((o) => o.trim()).filter(Boolean);
+
+app.use(
+  cors({
+    origin: allowedOrigins.includes("*") ? true : allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
+
 app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
 app.use("/api/auth", authRoutes);
 app.use("/api/categorias", categoriasRoutes);
-app.use("/api/perfiles", perfilRoutes);app.use("/api/negociaciones", negociacionRoutes);app.use("/api/mensajes", mensajeRoutes);app.use("/api", calificacionRoutes);app.use("/api/busquedas", busquedaRoutes);app.use("/api", favoritoRoutes);
+app.use("/api/perfiles", perfilRoutes);
+app.use("/api/negociaciones", negociacionRoutes);
+app.use("/api/mensajes", mensajeRoutes);
+app.use("/api/busquedas", busquedaRoutes);
+app.use("/api/reportes", reportesRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api", calificacionRoutes);
+app.use("/api", favoritoRoutes);
+
 app.use(notFoundHandler);
 app.use(errorHandler);
 
@@ -27,7 +53,10 @@ async function start() {
     const server = app.listen(env.PORT, "0.0.0.0", () => {
       console.log("Servidor en http://localhost:" + env.PORT);
     });
-    server.on("error", (e) => { console.error("Server error:", e); process.exit(1); });
+    server.on("error", (e) => {
+      console.error("Server error:", e);
+      process.exit(1);
+    });
   } catch (e) {
     console.error("Error iniciando:", e);
     process.exit(1);

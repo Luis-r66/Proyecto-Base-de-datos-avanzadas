@@ -1,7 +1,6 @@
 ﻿import { Types } from "mongoose";
 import { Favorito } from "../models/Favorito";
 import { PerfilPrestador } from "../models/PerfilPrestador";
-import { Usuario } from "../models/Usuario";
 import { AppError } from "../middleware/errorHandler";
 
 export async function toggleFavorito(userId: Types.ObjectId, prestadorId: Types.ObjectId) {
@@ -17,24 +16,29 @@ export async function toggleFavorito(userId: Types.ObjectId, prestadorId: Types.
   return { added: true, favorito: fav };
 }
 
+export async function quitarFavorito(userId: Types.ObjectId, prestadorId: Types.ObjectId) {
+  const res = await Favorito.deleteOne({ usuario_id: userId, prestador_id: prestadorId });
+  if (res.deletedCount === 0) {
+    throw new AppError(404, "FAVORITO_NOT_FOUND", "Ese prestador no esta en tus favoritos");
+  }
+  return { removed: true };
+}
+
 export async function getFavoritos(userId: Types.ObjectId, page = 1, limit = 10) {
   const [data, total] = await Promise.all([
-    Favorito.find({ usuario_id: userId }).sort({ fecha: -1 }).skip((page - 1) * limit).limit(limit)
-      .populate({ path: "prestador_id", populate: { path: "usuario_id", select: "nombre foto_perfil_url verificado calificacion_promedio total_calificaciones" } })
+    Favorito.find({ usuario_id: userId })
+      .sort({ fecha: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate({
+        path: "prestador_id",
+        populate: {
+          path: "usuario_id",
+          select: "nombre foto_perfil_url verificado calificacion_promedio total_calificaciones carrera semestre",
+        },
+      })
       .lean(),
     Favorito.countDocuments({ usuario_id: userId }),
   ]);
   return { data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
-}
-
-export async function verificarUsuario(adminId: Types.ObjectId, userId: Types.ObjectId, verificado: boolean) {
-  const admin = await Usuario.findById(adminId);
-  if (!admin || !admin.tipo_usuario.includes("Admin" as any)) {
-    throw new AppError(403, "FORBIDDEN", "Solo administradores");
-  }
-  const user = await Usuario.findById(userId);
-  if (!user) throw new AppError(404, "USER_NOT_FOUND", "Usuario no encontrado");
-  user.verificado = verificado;
-  await user.save();
-  return { _id: user._id, verificado: user.verificado };
 }

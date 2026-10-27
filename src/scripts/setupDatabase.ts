@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { connectDB, getConnection } from "../config/db";
-import { indexDefinitions } from "../config/indexes";
+import { indexDefinitions, legacyIndexes } from "../config/indexes";
 import "../models/Usuario";
 import "../models/PerfilPrestador";
 import "../models/TrabajoPortafolio";
@@ -83,12 +83,12 @@ const MENSAJES = [
   { texto: "El trabajo está completo, muchas gracias.", tipo_usuario: "Solicitante", categoria: "finalizacion" },
   { texto: "Hola, gracias por contactarme. ¿En qué puedo ayudarte?", tipo_usuario: "Prestador", categoria: "inicial" },
   { texto: "Mi disponibilidad es de lunes a viernes de 18:00 a 22:00.", tipo_usuario: "Prestador", categoria: "disponibilidad" },
-  { texto: "Mi tarifa es de $XXX por hora/proyecto.", tipo_usuario: "Prestador", categoria: "precio" },
-  { texto: "Acepto pago por transferencia/PayPal/efectivo.", tipo_usuario: "Prestador", categoria: "pago" },
+  { texto: "Mi tarifa es de 150 por hora o por proyecto.", tipo_usuario: "Prestador", categoria: "precio" },
+  { texto: "Acepto pago por transferencia, PayPal o efectivo.", tipo_usuario: "Prestador", categoria: "pago" },
   { texto: "De acuerdo, empecemos. Necesito que me pases los detalles.", tipo_usuario: "Prestador", categoria: "acuerdo" },
   { texto: "Trabajo entregado. Quedo a la espera de tu revisión.", tipo_usuario: "Prestador", categoria: "finalizacion" },
   { texto: "¿Podemos agendar una videollamada para aclarar dudas?", tipo_usuario: "Ambos", categoria: "comunicacion" },
-  { texto: "Te envié los archivos por email/Drive.", tipo_usuario: "Ambos", categoria: "entrega" },
+  { texto: "Te envié los archivos por correo o Drive.", tipo_usuario: "Ambos", categoria: "entrega" },
 ];
 
 async function main() {
@@ -111,28 +111,44 @@ async function main() {
   await db.command({ collMod: "negociaciones", validator: NEGOCIACIONES_VALIDATION, validationLevel: "strict" });
   console.log("  validacion negociaciones");
 
+  // Eliminar indices obsoletos antes de crear los definitivos
+  for (const [collName, names] of Object.entries(legacyIndexes)) {
+    const coll = db.collection(collName);
+    for (const name of names) {
+      try {
+        await coll.dropIndex(name);
+        console.log(`  ${collName}.${name} (eliminado)`);
+      } catch (e: any) {
+        if (e.codeName !== "IndexNotFound" && e.code !== 27) throw e;
+      }
+    }
+  }
+
   for (const [collName, indexes] of Object.entries(indexDefinitions)) {
     const coll = db.collection(collName);
     for (const idx of indexes) {
       try {
         const opts: any = { name: idx.name };
         if (idx.unique === true) opts.unique = true;
+        if (idx.partialFilterExpression) opts.partialFilterExpression = idx.partialFilterExpression;
         await coll.createIndex(idx.key, opts);
         console.log(`  ${collName}.${idx.name}`);
       } catch (e: any) {
-        if (e.codeName === "IndexOptionsConflict" || e.codeName === "IndexAlreadyExists") {
+        if (e.codeName === "IndexOptionsConflict" || e.codeName === "IndexAlreadyExists" || e.code === 85 || e.code === 86) {
           console.log(`  ${collName}.${idx.name} (ya existe)`);
         } else throw e;
       }
     }
   }
 
-  const count = await MensajePredeterminado.countDocuments();
-  if (count === 0) {
+  const existing = await MensajePredeterminado.find({}).lean();
+  const garbled = existing.some((m: any) => typeof m.texto === "string" && m.texto.includes("\uFFFD"));
+  if (existing.length !== MENSAJES.length || garbled) {
+    await MensajePredeterminado.deleteMany({});
     await MensajePredeterminado.insertMany(MENSAJES);
-    console.log(`  ${MENSAJES.length} mensajes predeterminados`);
+    console.log(`  ${MENSAJES.length} mensajes predeterminados (refrescados)`);
   } else {
-    console.log(`  mensajes predeterminados (ya existen ${count})`);
+    console.log(`  mensajes predeterminados (ya existen ${existing.length})`);
   }
 
   console.log("Setup listo.");

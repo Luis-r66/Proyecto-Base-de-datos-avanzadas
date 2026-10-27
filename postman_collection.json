@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Academico API",
-    "description": "Backend apoyo academico - puerto 3001. H001-H017.",
+    "name": "TutorLink API",
+    "description": "Backend TutorLink - apoyo academico entre estudiantes. Puerto 3001.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -12,6 +12,21 @@
     },
     {
       "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_a",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "perfil_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "usuario_id",
       "value": "",
       "type": "string"
     },
@@ -31,12 +46,7 @@
       "type": "string"
     },
     {
-      "key": "token_a",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "perfil_id",
+      "key": "trabajo_id",
       "value": "",
       "type": "string"
     }
@@ -56,7 +66,7 @@
       "name": "Auth",
       "item": [
         {
-          "name": "Register",
+          "name": "Register (email unico)",
           "request": {
             "method": "POST",
             "header": [
@@ -77,24 +87,27 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Test\",\n  \"email\": \"demo{{$timestamp}}@test.com\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\"\n}"
+              "raw": "{\n  \"nombre\": \"Demo TutorLink\",\n  \"email\": \"demo{{$timestamp}}@test.com\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
             }
           },
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
                   "if (r.accessToken) { pm.collectionVariables.set('access_token', r.accessToken); pm.collectionVariables.set('token_a', r.accessToken); }"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ]
         },
         {
-          "name": "Login",
+          "name": "Login Santiago (prestador)",
           "request": {
             "method": "POST",
             "header": [
@@ -116,17 +129,20 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"santiago.morales@test.com\",\n  \"password\": \"Santiago123\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
             }
           },
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
                   "if (r.accessToken) pm.collectionVariables.set('access_token', r.accessToken);"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ]
@@ -154,17 +170,20 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"luis.riascos@test.com\",\n  \"password\": \"Luis1234\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
             }
           },
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
                   "if (r.accessToken) pm.collectionVariables.set('access_token', r.accessToken);"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ]
@@ -208,13 +227,16 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"refreshToken\": \"<pegar_refreshToken_del_login>\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }
       ]
     },
     {
-      "name": "Categorias (Admin)",
+      "name": "Categorias",
       "item": [
         {
           "name": "Listar",
@@ -227,12 +249,38 @@
               ],
               "path": [
                 "categorias"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
               ]
             }
           }
         },
         {
-          "name": "Crear",
+          "name": "Obtener una",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/categorias/{{cat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categorias",
+                "{{cat_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear (Admin)",
           "request": {
             "method": "POST",
             "header": [
@@ -259,33 +307,17 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
                   "if (r._id) pm.collectionVariables.set('cat_id', r._id);"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ]
         },
         {
-          "name": "Obtener una",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/categorias/{{cat_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categorias",
-                "{{cat_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Actualizar",
+          "name": "Actualizar (Admin)",
           "request": {
             "method": "PATCH",
             "header": [
@@ -306,12 +338,12 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Calculo\"\n}"
+              "raw": "{\n  \"carrera_asociada\": \"Ingenieria\"\n}"
             }
           }
         },
         {
-          "name": "Eliminar",
+          "name": "Eliminar (Admin)",
           "request": {
             "method": "DELETE",
             "url": {
@@ -353,18 +385,18 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categorias_ids\": [\"6ace8ae3157a052cf8e11cbc\"]\n}"
+              "raw": "{\n  \"categorias_ids\": [\n    \"{{cat_id}}\"\n  ],\n  \"tipos_actividad\": [\n    \"Tutorias\"\n  ],\n  \"descripcion\": \"Perfil de demostracion\",\n  \"tarifa_referencia\": {\n    \"monto\": 150,\n    \"moneda\": \"MXN\",\n    \"unidad\": \"hora\"\n  },\n  \"metodos_pago_aceptados\": [\n    \"Transferencia\"\n  ]\n}"
             }
           },
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
                   "if (r._id) pm.collectionVariables.set('perfil_id', r._id);"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ]
@@ -383,7 +415,20 @@
                 "prestador"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r._id) pm.collectionVariables.set('perfil_id', r._id);",
+                  "if (r.usuario_id) pm.collectionVariables.set('usuario_id', r.usuario_id);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar mi perfil",
@@ -407,12 +452,58 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"descripcion\": \"Experto en matematicas\",\n  \"tarifa_referencia\": { \"monto\": 150, \"moneda\": \"MXN\", \"unidad\": \"hora\" }\n}"
+              "raw": "{\n  \"descripcion\": \"Experto en matematicas\"\n}"
             }
           }
         },
         {
-          "name": "Publicar portafolio",
+          "name": "Perfil publico",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/perfiles/prestador/{{perfil_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perfiles",
+                "prestador",
+                "{{perfil_id}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Portafolio publico",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/perfiles/prestador/{{perfil_id}}/portafolio",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perfiles",
+                "prestador",
+                "{{perfil_id}}",
+                "portafolio"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Portafolio (dueno)",
+      "item": [
+        {
+          "name": "Publicar trabajo",
           "request": {
             "method": "POST",
             "header": [
@@ -434,16 +525,28 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoria_id\": \"6ace8ae3157a052cf8e11cbc\",\n  \"titulo\": \"Resolucion de ecuaciones\",\n  \"descripcion\": \"Trabajo documentado paso a paso\"\n}"
+              "raw": "{\n  \"categoria_id\": \"{{cat_id}}\",\n  \"titulo\": \"Proyecto demo{{$timestamp}}\",\n  \"descripcion\": \"Trabajo documentado paso a paso\",\n  \"habilidades_usadas\": [\n    \"Python\"\n  ]\n}"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r._id) pm.collectionVariables.set('trabajo_id', r._id);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Mi portafolio",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/perfiles/prestador/portafolio?page=1&limit=10",
+              "raw": "{{base_url}}/perfiles/prestador/portafolio",
               "host": [
                 "{{base_url}}"
               ],
@@ -466,22 +569,66 @@
           }
         },
         {
-          "name": "Perfil publico",
+          "name": "Obtener trabajo",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/perfiles/prestador/6ace8ae6157a052cf8e11cce",
+              "raw": "{{base_url}}/perfiles/prestador/portafolio/{{trabajo_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "perfiles",
                 "prestador",
-                "6ace8ae6157a052cf8e11cce"
+                "portafolio",
+                "{{trabajo_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Editar trabajo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/perfiles/prestador/portafolio/{{trabajo_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perfiles",
+                "prestador",
+                "portafolio",
+                "{{trabajo_id}}"
               ]
             },
-            "auth": {
-              "type": "noauth"
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Proyecto demo (editado)\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar trabajo",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/perfiles/prestador/portafolio/{{trabajo_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perfiles",
+                "prestador",
+                "portafolio",
+                "{{trabajo_id}}"
+              ]
             }
           }
         }
@@ -495,7 +642,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/busquedas/prestadores?categoria_id=6ace8ae3157a052cf8e11cbc&page=1&limit=10&sort=rating",
+              "raw": "{{base_url}}/busquedas/prestadores?categoria_id={{cat_id}}&page=1&limit=10&sort=rating",
               "host": [
                 "{{base_url}}"
               ],
@@ -506,7 +653,7 @@
               "query": [
                 {
                   "key": "categoria_id",
-                  "value": "6ace8ae3157a052cf8e11cbc"
+                  "value": "{{cat_id}}"
                 },
                 {
                   "key": "page",
@@ -579,19 +726,19 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"prestador_id\": \"{{perfil_id}}\",\n  \"categoria_id\": \"6ace8ae3157a052cf8e11cbc\",\n  \"descripcion_trabajo\": \"Necesito ayuda con calculo\",\n  \"precio_propuesto\": 500,\n  \"forma_pago\": \"Transferencia\"\n}"
+              "raw": "{\n  \"prestador_id\": \"{{perfil_id}}\",\n  \"categoria_id\": \"{{cat_id}}\",\n  \"descripcion_trabajo\": \"Necesito apoyo con calculo\",\n  \"precio_propuesto\": 500,\n  \"forma_pago\": \"Transferencia\"\n}"
             }
           },
           "event": [
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
                   "if (r._id) pm.collectionVariables.set('neg_id', r._id);",
                   "if (r.codigo_seguimiento) pm.collectionVariables.set('neg_codigo', r.codigo_seguimiento);"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ]
@@ -608,6 +755,41 @@
               "path": [
                 "negociaciones",
                 "mis"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar (alias)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/negociaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "negociaciones"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -615,49 +797,60 @@
         {
           "name": "Ver una",
           "request": {
-            "name": "Ver una",
-            "request": {
-              "method": "GET",
-              "url": {
-                "raw": "{{base_url}}/negociaciones/{{neg_id}}",
-                "host": [
-                  "{{base_url}}"
-                ],
-                "path": [
-                  "negociaciones",
-                  "{{neg_id}}"
-                ]
-              }
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/negociaciones/{{neg_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "negociaciones",
+                "{{neg_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Negociar (Propuesta -> Negociando)",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base_url}}/negociaciones/{{neg_id}}/negociar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "negociaciones",
+                "{{neg_id}}",
+                "negociar"
+              ]
             }
           }
         },
         {
           "name": "Acordar (prestador)",
           "request": {
-            "name": "Acordar (prestador)",
-            "request": {
-              "method": "PATCH",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "url": {
-                "raw": "{{base_url}}/negociaciones/{{neg_id}}/acordar",
-                "host": [
-                  "{{base_url}}"
-                ],
-                "path": [
-                  "negociaciones",
-                  "{{neg_id}}",
-                  "acordar"
-                ]
-              },
-              "body": {
-                "mode": "raw",
-                "raw": "{\n  \"precio_acordado\": 450,\n  \"forma_pago\": \"Transferencia\"\n}"
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
               }
+            ],
+            "url": {
+              "raw": "{{base_url}}/negociaciones/{{neg_id}}/acordar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "negociaciones",
+                "{{neg_id}}",
+                "acordar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"precio_acordado\": 450,\n  \"forma_pago\": \"Transferencia\"\n}"
             },
             "auth": {
               "type": "bearer",
@@ -674,20 +867,17 @@
         {
           "name": "En progreso",
           "request": {
-            "name": "En progreso",
-            "request": {
-              "method": "PATCH",
-              "url": {
-                "raw": "{{base_url}}/negociaciones/{{neg_id}}/en-progreso",
-                "host": [
-                  "{{base_url}}"
-                ],
-                "path": [
-                  "negociaciones",
-                  "{{neg_id}}",
-                  "en-progreso"
-                ]
-              }
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base_url}}/negociaciones/{{neg_id}}/en-progreso",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "negociaciones",
+                "{{neg_id}}",
+                "en-progreso"
+              ]
             },
             "auth": {
               "type": "bearer",
@@ -704,20 +894,17 @@
         {
           "name": "Completar",
           "request": {
-            "name": "Completar",
-            "request": {
-              "method": "PATCH",
-              "url": {
-                "raw": "{{base_url}}/negociaciones/{{neg_id}}/completar",
-                "host": [
-                  "{{base_url}}"
-                ],
-                "path": [
-                  "negociaciones",
-                  "{{neg_id}}",
-                  "completar"
-                ]
-              }
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base_url}}/negociaciones/{{neg_id}}/completar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "negociaciones",
+                "{{neg_id}}",
+                "completar"
+              ]
             },
             "auth": {
               "type": "bearer",
@@ -727,6 +914,23 @@
                   "value": "{{token_a}}",
                   "type": "string"
                 }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancelar",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base_url}}/negociaciones/{{neg_id}}/cancelar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "negociaciones",
+                "{{neg_id}}",
+                "cancelar"
               ]
             }
           }
@@ -780,7 +984,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"contenido\": \"Hola, cuando empezamos?\"\n}"
+              "raw": "{\n  \"contenido\": \"Hola, cuando podemos empezar?\"\n}"
             }
           }
         },
@@ -808,7 +1012,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"mensaje_predeterminado_id\": \"6aca7b52f3f925847effab45\"\n}"
+              "raw": "{\n  \"mensaje_predeterminado_id\": \"<id_predeterminado>\"\n}"
             }
           }
         },
@@ -826,6 +1030,16 @@
                 "negociaciones",
                 "{{neg_id}}",
                 "mensajes"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -842,6 +1056,12 @@
               "path": [
                 "mensajes",
                 "mensajes-predeterminados"
+              ],
+              "query": [
+                {
+                  "key": "tipo_usuario",
+                  "value": "Prestador"
+                }
               ]
             }
           }
@@ -863,6 +1083,20 @@
               "path": [
                 "mensajes",
                 "notificaciones"
+              ],
+              "query": [
+                {
+                  "key": "leido",
+                  "value": "false"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
               ]
             }
           }
@@ -872,14 +1106,14 @@
           "request": {
             "method": "PATCH",
             "url": {
-              "raw": "{{base_url}}/mensajes/notificaciones/:id/leer",
+              "raw": "{{base_url}}/mensajes/notificaciones/<id_notificacion>/leer",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "mensajes",
                 "notificaciones",
-                ":id",
+                "<id_notificacion>",
                 "leer"
               ]
             }
@@ -928,7 +1162,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"negociacion_id\": \"{{neg_id}}\",\n  \"puntaje\": 5,\n  \"comentario\": \"Excelente\"\n}"
+              "raw": "{\n  \"negociacion_id\": \"{{neg_id}}\",\n  \"puntaje\": 5,\n  \"comentario\": \"Excelente trabajo\"\n}"
             },
             "auth": {
               "type": "bearer",
@@ -954,6 +1188,43 @@
               "path": [
                 "calificaciones",
                 "mis"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "De un prestador",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/calificaciones/prestador/{{usuario_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "calificaciones",
+                "prestador",
+                "{{usuario_id}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -984,7 +1255,62 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"reportado_id\": \"6ace8ae5157a052cf8e11cc5\",\n  \"negociacion_id\": \"{{neg_id}}\",\n  \"motivo\": \"Prueba demo\",\n  \"categoria_reporte\": \"otro\"\n}"
+              "raw": "{\n  \"reportado_id\": \"{{usuario_id}}\",\n  \"negociacion_id\": \"{{neg_id}}\",\n  \"motivo\": \"Reporte de prueba\",\n  \"categoria_reporte\": \"otro\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar (Admin)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/reportes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reportes"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "Abierto"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cambiar estado (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reportes/<id_reporte>",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reportes",
+                "<id_reporte>"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"En_revision\"\n}"
             }
           }
         }
@@ -994,7 +1320,7 @@
       "name": "Favoritos",
       "item": [
         {
-          "name": "Toggle",
+          "name": "Toggle (agregar/quitar)",
           "request": {
             "method": "POST",
             "header": [
@@ -1014,7 +1340,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"prestador_id\": \"6ace8ae6157a052cf8e11cce\"\n}"
+              "raw": "{\n  \"prestador_id\": \"{{perfil_id}}\"\n}"
             }
           }
         },
@@ -1029,6 +1355,32 @@
               ],
               "path": [
                 "favoritos"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eliminar",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/favoritos/{{perfil_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "favoritos",
+                "{{perfil_id}}"
               ]
             }
           }
@@ -1038,6 +1390,92 @@
     {
       "name": "Admin",
       "item": [
+        {
+          "name": "Prestadores pendientes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/prestadores?verificado=false&page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "prestadores"
+              ],
+              "query": [
+                {
+                  "key": "verificado",
+                  "value": "false"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "const first = r.data && r.data[0];",
+                  "if (first && first.usuario_id) pm.collectionVariables.set('usuario_id', first.usuario_id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Prestadores verificados",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/prestadores?verificado=true&page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "prestadores"
+              ],
+              "query": [
+                {
+                  "key": "verificado",
+                  "value": "true"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "const first = r.data && r.data[0];",
+                  "if (first && first.usuario_id) pm.collectionVariables.set('usuario_id', first.usuario_id);"
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "Verificar usuario",
           "request": {
@@ -1049,20 +1487,46 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/admin/usuarios/6ace8ae5157a052cf8e11cc5/verificar",
+              "raw": "{{base_url}}/admin/usuarios/{{usuario_id}}/verificar",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "admin",
                 "usuarios",
-                "6ace8ae5157a052cf8e11cc5",
+                "{{usuario_id}}",
                 "verificar"
               ]
             },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"verificado\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Salud",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3001/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "http:",
+                "",
+                "localhost:3001",
+                "health"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }

@@ -1,14 +1,21 @@
 ﻿import { Router } from "express";
 import { createHandler, listHandler, getHandler, updateHandler, deleteHandler } from "../controllers/categoria.controller";
 import { authenticate, requireRole } from "../middleware/auth";
-import { validateBody } from "../middleware/validateBody";
+import { validate } from "../middleware/validateBody";
 import { createCategoriaSchema, updateCategoriaSchema } from "../utils/categoria.validation";
 
 const router = Router();
-router.use(authenticate, requireRole("Admin"));
-router.post("/", validateBody(createCategoriaSchema), createHandler);
+
+// Cualquier usuario autenticado puede listar y consultar categorias
+// (los selectores del frontend lo necesitan).
+router.use(authenticate);
+
 router.get("/", listHandler);
 router.get("/:id", getHandler);
-router.patch("/:id", validateBody(updateCategoriaSchema), updateHandler);
-router.delete("/:id", deleteHandler);
+
+// Solo Administrador puede crear, editar y eliminar
+router.post("/", requireRole("Admin"), validate(createCategoriaSchema, "body"), createHandler);
+router.patch("/:id", requireRole("Admin"), validate(updateCategoriaSchema, "body"), updateHandler);
+router.delete("/:id", requireRole("Admin"), deleteHandler);
+
 export default router;

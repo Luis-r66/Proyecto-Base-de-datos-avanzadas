@@ -34,6 +34,20 @@ export const createTrabajoSchema = z.object({
   imagenes_urls: z.array(z.string().url()).optional(),
 });
 
+export const updateTrabajoSchema = z.object({
+  categoria_id: optionalObjectId("ID de categoria invalido"),
+  titulo: z.string().min(1).max(200).trim().optional(),
+  descripcion: z.string().min(1).max(5000).trim().optional(),
+  habilidades_usadas: z.array(z.string().trim()).optional(),
+  imagenes_urls: z.array(z.string().url()).optional(),
+});
+
+export const paginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
+});
+
 export type CreatePerfilInput = z.infer<typeof createPerfilSchema>;
 export type UpdatePerfilInput = z.infer<typeof updatePerfilSchema>;
 export type CreateTrabajoInput = z.infer<typeof createTrabajoSchema>;
+export type UpdateTrabajoInput = z.infer<typeof updateTrabajoSchema>;

@@ -2,7 +2,15 @@ export interface IndexDef {
   key: Record<string, any>;
   unique?: boolean;
   name: string;
+  partialFilterExpression?: Record<string, any>;
 }
+
+export const ACTIVE_NEGOTIATION_STATES = [
+  "Propuesta",
+  "Negociando",
+  "Acordado",
+  "En_progreso",
+];
 
 export const indexDefinitions: Record<string, IndexDef[]> = {
   usuarios: [
@@ -25,6 +33,12 @@ export const indexDefinitions: Record<string, IndexDef[]> = {
     { key: { codigo_seguimiento: 1 }, unique: true, name: "idx_negociaciones_codigo_unique" },
     { key: { solicitante_id: 1 }, name: "idx_negociaciones_solicitante" },
     { key: { prestador_id: 1, estado: 1 }, name: "idx_negociaciones_prestador_estado" },
+    {
+      key: { solicitante_id: 1, prestador_id: 1 },
+      unique: true,
+      name: "idx_negociaciones_activa_unique",
+      partialFilterExpression: { estado: { $in: ACTIVE_NEGOTIATION_STATES } },
+    },
   ],
   mensajes: [
     { key: { negociacion_id: 1 }, name: "idx_mensajes_negociacion" },
@@ -44,4 +58,9 @@ export const indexDefinitions: Record<string, IndexDef[]> = {
   reportes: [
     { key: { reportado_id: 1, estado: 1 }, name: "idx_reportes_reportado_estado" },
   ],
+};
+
+/** Indices antiguos que deben eliminarse si existen en Atlas. */
+export const legacyIndexes: Record<string, string[]> = {
+  negociaciones: ["idx_negociaciones_solicitante_prestador_unique"],
 };

@@ -1,12 +1,15 @@
 ﻿import { Router } from "express";
-import { calificarHandler, misCalifHandler, reportarHandler } from "../controllers/calificacion.controller";
+import { calificarHandler, misCalifHandler, calificacionesDePrestadorHandler } from "../controllers/calificacion.controller";
 import { authenticate } from "../middleware/auth";
-import { validateBody } from "../middleware/validateBody";
-import { calificarSchema, reporteSchema } from "../utils/calificacion.validation";
+import { validate } from "../middleware/validateBody";
+import { calificarSchema } from "../utils/calificacion.validation";
+import { paginationQuerySchema } from "../utils/perfil.validation";
 
 const router = Router();
 router.use(authenticate);
-router.post("/calificaciones", validateBody(calificarSchema), calificarHandler);
-router.get("/calificaciones/mis", misCalifHandler);
-router.post("/reportes", validateBody(reporteSchema), reportarHandler);
+
+router.post("/calificaciones", validate(calificarSchema, "body"), calificarHandler);
+router.get("/calificaciones/mis", validate(paginationQuerySchema, "query"), misCalifHandler);
+router.get("/calificaciones/prestador/:usuarioId", validate(paginationQuerySchema, "query"), calificacionesDePrestadorHandler);
+
 export default router;

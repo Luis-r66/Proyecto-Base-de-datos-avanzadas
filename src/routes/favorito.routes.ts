@@ -1,12 +1,15 @@
 ﻿import { Router } from "express";
-import { toggleHandler, listHandler, verificarHandler } from "../controllers/favorito.controller";
-import { authenticate, requireRole } from "../middleware/auth";
-import { validateBody } from "../middleware/validateBody";
-import { favoritoBodySchema, verifyBodySchema } from "../utils/favorito.validation";
+import { toggleHandler, removeHandler, listHandler } from "../controllers/favorito.controller";
+import { authenticate } from "../middleware/auth";
+import { validate } from "../middleware/validateBody";
+import { favoritoBodySchema } from "../utils/favorito.validation";
+import { paginationQuerySchema } from "../utils/perfil.validation";
 
 const router = Router();
 router.use(authenticate);
-router.post("/favoritos", validateBody(favoritoBodySchema), toggleHandler);
-router.get("/favoritos", listHandler);
-router.patch("/admin/usuarios/:id/verificar", requireRole("Admin"), validateBody(verifyBodySchema), verificarHandler);
+
+router.post("/favoritos", validate(favoritoBodySchema, "body"), toggleHandler);
+router.get("/favoritos", validate(paginationQuerySchema, "query"), listHandler);
+router.delete("/favoritos/:prestadorId", removeHandler);
+
 export default router;

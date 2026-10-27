@@ -1,74 +1,105 @@
-# Apoyo AcadÃ©mico entre Estudiantes â€” Backend MVP
+# TutorLink - Backend
 
-API REST en **Node.js + Express + TypeScript + Mongoose**, conectada a
-**MongoDB Atlas**. Conecta solicitantes (estudiantes que necesitan apoyo:
-talleres, trabajos, ejercicios, investigaciones, exposiciones, asesorÃ­as)
-con prestadores (estudiantes que ofrecen conocimientos). Flujo:
-buscar â†’ negociar â†’ acordar â†’ trabajar â†’ completar â†’ calificar.
+API REST de **TutorLink**, una plataforma de apoyo academico entre estudiantes
+universitarios. Conecta a un **Solicitante** (necesita apoyo: talleres, trabajos,
+ejercicios, investigaciones, exposiciones, asesorias) con un **Prestador**
+(ofrece sus conocimientos). Flujo central: buscar -> negociar -> chatear ->
+acordar -> trabajar -> completar -> calificar o reportar.
+
+Stack: **Node.js + Express + TypeScript + Mongoose + MongoDB Atlas**.
 
 ## Requisitos
 
-- Node.js 20+ y npm
-- Acceso a MongoDB Atlas (URI en `.env`, archivo **no** versionado)
-- IP con acceso en Atlas Network Access
+- Node.js 20 o superior
+- Acceso a MongoDB Atlas (cadena en `.env`, no versionada)
+- IP habilitada en Atlas Network Access
 
-## InstalaciÃ³n y arranque
+## Instalacion
 
 ```bash
 npm install
+cp .env.example .env   # completa los valores reales
 npm run build
-npm run db:setup    # crea colecciones, Ã­ndices, $jsonSchema y catÃ¡logo (idempotente)
-npm run db:seed     # datos demo: 2 usuarios, 2 categorÃ­as, 2 negociaciones, etc. (idempotente)
-npm run dev         # http://localhost:3001
+npm run db:setup       # colecciones, indices, $jsonSchema y catalogo (idempotente)
+npm run db:seed        # datos demo (idempotente, opcional)
+npm run dev            # http://localhost:3001
 ```
 
-Variables de entorno (`.env`, no se commitea):
+### Variables de entorno
 
-```
-MONGODB_URI=mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/academico?retryWrites=true&w=majority
-JWT_ACCESS_SECRET=<min-32-chars>
-JWT_REFRESH_SECRET=<min-32-chars>
-JWT_ACCESS_EXPIRY=15m
-JWT_REFRESH_EXPIRY=7d
-PORT=3001
-NODE_ENV=development
-BCRYPT_ROUNDS=12
-```
+| Variable | Descripcion |
+|----------|-------------|
+| `MONGODB_URI` | Cadena de conexion de MongoDB Atlas |
+| `JWT_ACCESS_SECRET` | Secreto del access token (minimo 32 caracteres) |
+| `JWT_REFRESH_SECRET` | Secreto del refresh token (minimo 32 caracteres) |
+| `JWT_ACCESS_EXPIRY` | Duracion del access token (por defecto `15m`) |
+| `JWT_REFRESH_EXPIRY` | Duracion del refresh token (por defecto `7d`) |
+| `PORT` | Puerto del servidor (por defecto `3001`; en Render lo inyecta la plataforma) |
+| `NODE_ENV` | `development` / `production` / `test` |
+| `BCRYPT_ROUNDS` | Rondas de bcrypt (10 a 15) |
+| `CORS_ORIGIN` | Origenes permitidos, separados por coma (por defecto `http://localhost:5173`) |
 
-## Probar la API
+## Cuentas demo (`npm run db:seed`)
 
-- Importar `postman_collection.json` en Postman (Web o Desktop).
-- Variable `base_url=http://localhost:3001/api`, `access_token` se pega tras el Login.
-- Cuentas demo: `santiago.morales@test.com / Santiago123` (prestador),
-  `luis.riascos@test.com / Luis1234` (solicitante + admin).
-- Para registrar en vivo usar un email nuevo (los existentes devuelven 409).
+| Rol | Email | Password |
+|-----|-------|----------|
+| Prestador | `santiago.morales@test.com` | `Santiago123` |
+| Solicitante + Admin | `luis.riascos@test.com` | `Luis1234` |
 
-## Historias de usuario y demo (10 funcionalidades, 5 min)
+Para registrar en vivo usa un email nuevo; repetir uno existente responde 409.
 
-Ver **`historias-usuarios.md`**: las 10 HU de sustentaciÃ³n con endpoint,
-mÃ©todo y resultado esperado, mÃ¡s la referencia completa H001â€“H017 y las
-reglas de negocio verificables.
+## Documentacion de la API
+
+- `docs/ENDPOINTS.md`: tabla exacta (metodo, ruta, rol, cuerpo, respuesta).
+- `postman_collection.json`: coleccion lista para importar en Postman.
+- `frontend/PENDIENTES_BACKEND.md`: estado de endpoints para el frontend.
+- `historias-usuarios.md`: historias H001-H017 y guion de sustentacion.
 
 ## Estructura
 
 ```
 src/
-â”œâ”€â”€ app.ts                 # Express, rutas, puerto 3001
-â”œâ”€â”€ config/                # env (Zod), db (conexiÃ³n + transacciones), indexes (31 Ã­ndices)
-â”œâ”€â”€ models/                # 11 modelos Mongoose (ObjectId, Date, bcrypt fuera del modelo)
-â”œâ”€â”€ routes/ + controllers/ + services/  # auth, categorias, perfil, busqueda,
-â”‚                                       # negociacion (tx), mensaje (tx), calificacion (tx),
-â”‚                                       # favorito (+admin verify)
-â”œâ”€â”€ middleware/            # auth JWT, validateBody, errorHandler (log solo 5xx)
-â”œâ”€â”€ utils/                 # jwt, trackingCode (NEG-YYYY-NNNN atÃ³mico), validators, schemas
-â””â”€â”€ scripts/               # setupDatabase.ts, seedDemo.ts
+├── app.ts                  # Express, CORS, rutas, puerto
+├── config/                 # env (Zod), db (conexion + transacciones), indexes
+├── middleware/             # auth JWT, validate (body/query/params), errorHandler
+├── models/                 # 11 modelos Mongoose
+├── routes/                 # 10 routers (auth, categorias, perfiles, portafolio,
+│                           # negociaciones, mensajes, calificaciones, favoritos,
+│                           # busquedas, reportes, admin)
+├── controllers/            # Adaptadores HTTP -> servicios
+├── services/               # Logica de negocio y transacciones
+├── utils/                  # jwt, trackingCode, validadores y schemas Zod
+└── scripts/                # setupDatabase.ts, seedDemo.ts
 ```
 
-## Reglas cumplidas
+## Reglas de negocio implementadas
 
-- `ObjectId` en `_id` y referencias; cÃ³digos `NEG-YYYY-NNNN` por contador.
-- `password_hash` con bcrypt (hash en service, una sola vez).
-- Fechas `Date` nativas; `bsonType: "number"` en numÃ©ricos.
-- 31 Ã­ndices (Ãºnicos, compuestos, texto); `$jsonSchema` en `usuarios` y `negociaciones`.
-- Transacciones: acordar (cupo 5), calificar (recÃ¡lculo), mensaje (notificaciÃ³n), perfil (rol).
-- CÃ³digos HTTP coherentes (200/201, 400, 401, 403, 404, 409); el servidor no se cae ante 4xx.
+- `ObjectId` en todas las referencias; codigos `NEG-AAAA-NNNN` con contador atomico.
+- `password_hash` con bcrypt (una sola vez, en el servicio).
+- Fechas nativas `Date`; `bsonType: "number"` en campos numericos.
+- 32 indices (unicos, compuestos, de texto y un unico parcial de negociacion activa).
+- `$jsonSchema` en `usuarios` y `negociaciones`.
+- Transacciones en: acordar (cupo maximo 5), calificar (recalculo de promedio),
+  enviar mensaje (mensaje + notificacion) y crear perfil (perfil + rol).
+- Una negociacion activa por par (solicitante, prestador), con indice unico parcial.
+- Errores con formato unico `{ error, code, details? }`.
+
+## Scripts
+
+| Comando | Accion |
+|---------|--------|
+| `npm run dev` | Servidor en modo desarrollo (puerto 3001) |
+| `npm run build` | Compila TypeScript a `dist/` |
+| `npm start` | Ejecuta `dist/app.js` |
+| `npm run db:setup` | Crea colecciones, indices, validaciones y catalogo |
+| `npm run db:seed` | Carga datos de demostracion |
+
+## Despliegue
+
+- **Backend:** servicio web Node en Render (plan free) o Railway. Build:
+  `npm install --include=dev && npm run build`; Start: `node dist/app.js`;
+  Health check: `/health`. Configura las variables de entorno del cuadro anterior
+  y `CORS_ORIGIN` con el dominio del frontend.
+- **Frontend:** Vercel (carpeta `frontend/`), con `VITE_API_URL` apuntando a la
+  URL publica del backend + `/api`.
+- **Base de datos:** MongoDB Atlas (Network Access `0.0.0.0/0` o las IPs del hosting).

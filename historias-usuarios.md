@@ -27,7 +27,7 @@ lo cual tambien evidencia la validacion de email unico.
   completar en vivo).
 - 14 mensajes predeterminados y notificaciones generadas por el flujo.
 
-## Las 10 funcionalidades de la sustentacion (5 minutos)
+## Las 10 funcionalidades
 
 1. Historia: Como estudiante nuevo, quiero registrarme con mi correo,
    para acceder a la plataforma.
