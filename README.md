@@ -130,10 +130,15 @@ Requiere el backend corriendo en `http://localhost:3001` y `VITE_API_URL` apunta
 
 ## Despliegue
 
-- **Backend:** servicio web Node en Render (plan free) o Railway. Build:
-  `npm install --include=dev && npm run build`; Start: `node dist/app.js`;
-  Health check: `/health`. Configura las variables de entorno del cuadro anterior
-  y `CORS_ORIGIN` con el dominio del frontend.
-- **Frontend:** Vercel (carpeta `frontend/`), con `VITE_API_URL` apuntando a la
-  URL publica del backend + `/api`.
+- **Backend:** servicio web Node en Render (plan free). Repo raiz, build
+  `npm install --include=dev && npm run build`, start `npm run start`, health
+  check `/health`. Region recomendada: Virginia. `PORT` lo inyecta Render.
+  Variables: `NODE_ENV=production`, `MONGODB_URI`, secretos JWT nuevos,
+  `CORS_ORIGIN=https://<frontend>.vercel.app` y las reglas de verificacion.
+- **Frontend:** Vercel con Root Directory `frontend`, framework Vite, build
+  `npm run build` y salida `dist`. Variable `VITE_API_URL=https://<backend>.onrender.com/api`.
+  `frontend/vercel.json` ya incluye el rewrite SPA.
 - **Base de datos:** MongoDB Atlas (Network Access `0.0.0.0/0` o las IPs del hosting).
+- Las credenciales demo de produccion se rotan despues del despliegue y se
+  entregan por separado; el bloque de cuentas demo ya no se muestra en `/login`.
+

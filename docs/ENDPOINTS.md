@@ -216,6 +216,8 @@ Se reevalua al registrarse, crear/editar perfil, crear/eliminar trabajos, inicia
 | Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` | `Luis1234` |
 | Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | `Andres1234` |
 
+> Estas cuentas son solo para el entorno local. En produccion las contrasenas se rotan y se entregan por separado; el login ya no muestra credenciales demo.
+
 ## Notas para el frontend
 
 - Guarda `accessToken` tras login/register y adjuntalo en cada peticion protegida.

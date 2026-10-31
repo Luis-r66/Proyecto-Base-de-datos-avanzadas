@@ -24,7 +24,7 @@ Crea `frontend/.env` (hay un `.env.example`):
 VITE_API_URL=http://localhost:3001/api
 ```
 
-## Cuentas demo
+## Cuentas demo (solo entorno local)
 
 | Rol | Email | Password |
 |-----|-------|----------|
@@ -32,14 +32,16 @@ VITE_API_URL=http://localhost:3001/api
 | Prestador | `santiago.morales@uniautonoma.edu.co` | `Santiago123` |
 | Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | `Andres1234` |
 
-## Sprint 0 (actual)
+> En el despliegue de produccion estas contrasenas se rotan y se entregan por separado. El bloque de credenciales ya no se muestra en `/login`.
+
+## Sprint 0
 
 - Login con JWT y refresh silencioso.
 - Rutas protegidas por sesion y rol.
 - `/admin/categorias`: listar, crear, editar y eliminar (con paginacion y error 409 visible).
 - Estilo neumórfico hibrido con acento azul.
 
-## Sprint 1 (actual)
+## Sprint 1
 
 - `/registro`: alta con validacion de contrasena y correo institucional.
 - `/convertirme-prestador`: crea o edita el perfil (categorias, tarifa, metodos de pago y disponibilidad).
@@ -48,7 +50,7 @@ VITE_API_URL=http://localhost:3001/api
 - `/prestador/:id` y `/portafolio/:id`: perfil y trabajo publicos (calificaciones visibles con sesion).
 - `/`: prestadores destacados.
 
-## Sprint 2 (actual)
+## Sprint 2
 
 - `/negociaciones`: lista con filtro por estado y paginacion.
 - `/negociaciones/:id`: detalle, acciones por rol y estado (negociar, acordar, iniciar, completar, cancelar), chat con mensajes rapidos, calificacion y reporte.
@@ -56,7 +58,7 @@ VITE_API_URL=http://localhost:3001/api
 - `/favoritos`: prestadores guardados con opcion de quitar.
 - `/notificaciones`: bandeja con contador en el header, marcar una o todas como leidas.
 
-## Sprint 3 (actual)
+## Sprint 3
 
 - `/track` y `/track/:codigo`: seguimiento publico por codigo `NEG-AAAA-NNNN`.
 - `/admin`: panel con conteos de pendientes, verificados, reportes y categorias.
@@ -65,3 +67,10 @@ VITE_API_URL=http://localhost:3001/api
 - `/admin/categorias`: CRUD del catalogo.
 
 La demo queda completa con los sprints 0 a 3.
+
+## Despliegue
+
+- **Vercel:** importar el repo con Root Directory `frontend`, framework Vite y build `npm run build` (salida `dist`). `vercel.json` incluye el rewrite SPA para React Router.
+- **Variable de build:** `VITE_API_URL=https://<backend>.onrender.com/api`.
+- **Backend:** en Render, `CORS_ORIGIN` debe ser exactamente el dominio de produccion de Vercel.
+- Las credenciales demo de produccion se rotan y se entregan por separado; no viven en el repo.
