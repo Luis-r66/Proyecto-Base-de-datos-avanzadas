@@ -116,6 +116,18 @@ src/
 | `npm run db:setup` | Crea colecciones, indices, validaciones y catalogo |
 | `npm run db:seed` | Carga datos de demostracion |
 
+## Frontend
+
+La interfaz React + Vite vive en `frontend/`. Instrucciones en `frontend/README.md`:
+
+```bash
+cd frontend
+npm install
+npm run dev    # http://localhost:5173
+```
+
+Requiere el backend corriendo en `http://localhost:3001` y `VITE_API_URL` apuntando a `/api`.
+
 ## Despliegue
 
 - **Backend:** servicio web Node en Render (plan free) o Railway. Build:

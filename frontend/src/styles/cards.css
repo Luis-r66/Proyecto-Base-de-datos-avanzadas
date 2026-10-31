@@ -1,0 +1,40 @@
+.rows {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.row {
+  background: var(--bg);
+  border-radius: var(--r-lg);
+  box-shadow: var(--raised-sm);
+  padding: 14px 18px;
+}
+
+.row__main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.row__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.row__sub {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.row__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
