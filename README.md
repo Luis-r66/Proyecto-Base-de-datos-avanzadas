@@ -138,6 +138,8 @@ Requiere el backend corriendo en `http://localhost:3001` y `VITE_API_URL` apunta
 
 - **Frontend:** https://tutorlink-gray.vercel.app
 - **API:** https://tutorlink-api-549w.onrender.com (`/health`)
+- **Auto-deploy:** activo en Render y Vercel para la rama `main` (cada push despliega).
+- **Uptime:** `.github/workflows/uptime.yml` hace ping a `/health` cada 10 minutos para evitar el cold start de Render free.
 - **Backend:** servicio web Node en Render (plan free). Repo raiz, build
   `npm install --include=dev && npm run build`, start `npm run start`, health
   check `/health`. Region recomendada: Virginia. `PORT` lo inyecta Render.
