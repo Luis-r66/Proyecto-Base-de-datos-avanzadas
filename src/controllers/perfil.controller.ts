@@ -8,6 +8,7 @@ import {
   getMisTrabajos,
   getPortafolioPublico,
   getTrabajoDelDueno,
+  getTrabajoPublico,
   updateTrabajoDelDueno,
   deleteTrabajoDelDueno,
 } from "../services/perfil.service";
@@ -57,6 +58,11 @@ export async function getMisTrabajosHandler(req: Request, res: Response) {
 export async function getTrabajoHandler(req: Request, res: Response) {
   const trabajoId = isObjectIdOr400(req.params.trabajoId, "trabajoId");
   res.json(await getTrabajoDelDueno(req.user!.sub, trabajoId));
+}
+
+export async function getTrabajoPublicoHandler(req: Request, res: Response) {
+  const trabajoId = isObjectIdOr400(req.params.id, "trabajoId");
+  res.json(await getTrabajoPublico(trabajoId));
 }
 
 export async function updateTrabajoHandler(req: Request, res: Response) {

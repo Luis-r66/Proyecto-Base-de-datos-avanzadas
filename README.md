@@ -38,15 +38,37 @@ npm run dev            # http://localhost:3001
 | `NODE_ENV` | `development` / `production` / `test` |
 | `BCRYPT_ROUNDS` | Rondas de bcrypt (10 a 15) |
 | `CORS_ORIGIN` | Origenes permitidos, separados por coma (por defecto `http://localhost:5173`) |
+| `AUTO_VERIFY` | Activa la verificacion automatica (`true` por defecto) |
+| `INSTITUTIONAL_EMAIL_DOMAINS` | Dominios institucionales permitidos, separados por coma (`uniautonoma.edu.co`) |
+| `VERIFY_REQUIRE_ACTIVE_ACCOUNT` | Exige cuenta `activo` para verificar |
+| `VERIFY_REQUIRE_PROVIDER_PROFILE` | Exige perfil de prestador `Activo` |
+| `VERIFY_MIN_CATEGORIES` | Minimo de categorias en el perfil (1) |
+| `VERIFY_MIN_PORTFOLIO_WORKS` | Minimo de trabajos en portafolio (1) |
+
+## Verificacion institucional (automatica)
+
+La insignia se calcula sola al registrarse, crear/editar perfil, publicar o
+eliminar trabajos del portafolio, iniciar sesion y consultar `/auth/me`.
+Se verifica cuando el correo pertenece a un dominio institucional, la cuenta
+esta activa, el perfil de prestador esta `Activo`, tiene al menos
+`VERIFY_MIN_CATEGORIES` categorias y al menos `VERIFY_MIN_PORTFOLIO_WORKS`
+trabajos. Si deja de cumplir, pierde la insignia. El Administrador puede
+forzar o revocar la verificacion (`verificado_override`); con `null` vuelve a
+las reglas automaticas.
 
 ## Cuentas demo (`npm run db:seed`)
 
-| Rol | Email | Password |
-|-----|-------|----------|
-| Prestador | `santiago.morales@test.com` | `Santiago123` |
-| Solicitante + Admin | `luis.riascos@test.com` | `Luis1234` |
+| Rol | Email | Password | Estado |
+|-----|-------|----------|--------|
+| Prestador | `santiago.morales@uniautonoma.edu.co` | `Santiago123` | Verificado (2 categorias + 2 trabajos) |
+| Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` | `Luis1234` | Panel admin + flujo como solicitante |
+| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | `Andres1234` | Perfil activo sin portafolio (para `/admin/verificacion`) |
 
-Para registrar en vivo usa un email nuevo; repetir uno existente responde 409.
+El seed deja 3 negociaciones entre Luis y Santiago: una **Completada** (con
+mensajes y calificaciones mutuas), una **Cancelada** y una **Propuesta activa**
+para demostrar el flujo en vivo. Tambien un reporte abierto, un favorito, una
+busqueda y notificaciones. Para registrar en vivo usa un email nuevo; repetir
+uno existente responde 409.
 
 ## Documentacion de la API
 

@@ -38,6 +38,7 @@ const USUARIOS_VALIDATION = {
       calificacion_promedio: { bsonType: "number", minimum: 0, maximum: 5 },
       total_calificaciones: { bsonType: "number", minimum: 0 },
       verificado: { bsonType: "bool" },
+      verificado_override: { bsonType: ["bool", "null"] },
       estado_cuenta: { bsonType: "string", enum: ["activo", "inactivo", "suspendido"] },
       fecha_registro: { bsonType: "date" },
     },

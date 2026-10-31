@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const verifyBodySchema = z.object({
-  verificado: z.boolean(),
+  verificado: z.union([z.boolean(), z.null()]),
 });
 
 export const adminPrestadoresQuerySchema = z.object({

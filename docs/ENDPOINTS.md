@@ -77,10 +77,11 @@ Errores: 409 `PERFIL_EXISTS`, 400 `INVALID_CATEGORIES`, 403 `ACCOUNT_INACTIVE`, 
 
 ---
 
-## Portafolio (CRUD del dueno)
+## Portafolio
 
 | Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
 |--------|------|-----|----------------|-----------|
+| GET | `/api/perfiles/portafolio/:id` | Publico | - | 200 trabajo con `categoria_id` y `prestador_id.usuario_id` poblados |
 | POST | `/api/perfiles/prestador/portafolio` | Prestador activo | `{categoria_id, titulo, descripcion, habilidades_usadas?, imagenes_urls?}` | 201 trabajo |
 | GET | `/api/perfiles/prestador/portafolio` | Prestador | `?page&limit` | 200 `{data, pagination}` |
 | GET | `/api/perfiles/prestador/portafolio/:trabajoId` | Dueno | - | 200 trabajo |
@@ -181,8 +182,10 @@ Errores: 403 `FORBIDDEN`, 400 `SELF_REPORT`, 404 `REPORTE_NOT_FOUND`.
 
 | Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
 |--------|------|-----|----------------|-----------|
-| GET | `/api/admin/prestadores` | **Admin** | `?verificado=false\|true&page&limit` | 200 `{data:[{_id, usuario_id, descripcion, categorias_ids, estado, fecha_creacion, usuario:{nombre,email,carrera,semestre,verificado,calificacion_promedio,total_calificaciones}}], pagination}` |
-| PATCH | `/api/admin/usuarios/:id/verificar` | **Admin** | `{verificado: boolean}` | 200 `{_id, nombre, email, verificado}` |
+| GET | `/api/admin/prestadores` | **Admin** | `?verificado=false\|true&page&limit` | 200 `{data:[{..., usuario:{...}, estado_verificacion:{verificado, override, automatico, cumplidas[], faltantes[]}}], pagination}` |
+| PATCH | `/api/admin/usuarios/:id/verificar` | **Admin** | `{verificado: true \| false \| null}` | 200 `{_id, nombre, email, verificado, verificado_override, estado_verificacion}` |
+
+`verificado: null` devuelve el control a las reglas automaticas. Con `true`/`false` el Admin fija la insignia manualmente (override).
 
 ---
 
@@ -193,6 +196,25 @@ Errores: 403 `FORBIDDEN`, 400 `SELF_REPORT`, 404 `REPORTE_NOT_FOUND`.
 | GET | `/health` | Publico | 200 `{status:"ok", timestamp}` |
 
 ---
+
+## Verificacion institucional (automatica)
+
+El backend calcula `usuario.verificado` automaticamente cuando:
+
+1. El correo pertenece a un dominio de `INSTITUTIONAL_EMAIL_DOMAINS` (por defecto `uniautonoma.edu.co`).
+2. La cuenta esta `activo` (si `VERIFY_REQUIRE_ACTIVE_ACCOUNT=true`).
+3. Tiene perfil de prestador `Activo` con al menos `VERIFY_MIN_CATEGORIES` categorias.
+4. Tiene al menos `VERIFY_MIN_PORTFOLIO_WORKS` trabajos de portafolio.
+
+Se reevalua al registrarse, crear/editar perfil, crear/eliminar trabajos, iniciar sesion y en `GET /auth/me`. Si deja de cumplir, pierde la insignia. El Admin puede forzar/revocar con `verificado_override`.
+
+## Cuentas demo (`npm run db:seed`)
+
+| Rol | Email | Password |
+|-----|-------|----------|
+| Prestador (verificado) | `santiago.morales@uniautonoma.edu.co` | `Santiago123` |
+| Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` | `Luis1234` |
+| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | `Andres1234` |
 
 ## Notas para el frontend
 

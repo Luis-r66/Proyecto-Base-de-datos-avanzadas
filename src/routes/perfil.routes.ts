@@ -8,6 +8,7 @@ import {
   createTrabajoHandler,
   getMisTrabajosHandler,
   getTrabajoHandler,
+  getTrabajoPublicoHandler,
   updateTrabajoHandler,
   deleteTrabajoHandler,
 } from "../controllers/perfil.controller";
@@ -22,6 +23,9 @@ import {
 } from "../utils/perfil.validation";
 
 const router = Router();
+
+// Detalle publico de un trabajo de portafolio (sin sesion)
+router.get("/portafolio/:id", getTrabajoPublicoHandler);
 
 // Portafolio publico de un prestador (sin sesion)
 router.get("/prestador/:id/portafolio", validate(paginationQuerySchema, "query"), getPortafolioPublicoHandler);

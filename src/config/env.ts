@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+const boolFromEnv = (fallback: boolean) =>
+  z.preprocess((v) => {
+    if (v === undefined || v === "") return fallback;
+    if (typeof v === "boolean") return v;
+    return v === "true" || v === "1";
+  }, z.boolean());
+
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().default(3001),
@@ -10,6 +17,14 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRY: z.string().default("7d"),
   BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
   CORS_ORIGIN: z.string().default("http://localhost:5173"),
+
+  // Verificacion institucional automatica
+  AUTO_VERIFY: boolFromEnv(true),
+  INSTITUTIONAL_EMAIL_DOMAINS: z.string().default("uniautonoma.edu.co"),
+  VERIFY_REQUIRE_ACTIVE_ACCOUNT: boolFromEnv(true),
+  VERIFY_REQUIRE_PROVIDER_PROFILE: boolFromEnv(true),
+  VERIFY_MIN_CATEGORIES: z.coerce.number().int().min(1).default(1),
+  VERIFY_MIN_PORTFOLIO_WORKS: z.coerce.number().int().min(0).default(1),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -28,3 +43,10 @@ export function getEnv(): Env {
 }
 
 export const env = getEnv();
+
+/** Lista de dominios institucionales permitidos (minusculas). */
+export function dominiosInstitucionales(): string[] {
+  return env.INSTITUTIONAL_EMAIL_DOMAINS.split(",")
+    .map((d) => d.trim().toLowerCase().replace(/^@/, ""))
+    .filter(Boolean);
+}

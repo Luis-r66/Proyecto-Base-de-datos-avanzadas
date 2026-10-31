@@ -6,20 +6,23 @@ Coleccion Postman: postman_collection.json
 
 ## Cuentas de prueba (solo demo)
 
-- Prestador: santiago.morales@test.com / Santiago123
-  Roles: Solicitante + Prestador, verificado.
-- Solicitante + Admin: luis.riascos@test.com / Luis1234
+- Prestador: santiago.morales@uniautonoma.edu.co / Santiago123
+  Roles: Solicitante + Prestador. Verificado automaticamente (2 categorias y 2 trabajos).
+- Solicitante + Admin: luis.riascos@uniautonoma.edu.co / Luis1234
   Roles: Solicitante + Admin.
+- Prestador pendiente: andres.gomez@uniautonoma.edu.co / Andres1234
+  Roles: Solicitante + Prestador. Perfil activo sin portafolio (pendiente de verificar).
 
 Nota: para demostrar el registro en vivo usar un email NUEVO cada vez
-(por ejemplo demo@test.com). Repetir un email existente devuelve 409,
+(por ejemplo demo@uniautonoma.edu.co). Repetir un email existente devuelve 409,
 lo cual tambien evidencia la validacion de email unico.
 
 ## Datos sembrados (npm run db:seed, idempotente)
 
 - 2 categorias: Fundamentos de Programacion / Ingenieria,
   Ingles Academico / Humanidades.
-- 1 perfil prestador (Santiago, Activo) + 1 trabajo de portafolio.
+- 1 perfil prestador de Santiago (Activo) + 2 trabajos de portafolio.
+- 1 perfil de Andres sin portafolio (pendiente de verificacion).
 - 1 busqueda, 1 favorito, 1 reporte (Abierto).
 - Negociacion con ciclo completo (Propuesta, Acordado, En_progreso,
   Completado) con mensajes y calificaciones mutuas.
@@ -129,8 +132,11 @@ lo cual tambien evidencia la validacion de email unico.
   para reencontrar prestadores. (POST/GET /api/favoritos)
 - H016: Como usuario, quiero ver y gestionar notificaciones,
   para no perder eventos. (GET/PATCH /api/mensajes/notificaciones)
-- H017: Como administrador, quiero verificar usuarios institucionales,
-  para dar confianza con insignia. (PATCH /api/admin/usuarios/:id/verificar)
+- H017: Como administrador, quiero que los usuarios institucionales obtengan
+  la insignia de verificado, para dar confianza. La verificacion es automatica
+  (correo institucional, cuenta activa, perfil activo, categorias y trabajos de
+  portafolio) y el administrador puede forzarla o revocarla.
+  (PATCH /api/admin/usuarios/:id/verificar con verificado true, false o null)
 
 ## Reglas verificables en demo
 

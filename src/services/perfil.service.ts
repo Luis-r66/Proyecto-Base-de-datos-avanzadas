@@ -5,6 +5,7 @@ import { TrabajoPortafolio } from "../models/TrabajoPortafolio";
 import { Categoria } from "../models/Categoria";
 import { AppError } from "../middleware/errorHandler";
 import { withTransaction } from "../config/db";
+import { evaluarVerificacionSilenciosa } from "./verificacion.service";
 import {
   CreatePerfilInput,
   UpdatePerfilInput,
@@ -44,6 +45,7 @@ export async function createPerfil(usuarioId: Types.ObjectId, data: CreatePerfil
     await Usuario.findByIdAndUpdate(usuarioId, { $addToSet: { tipo_usuario: "Prestador" } }, { session: s });
     return created[0];
   });
+  await evaluarVerificacionSilenciosa(usuarioId);
   return perfil;
 }
 
@@ -85,6 +87,7 @@ export async function updateMiPerfil(usuarioId: Types.ObjectId, data: UpdatePerf
   }
   Object.assign(p, data);
   await p.save();
+  await evaluarVerificacionSilenciosa(usuarioId);
   return p;
 }
 
@@ -96,7 +99,7 @@ export async function createTrabajo(usuarioId: Types.ObjectId, data: CreateTraba
   if (!(await Categoria.findById(data.categoria_id))) {
     throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoria no encontrada");
   }
-  return await TrabajoPortafolio.create({
+  const trabajo = await TrabajoPortafolio.create({
     prestador_id: perfil._id,
     categoria_id: data.categoria_id,
     titulo: data.titulo,
@@ -105,6 +108,8 @@ export async function createTrabajo(usuarioId: Types.ObjectId, data: CreateTraba
     imagenes_urls: data.imagenes_urls || [],
     fecha_realizado: new Date(),
   });
+  await evaluarVerificacionSilenciosa(usuarioId);
+  return trabajo;
 }
 
 export async function getMisTrabajos(usuarioId: Types.ObjectId, page = 1, limit = 10) {
@@ -174,4 +179,15 @@ export async function updateTrabajoDelDueno(
 export async function deleteTrabajoDelDueno(usuarioId: Types.ObjectId, trabajoId: Types.ObjectId) {
   const trabajo = await trabajoDelDueno(usuarioId, trabajoId);
   await trabajo.deleteOne();
+  await evaluarVerificacionSilenciosa(usuarioId);
+}
+
+/** Detalle publico de un trabajo de portafolio (para /portafolio/:id). */
+export async function getTrabajoPublico(trabajoId: Types.ObjectId) {
+  const trabajo = await TrabajoPortafolio.findById(trabajoId)
+    .populate("categoria_id", "nombre carrera_asociada")
+    .populate({ path: "prestador_id", populate: { path: "usuario_id", select: USUARIO_PUBLIC_FIELDS } })
+    .lean();
+  if (!trabajo) throw new AppError(404, "TRABAJO_NOT_FOUND", "Trabajo no encontrado");
+  return trabajo;
 }

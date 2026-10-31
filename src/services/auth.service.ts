@@ -4,6 +4,7 @@ import { Usuario } from "../models/Usuario";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, TokenPayload } from "../utils/jwt";
 import { AppError } from "../middleware/errorHandler";
 import { env } from "../config/env";
+import { evaluarVerificacionSilenciosa } from "./verificacion.service";
 import { RegisterInput, LoginInput } from "../utils/auth.validation";
 
 export interface AuthTokens {
@@ -24,11 +25,18 @@ export async function registerUser(data: RegisterInput): Promise<AuthTokens> {
   if (data.semestre !== undefined) doc.semestre = data.semestre;
   if (data.institucion !== undefined) doc.institucion = data.institucion;
   const user = await Usuario.create(doc);
+
+  await evaluarVerificacionSilenciosa(user._id);
+  const fresh = await Usuario.findById(user._id);
+
   const payload: TokenPayload = { sub: user._id, email: user.email, tipo_usuario: user.tipo_usuario };
   return {
     accessToken: generateAccessToken(payload),
     refreshToken: generateRefreshToken(payload),
-    user: { id: user._id, nombre: user.nombre, email: user.email, tipo_usuario: user.tipo_usuario, verificado: user.verificado },
+    user: {
+      id: user._id, nombre: user.nombre, email: user.email,
+      tipo_usuario: user.tipo_usuario, verificado: fresh?.verificado ?? false,
+    },
   };
 }
 
@@ -39,11 +47,18 @@ export async function loginUser(data: LoginInput): Promise<AuthTokens> {
     throw new AppError(401, "INVALID_CREDENTIALS", "Credenciales invalidas");
   }
   if (user.estado_cuenta !== "activo") throw new AppError(403, "ACCOUNT_INACTIVE", "Cuenta inactiva o suspendida");
+
+  await evaluarVerificacionSilenciosa(user._id);
+  const fresh = await Usuario.findById(user._id);
+
   const payload: TokenPayload = { sub: user._id, email: user.email, tipo_usuario: user.tipo_usuario };
   return {
     accessToken: generateAccessToken(payload),
     refreshToken: generateRefreshToken(payload),
-    user: { id: user._id, nombre: user.nombre, email: user.email, tipo_usuario: user.tipo_usuario, verificado: user.verificado },
+    user: {
+      id: user._id, nombre: user.nombre, email: user.email,
+      tipo_usuario: user.tipo_usuario, verificado: fresh?.verificado ?? user.verificado,
+    },
   };
 }
 
@@ -59,6 +74,7 @@ export async function refreshTokens(token: string) {
 }
 
 export async function getMe(userId: Types.ObjectId) {
+  await evaluarVerificacionSilenciosa(userId);
   const user = await Usuario.findById(userId);
   if (!user) throw new AppError(404, "USER_NOT_FOUND", "Usuario no encontrado");
   return {
@@ -66,6 +82,7 @@ export async function getMe(userId: Types.ObjectId) {
     carrera: user.carrera, semestre: user.semestre, institucion: user.institucion,
     tipo_usuario: user.tipo_usuario, calificacion_promedio: user.calificacion_promedio,
     total_calificaciones: user.total_calificaciones, verificado: user.verificado,
+    verificado_override: user.verificado_override,
     estado_cuenta: user.estado_cuenta, fecha_registro: user.fecha_registro,
   };
 }

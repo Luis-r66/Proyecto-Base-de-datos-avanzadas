@@ -25,6 +25,7 @@ export interface IUsuario extends Document {
   calificacion_promedio: number;
   total_calificaciones: number;
   verificado: boolean;
+  verificado_override: boolean | null;
   estado_cuenta: "activo" | "inactivo" | "suspendido";
   fecha_registro: Date;
   compararPassword(password: string): Promise<boolean>;
@@ -55,6 +56,7 @@ const usuarioSchema = new Schema<IUsuario>(
     calificacion_promedio: { type: Number, default: 0, min: 0, max: 5 },
     total_calificaciones: { type: Number, default: 0, min: 0 },
     verificado: { type: Boolean, default: false },
+    verificado_override: { type: Boolean, default: null },
     estado_cuenta: { type: String, enum: ["activo", "inactivo", "suspendido"], default: "activo" },
     fecha_registro: { type: Date, default: Date.now },
   },
