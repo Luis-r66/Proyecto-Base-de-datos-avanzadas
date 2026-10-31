@@ -91,6 +91,10 @@ export default function Login() {
         </p>
 
         <p className="muted hint">
+          Tienes un codigo? <Link to="/track">Consulta tu negociacion</Link> sin iniciar sesion.
+        </p>
+
+        <p className="muted hint">
           Cuentas demo: <strong>luis.riascos@uniautonoma.edu.co</strong> / Luis1234 (admin) y{" "}
           <strong>santiago.morales@uniautonoma.edu.co</strong> / Santiago123 (prestador).
         </p>

@@ -16,6 +16,10 @@ import Negociaciones from "./pages/Negociaciones";
 import NegociacionDetalle from "./pages/NegociacionDetalle";
 import Favoritos from "./pages/Favoritos";
 import Notificaciones from "./pages/Notificaciones";
+import Track from "./pages/Track";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminVerificacion from "./pages/AdminVerificacion";
+import AdminReportes from "./pages/AdminReportes";
 import AdminCategorias from "./pages/AdminCategorias";
 import "./styles/global.css";
 
@@ -30,6 +34,8 @@ export default function App() {
           <Route path="/registro" element={<Registro />} />
           <Route path="/prestador/:id" element={<PrestadorPublico />} />
           <Route path="/portafolio/:id" element={<PortafolioDetalle />} />
+          <Route path="/track" element={<Track />} />
+          <Route path="/track/:codigo" element={<Track />} />
           <Route
             path="/buscar"
             element={
@@ -99,6 +105,30 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <NegociacionDetalle />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute roles={["Admin"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/verificacion"
+            element={
+              <ProtectedRoute roles={["Admin"]}>
+                <AdminVerificacion />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/reportes"
+            element={
+              <ProtectedRoute roles={["Admin"]}>
+                <AdminReportes />
               </ProtectedRoute>
             }
           />

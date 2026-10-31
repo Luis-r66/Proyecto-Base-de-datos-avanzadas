@@ -62,7 +62,7 @@ export default function Header() {
                 </NavLink>
               )}
               {isAdmin && (
-                <NavLink to="/admin/categorias" className="navlink">
+                <NavLink to="/admin" className="navlink">
                   Admin
                 </NavLink>
               )}

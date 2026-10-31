@@ -22,4 +22,6 @@ La referencia exacta esta en `../docs/ENDPOINTS.md`.
 ## Limitaciones conocidas (no bloquean el frontend)
 
 - El backend no expone un endpoint para listar todos los usuarios; solo perfiles de prestador (`/api/admin/prestadores`) y perfiles publicos por id.
+- No hay endpoint de metricas agregadas; el dashboard admin usa los `pagination.total` de los listados existentes (prestadores por verificacion, reportes por estado y categorias).
+- Las notificaciones de tipo `mensaje` solo guardan el id del mensaje, no el de la negociacion; el frontend enlaza a `/negociaciones` para ubicar la conversacion.
 - `reportes` no tiene endpoint para que el reportado vea los reportes en su contra (solo Admin los lista). No es requerido por las pantallas actuales.

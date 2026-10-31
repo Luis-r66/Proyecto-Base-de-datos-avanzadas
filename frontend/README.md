@@ -56,4 +56,12 @@ VITE_API_URL=http://localhost:3001/api
 - `/favoritos`: prestadores guardados con opcion de quitar.
 - `/notificaciones`: bandeja con contador en el header, marcar una o todas como leidas.
 
-El Sprint 3 cubre paneles de administracion (verificacion, reportes, metricas) y seguimiento publico por codigo.
+## Sprint 3 (actual)
+
+- `/track` y `/track/:codigo`: seguimiento publico por codigo `NEG-AAAA-NNNN`.
+- `/admin`: panel con conteos de pendientes, verificados, reportes y categorias.
+- `/admin/verificacion`: pendientes/verificados, motivos y acciones verificar, revocar o volver a automatico.
+- `/admin/reportes`: filtro por estado y cambio de estado (Abierto, En revision, Cerrado).
+- `/admin/categorias`: CRUD del catalogo.
+
+La demo queda completa con los sprints 0 a 3.

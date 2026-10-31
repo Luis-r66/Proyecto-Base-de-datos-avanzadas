@@ -62,6 +62,9 @@ export default function Home() {
               <p className="muted">
                 Sesion iniciada como <strong>{usuario.nombre}</strong>.
               </p>
+              <Link to="/track" className="btn btn--ghost btn--sm">
+                Consultar por codigo
+              </Link>
             </>
           ) : (
             <>
@@ -70,6 +73,9 @@ export default function Home() {
               </Link>
               <Link to="/registro" className="btn btn--ghost">
                 Crear cuenta
+              </Link>
+              <Link to="/track" className="btn btn--ghost btn--sm">
+                Consultar por codigo
               </Link>
             </>
           )}
