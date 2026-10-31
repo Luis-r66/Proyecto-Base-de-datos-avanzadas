@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import Estrellas from "../components/Estrellas";
 import VerificadoBadge from "../components/VerificadoBadge";
+import SolicitarApoyo from "../components/SolicitarApoyo";
 import { obtenerPerfilPublico, obtenerPortafolioPublico } from "../api/perfiles";
 import { calificacionesDePrestador } from "../api/calificaciones";
+import { listarFavoritos, toggleFavorito, quitarFavorito } from "../api/favoritos";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 import { formatearFecha } from "../utils/fechas";
@@ -15,10 +17,14 @@ const VACIO = { data: [], pagination: { page: 1, totalPages: 1, total: 0 } };
 
 export default function PrestadorPublico() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { usuario: sesion } = useAuth();
   const [perfil, setPerfil] = useState(null);
   const [portafolio, setPortafolio] = useState(VACIO);
   const [calificaciones, setCalificaciones] = useState(null);
+  const [esFavorito, setEsFavorito] = useState(false);
+  const [favCargando, setFavCargando] = useState(false);
+  const [favError, setFavError] = useState("");
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
@@ -62,6 +68,47 @@ export default function PrestadorPublico() {
     };
   }, [perfil, sesion]);
 
+  useEffect(() => {
+    if (!sesion || !perfil?._id) {
+      setEsFavorito(false);
+      return;
+    }
+    let activo = true;
+    listarFavoritos({ page: 1, limit: 50 })
+      .then((datos) => {
+        if (!activo) return;
+        setEsFavorito(datos.data.some((f) => String(f.prestador_id?._id) === String(perfil._id)));
+      })
+      .catch(() => {
+        if (activo) setEsFavorito(false);
+      });
+    return () => {
+      activo = false;
+    };
+  }, [perfil, sesion]);
+
+  async function alternarFavorito() {
+    if (!sesion) {
+      navigate("/login");
+      return;
+    }
+    setFavCargando(true);
+    setFavError("");
+    try {
+      if (esFavorito) {
+        await quitarFavorito(perfil._id);
+        setEsFavorito(false);
+      } else {
+        await toggleFavorito(perfil._id);
+        setEsFavorito(true);
+      }
+    } catch (err) {
+      setFavError(getErrorMessage(err));
+    } finally {
+      setFavCargando(false);
+    }
+  }
+
   if (cargando) {
     return (
       <main className="container">
@@ -84,6 +131,7 @@ export default function PrestadorPublico() {
   }
 
   const u = perfil.usuario || {};
+  const esPropio = sesion && String(u._id) === String(sesion.id);
 
   return (
     <main className="container">
@@ -140,7 +188,56 @@ export default function PrestadorPublico() {
             </>
           )}
         </dl>
+
+        <div className="acciones">
+          {!sesion ? (
+            <Link to="/login" className="btn btn--primary">
+              Inicia sesion para solicitar apoyo
+            </Link>
+          ) : esPropio ? (
+            <>
+              <span className="muted">Este es tu perfil de prestador.</span>
+              <Link to="/convertirme-prestador" className="btn btn--ghost btn--sm">
+                Editar mi perfil
+              </Link>
+            </>
+          ) : (
+            <button
+              type="button"
+              className={esFavorito ? "btn btn--ghost" : "btn btn--primary"}
+              onClick={alternarFavorito}
+              disabled={favCargando}
+            >
+              {favCargando
+                ? "Guardando..."
+                : esFavorito
+                ? "Quitar de favoritos"
+                : "Guardar en favoritos"}
+            </button>
+          )}
+        </div>
+
+        {favError && (
+          <p className="alert alert--error" role="alert">
+            {favError}
+          </p>
+        )}
       </section>
+
+      {sesion && !esPropio && (
+        <section className="section">
+          <div className="card card--flat">
+            <h2 className="section__title">Solicitar apoyo</h2>
+            <p className="muted">
+              Cuentale que necesitas. Se creara una negociacion y podran conversar.
+            </p>
+            <SolicitarApoyo
+              perfil={perfil}
+              onCreada={(neg) => navigate(`/negociaciones/${neg._id}`)}
+            />
+          </div>
+        </section>
+      )}
 
       <section className="section">
         <h2 className="section__title">Portafolio</h2>

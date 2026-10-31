@@ -400,3 +400,56 @@ p {
     border: 1px solid #9aa0aa;
   }
 }
+
+.icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--primary);
+  box-shadow: var(--raised-sm);
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  box-shadow: 7px 7px 16px var(--shadow-dark), -7px -7px 16px var(--shadow-light);
+}
+
+.icon-btn:active {
+  box-shadow: var(--inset);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.icon-btn__badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.header__nav {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.header__nav::-webkit-scrollbar {
+  display: none;
+}

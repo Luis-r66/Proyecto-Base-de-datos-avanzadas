@@ -126,3 +126,19 @@ textarea:focus {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.field--inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field--inline label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.field--inline select {
+  width: auto;
+  min-width: 170px;
+}

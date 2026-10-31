@@ -2,6 +2,7 @@
 import { Negociacion } from "../models/Negociacion";
 import { PerfilPrestador } from "../models/PerfilPrestador";
 import { Notificacion } from "../models/Notificacion";
+import { Calificacion } from "../models/Calificacion";
 import { AppError } from "../middleware/errorHandler";
 import { withTransaction } from "../config/db";
 import { generateTrackingCode } from "../utils/trackingCode";
@@ -174,10 +175,18 @@ export async function porId(negId: Types.ObjectId, userId: Types.ObjectId) {
   if (!(await esParte(neg, userId))) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
   }
-  return await Negociacion.findById(negId)
+  const doc: any = await Negociacion.findById(negId)
     .populate("solicitante_id", "nombre foto_perfil_url verificado")
     .populate({ path: "prestador_id", populate: { path: "usuario_id", select: "nombre foto_perfil_url verificado" } })
-    .populate("categoria_id", "nombre");
+    .populate("categoria_id", "nombre")
+    .lean();
+  const mi = await Calificacion.findOne({ negociacion_id: negId, calificador_id: userId }).lean();
+  const esSolicitante = doc.solicitante_id?._id?.toString() === userId.toString();
+  return {
+    ...doc,
+    rol_usuario: esSolicitante ? "Solicitante" : "Prestador",
+    mi_calificacion: mi || null,
+  };
 }
 
 export async function misNegociaciones(userId: Types.ObjectId, page = 1, limit = 10, estado?: string) {

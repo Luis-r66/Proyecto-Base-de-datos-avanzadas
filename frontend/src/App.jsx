@@ -12,6 +12,10 @@ import CrearTrabajo from "./pages/CrearTrabajo";
 import EditarTrabajo from "./pages/EditarTrabajo";
 import PrestadorPublico from "./pages/PrestadorPublico";
 import PortafolioDetalle from "./pages/PortafolioDetalle";
+import Negociaciones from "./pages/Negociaciones";
+import NegociacionDetalle from "./pages/NegociacionDetalle";
+import Favoritos from "./pages/Favoritos";
+import Notificaciones from "./pages/Notificaciones";
 import AdminCategorias from "./pages/AdminCategorias";
 import "./styles/global.css";
 
@@ -63,6 +67,38 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <EditarTrabajo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/favoritos"
+            element={
+              <ProtectedRoute>
+                <Favoritos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notificaciones"
+            element={
+              <ProtectedRoute>
+                <Notificaciones />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/negociaciones"
+            element={
+              <ProtectedRoute>
+                <Negociaciones />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/negociaciones/:id"
+            element={
+              <ProtectedRoute>
+                <NegociacionDetalle />
               </ProtectedRoute>
             }
           />

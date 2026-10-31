@@ -110,7 +110,7 @@ Cada item incluye `usuario.nombre`, `usuario.calificacion_promedio`, `usuario.to
 | POST | `/api/negociaciones` | Autenticado | `{prestador_id, categoria_id, descripcion_trabajo, precio_propuesto?, forma_pago?}` | 201 negociacion (estado `Propuesta`, `codigo_seguimiento`) |
 | GET | `/api/negociaciones` | Autenticado | `?page&limit&estado` | 200 `{data, pagination}` con `rol_usuario` y `otra_parte:{_id,nombre,foto_perfil_url,verificado}` |
 | GET | `/api/negociaciones/mis` | Autenticado | `?page&limit&estado` | Igual que el anterior (alias conservado) |
-| GET | `/api/negociaciones/:id` | Participante | - | 200 negociacion populada |
+| GET | `/api/negociaciones/:id` | Participante | - | 200 negociacion populada + `rol_usuario` y `mi_calificacion` (null si aun no califico) |
 | PATCH | `/api/negociaciones/:id/negociar` | Participante | - | 200 estado `Negociando` (solo desde `Propuesta`) |
 | PATCH | `/api/negociaciones/:id/acordar` | Prestador dueno | `{precio_acordado, forma_pago}` | 200 estado `Acordado` (valida cupo maximo 5 en transaccion) |
 | PATCH | `/api/negociaciones/:id/en-progreso` | Participante | - | 200 estado `En_progreso` (solo desde `Acordado`) |

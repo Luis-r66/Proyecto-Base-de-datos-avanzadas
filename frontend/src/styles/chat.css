@@ -1,1 +1,82 @@
-/* Estilos del chat y notificaciones: se completan en el Sprint 2. */
+.chat {
+  display: grid;
+  gap: 12px;
+}
+
+.chat__box {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  max-height: 430px;
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: var(--r-lg);
+  background: var(--bg);
+  box-shadow: var(--inset);
+}
+
+.msg {
+  display: grid;
+  gap: 3px;
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  box-shadow: var(--raised-sm);
+  overflow-wrap: anywhere;
+}
+
+.msg--propio {
+  justify-self: end;
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.msg--otro {
+  justify-self: start;
+  background: var(--bg);
+}
+
+.msg__meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.msg--propio .msg__meta {
+  color: #dbe9f8;
+}
+
+.chat__form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chat__form input {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat__predets {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chat__predets select {
+  width: auto;
+  max-width: 100%;
+  min-width: 240px;
+}
+
+@media (max-width: 720px) {
+  .msg {
+    max-width: 88%;
+  }
+
+  .chat__predets select {
+    min-width: 0;
+    width: 100%;
+  }
+}

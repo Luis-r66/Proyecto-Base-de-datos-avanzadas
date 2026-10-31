@@ -48,4 +48,12 @@ VITE_API_URL=http://localhost:3001/api
 - `/prestador/:id` y `/portafolio/:id`: perfil y trabajo publicos (calificaciones visibles con sesion).
 - `/`: prestadores destacados.
 
-Los siguientes sprints agregan negociaciones, mensajes, calificaciones, favoritos y paneles de administracion.
+## Sprint 2 (actual)
+
+- `/negociaciones`: lista con filtro por estado y paginacion.
+- `/negociaciones/:id`: detalle, acciones por rol y estado (negociar, acordar, iniciar, completar, cancelar), chat con mensajes rapidos, calificacion y reporte.
+- `/prestador/:id`: boton de favorito y formulario "Solicitar apoyo".
+- `/favoritos`: prestadores guardados con opcion de quitar.
+- `/notificaciones`: bandeja con contador en el header, marcar una o todas como leidas.
+
+El Sprint 3 cubre paneles de administracion (verificacion, reportes, metricas) y seguimiento publico por codigo.
