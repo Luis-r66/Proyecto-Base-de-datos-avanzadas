@@ -26,13 +26,13 @@ VITE_API_URL=http://localhost:3001/api
 
 ## Cuentas demo (solo entorno local)
 
-| Rol | Email | Password |
-|-----|-------|----------|
-| Admin | `luis.riascos@uniautonoma.edu.co` | `Luis1234` |
-| Prestador | `santiago.morales@uniautonoma.edu.co` | `Santiago123` |
-| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | `Andres1234` |
+| Rol | Email |
+|-----|-------|
+| Admin | `luis.riascos@uniautonoma.edu.co` |
+| Prestador | `santiago.morales@uniautonoma.edu.co` |
+| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` |
 
-> En el despliegue de produccion estas contrasenas se rotan y se entregan por separado. El bloque de credenciales ya no se muestra en `/login`.
+> Las contrasenas no se publican. En produccion se rotaron y se entregan por separado; en una base nueva sembrada con `npm run db:seed` se usan las definidas en `src/scripts/seedDemo.ts`. El bloque de credenciales ya no se muestra en `/login`.
 
 ## Sprint 0
 
@@ -70,6 +70,8 @@ La demo queda completa con los sprints 0 a 3.
 
 ## Despliegue
 
+- **Produccion:** https://tutorlink-gray.vercel.app
+- **API:** https://tutorlink-api-549w.onrender.com/api
 - **Vercel:** importar el repo con Root Directory `frontend`, framework Vite y build `npm run build` (salida `dist`). `vercel.json` incluye el rewrite SPA para React Router.
 - **Variable de build:** `VITE_API_URL=https://<backend>.onrender.com/api`.
 - **Backend:** en Render, `CORS_ORIGIN` debe ser exactamente el dominio de produccion de Vercel.

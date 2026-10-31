@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "TutorLink API",
-    "description": "Backend TutorLink - apoyo academico entre estudiantes. Puerto 3001.",
+    "description": "Backend TutorLink - apoyo academico entre estudiantes. Puerto 3001. Los login usan credenciales del seed local; en produccion las contrasenas fueron rotadas.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [

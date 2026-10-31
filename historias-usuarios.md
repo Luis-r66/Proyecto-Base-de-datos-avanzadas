@@ -6,12 +6,16 @@ Coleccion Postman: postman_collection.json
 
 ## Cuentas de prueba (solo demo)
 
-- Prestador: santiago.morales@uniautonoma.edu.co / Santiago123
+- Prestador: santiago.morales@uniautonoma.edu.co
   Roles: Solicitante + Prestador. Verificado automaticamente (2 categorias y 2 trabajos).
-- Solicitante + Admin: luis.riascos@uniautonoma.edu.co / Luis1234
+- Solicitante + Admin: luis.riascos@uniautonoma.edu.co
   Roles: Solicitante + Admin.
-- Prestador pendiente: andres.gomez@uniautonoma.edu.co / Andres1234
+- Prestador pendiente: andres.gomez@uniautonoma.edu.co
   Roles: Solicitante + Prestador. Perfil activo sin portafolio (pendiente de verificar).
+
+Las contrasenas no se publican. En produccion se rotaron y se entregan por
+separado; en una base nueva sembrada con `npm run db:seed` se usan las
+credenciales definidas en `src/scripts/seedDemo.ts`.
 
 Nota: para demostrar el registro en vivo usar un email NUEVO cada vez
 (por ejemplo demo@uniautonoma.edu.co). Repetir un email existente devuelve 409,

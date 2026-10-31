@@ -210,13 +210,13 @@ Se reevalua al registrarse, crear/editar perfil, crear/eliminar trabajos, inicia
 
 ## Cuentas demo (`npm run db:seed`)
 
-| Rol | Email | Password |
-|-----|-------|----------|
-| Prestador (verificado) | `santiago.morales@uniautonoma.edu.co` | `Santiago123` |
-| Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` | `Luis1234` |
-| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | `Andres1234` |
+| Rol | Email |
+|-----|-------|
+| Prestador (verificado) | `santiago.morales@uniautonoma.edu.co` |
+| Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` |
+| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` |
 
-> Estas cuentas son solo para el entorno local. En produccion las contrasenas se rotan y se entregan por separado; el login ya no muestra credenciales demo.
+> Las contrasenas no se publican: en produccion se rotaron y se entregan por separado. En una base nueva sembrada con `npm run db:seed` se usan las credenciales definidas en `src/scripts/seedDemo.ts`. El login ya no muestra credenciales demo.
 
 ## Notas para el frontend
 

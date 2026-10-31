@@ -58,11 +58,17 @@ las reglas automaticas.
 
 ## Cuentas demo (`npm run db:seed`)
 
-| Rol | Email | Password | Estado |
-|-----|-------|----------|--------|
-| Prestador | `santiago.morales@uniautonoma.edu.co` | `Santiago123` | Verificado (2 categorias + 2 trabajos) |
-| Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` | `Luis1234` | Panel admin + flujo como solicitante |
-| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | `Andres1234` | Perfil activo sin portafolio (para `/admin/verificacion`) |
+| Rol | Email | Estado |
+|-----|-------|--------|
+| Prestador | `santiago.morales@uniautonoma.edu.co` | Verificado (2 categorias + 2 trabajos) |
+| Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` | Panel admin + flujo como solicitante |
+| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | Perfil activo sin portafolio (para `/admin/verificacion`) |
+
+Las contrasenas no se listan en la documentacion. En el despliegue de produccion
+se rotaron y se entregan por separado; si siembras una base nueva con
+`npm run db:seed`, el script `src/scripts/seedDemo.ts` define las credenciales
+iniciales del seed.
+
 
 El seed deja 3 negociaciones entre Luis y Santiago: una **Completada** (con
 mensajes y calificaciones mutuas), una **Cancelada** y una **Propuesta activa**
@@ -130,6 +136,8 @@ Requiere el backend corriendo en `http://localhost:3001` y `VITE_API_URL` apunta
 
 ## Despliegue
 
+- **Frontend:** https://tutorlink-gray.vercel.app
+- **API:** https://tutorlink-api-549w.onrender.com (`/health`)
 - **Backend:** servicio web Node en Render (plan free). Repo raiz, build
   `npm install --include=dev && npm run build`, start `npm run start`, health
   check `/health`. Region recomendada: Virginia. `PORT` lo inyecta Render.
