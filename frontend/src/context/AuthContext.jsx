@@ -49,6 +49,13 @@ export function AuthProvider({ children }) {
     return authApi.registro(payload);
   }
 
+  async function recargarUsuario() {
+    const u = await authApi.me();
+    localStorage.setItem(USER_KEY, JSON.stringify(u));
+    setUsuario(u);
+    return u;
+  }
+
   function logout() {
     limpiarSesion();
     setUsuario(null);
@@ -60,6 +67,7 @@ export function AuthProvider({ children }) {
     loading,
     login,
     registrar,
+    recargarUsuario,
     logout,
     isAuthenticated: Boolean(usuario),
     isAdmin: tipoUsuario.includes("Admin"),

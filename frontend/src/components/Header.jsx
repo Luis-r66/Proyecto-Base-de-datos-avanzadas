@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import Avatar from "./Avatar";
 
 export default function Header() {
-  const { usuario, isAdmin, logout } = useAuth();
+  const { usuario, isAdmin, isPrestador, logout } = useAuth();
   const navigate = useNavigate();
 
   function cerrarSesion() {
@@ -21,16 +21,29 @@ export default function Header() {
         <nav className="header__nav" aria-label="Navegacion principal">
           {usuario ? (
             <>
+              <NavLink to="/buscar" className="navlink">
+                Buscar
+              </NavLink>
+              {isPrestador && (
+                <NavLink to="/mi-portafolio" className="navlink">
+                  Mi portafolio
+                </NavLink>
+              )}
               {isAdmin && (
                 <NavLink to="/admin/categorias" className="navlink">
-                  Categorias
+                  Admin
                 </NavLink>
               )}
             </>
           ) : (
-            <NavLink to="/login" className="navlink">
-              Iniciar sesion
-            </NavLink>
+            <>
+              <NavLink to="/login" className="navlink">
+                Iniciar sesion
+              </NavLink>
+              <NavLink to="/registro" className="navlink">
+                Registrarse
+              </NavLink>
+            </>
           )}
         </nav>
 

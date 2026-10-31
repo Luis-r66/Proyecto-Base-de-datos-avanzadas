@@ -39,4 +39,13 @@ VITE_API_URL=http://localhost:3001/api
 - `/admin/categorias`: listar, crear, editar y eliminar (con paginacion y error 409 visible).
 - Estilo neumórfico hibrido con acento azul.
 
-Los siguientes sprints agregan registro, perfiles, busqueda, negociaciones, mensajes, calificaciones, favoritos y paneles de administracion.
+## Sprint 1 (actual)
+
+- `/registro`: alta con validacion de contrasena y correo institucional.
+- `/convertirme-prestador`: crea o edita el perfil (categorias, tarifa, metodos de pago y disponibilidad).
+- `/mi-portafolio`: CRUD de trabajos con paginacion.
+- `/buscar`: busqueda por categoria, orden por calificacion o reciente, paginacion.
+- `/prestador/:id` y `/portafolio/:id`: perfil y trabajo publicos (calificaciones visibles con sesion).
+- `/`: prestadores destacados.
+
+Los siguientes sprints agregan negociaciones, mensajes, calificaciones, favoritos y paneles de administracion.

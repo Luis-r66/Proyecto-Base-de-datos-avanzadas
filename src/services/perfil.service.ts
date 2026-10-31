@@ -37,6 +37,7 @@ export async function createPerfil(usuarioId: Types.ObjectId, data: CreatePerfil
           descripcion: data.descripcion,
           tarifa_referencia: data.tarifa_referencia,
           metodos_pago_aceptados: data.metodos_pago_aceptados || [],
+          disponibilidad: data.disponibilidad || [],
           estado: "Activo",
         },
       ],

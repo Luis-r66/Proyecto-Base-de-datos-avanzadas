@@ -1,6 +1,21 @@
 ﻿import { z } from "zod";
 import { objectId, optionalObjectId } from "./validators";
 
+const hora = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Hora invalida (HH:MM)");
+
+const disponibilidadItem = z
+  .object({
+    dia: z.number().int().min(0).max(6),
+    hora_inicio: hora,
+    hora_fin: hora,
+  })
+  .refine((d) => d.hora_fin > d.hora_inicio, {
+    message: "La hora fin debe ser mayor que la hora inicio",
+    path: ["hora_fin"],
+  });
+
+const disponibilidadSchema = z.array(disponibilidadItem).optional();
+
 export const createPerfilSchema = z.object({
   categorias_ids: z.array(objectId("ID de categoria invalido")).min(1),
   tipos_actividad: z.array(z.string().trim().min(1)).optional(),
@@ -11,6 +26,7 @@ export const createPerfilSchema = z.object({
     unidad: z.enum(["hora", "proyecto", "dia"]).default("hora"),
   }).optional(),
   metodos_pago_aceptados: z.array(z.string().trim()).optional(),
+  disponibilidad: disponibilidadSchema,
 });
 
 export const updatePerfilSchema = z.object({
@@ -23,6 +39,7 @@ export const updatePerfilSchema = z.object({
     unidad: z.enum(["hora", "proyecto", "dia"]),
   }).optional(),
   metodos_pago_aceptados: z.array(z.string().trim()).optional(),
+  disponibilidad: disponibilidadSchema,
   estado: z.enum(["Activo", "Inactivo"]).optional(),
 });
 

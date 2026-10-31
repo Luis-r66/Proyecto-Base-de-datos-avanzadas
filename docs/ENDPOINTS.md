@@ -67,9 +67,9 @@ Errores: 409 `CATEGORIA_EXISTS` (nombre unico por carrera), 409 `HAS_CHILDREN`, 
 
 | Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
 |--------|------|-----|----------------|-----------|
-| POST | `/api/perfiles/prestador` | Autenticado | `{categorias_ids[], tipos_actividad?, descripcion?, tarifa_referencia?{monto,moneda,unidad}, metodos_pago_aceptados?}` | 201 perfil |
+| POST | `/api/perfiles/prestador` | Autenticado | `{categorias_ids[], tipos_actividad?, descripcion?, tarifa_referencia?{monto,moneda,unidad}, metodos_pago_aceptados?, disponibilidad?[{dia,hora_inicio,hora_fin}]}` | 201 perfil |
 | GET | `/api/perfiles/prestador` | Autenticado | - | 200 mi perfil (con categorias pobladas) |
-| PATCH | `/api/perfiles/prestador` | Autenticado | `{categorias_ids?, tipos_actividad?, descripcion?, tarifa_referencia?, metodos_pago_aceptados?, estado?}` | 200 perfil |
+| PATCH | `/api/perfiles/prestador` | Autenticado | `{categorias_ids?, tipos_actividad?, descripcion?, tarifa_referencia?, metodos_pago_aceptados?, disponibilidad?, estado?}` | 200 perfil |
 | GET | `/api/perfiles/prestador/:id` | Publico | - | 200 `{_id, usuario:{nombre,carrera,semestre,institucion,verificado,calificacion_promedio,total_calificaciones,biografia,habilidades,foto_perfil_url}, categorias, disponibilidad, tarifa_referencia, metodos_pago_aceptados, descripcion, tipos_actividad, estado, fecha_creacion}` |
 | GET | `/api/perfiles/prestador/:id/portafolio` | Publico | `?page&limit` | 200 `{data:[trabajo], pagination}` orden `fecha_realizado` desc |
 

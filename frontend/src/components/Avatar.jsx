@@ -1,4 +1,4 @@
-export default function Avatar({ nombre = "", size = 40 }) {
+export default function Avatar({ nombre = "", url = "", size = 40 }) {
   const iniciales = nombre
     .trim()
     .split(/\s+/)
@@ -12,7 +12,7 @@ export default function Avatar({ nombre = "", size = 40 }) {
       style={{ width: size, height: size, fontSize: size * 0.38 }}
       aria-hidden="true"
     >
-      {iniciales || "?"}
+      {url ? <img src={url} alt="" /> : iniciales || "?"}
     </span>
   );
 }

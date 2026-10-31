@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 import "../styles/forms.css";
@@ -8,10 +8,11 @@ export default function Login() {
   const { usuario, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(location.state?.email || "");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const registrado = Boolean(location.state?.registrado);
 
   if (usuario) {
     const destino = location.state?.from || "/";
@@ -42,6 +43,11 @@ export default function Login() {
         <p className="muted">Accede a TutorLink con tu correo institucional.</p>
 
         <form className="form" onSubmit={enviar}>
+          {registrado && (
+            <p className="alert alert--ok" role="status">
+              Cuenta creada. Ya puedes iniciar sesion.
+            </p>
+          )}
           {error && (
             <p className="alert alert--error" role="alert">
               {error}
@@ -79,6 +85,10 @@ export default function Login() {
             {enviando ? "Ingresando..." : "Ingresar"}
           </button>
         </form>
+
+        <p className="muted hint">
+          No tienes cuenta? <Link to="/registro">Registrate</Link>
+        </p>
 
         <p className="muted hint">
           Cuentas demo: <strong>luis.riascos@uniautonoma.edu.co</strong> / Luis1234 (admin) y{" "}
