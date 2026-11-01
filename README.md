@@ -42,29 +42,36 @@ npm run dev            # http://localhost:3001
 | `INSTITUTIONAL_EMAIL_DOMAINS` | Dominios institucionales permitidos, separados por coma (`uniautonoma.edu.co`) |
 | `VERIFY_REQUIRE_ACTIVE_ACCOUNT` | Exige cuenta `activo` para verificar |
 | `VERIFY_REQUIRE_PROVIDER_PROFILE` | Exige perfil de prestador `Activo` |
-| `VERIFY_MIN_CATEGORIES` | Minimo de categorias en el perfil (1) |
-| `VERIFY_MIN_PORTFOLIO_WORKS` | Minimo de trabajos en portafolio (1) |
+| `VERIFY_MIN_CATEGORIES` | Mínimo de categorías en el perfil (1) |
+| `VERIFY_MIN_PORTFOLIO_WORKS` | Mínimo de trabajos en portafolio (1) |
+| `VERIFY_MIN_COMPLETED_NEGOTIATIONS` | Mínimo de negociaciones completadas como prestador (1) |
+| `VERIFY_MIN_RATINGS` | Mínimo de calificaciones recibidas (1) |
+| `VERIFY_MIN_RATING` | Promedio mínimo de calificación (4) |
 
 ## Verificacion institucional (automatica)
 
 La insignia se calcula sola al registrarse, crear/editar perfil, publicar o
-eliminar trabajos del portafolio, iniciar sesion y consultar `/auth/me`.
+eliminar trabajos del portafolio, completar una negociación, recibir una
+calificación, iniciar sesión y consultar `/auth/me`.
 Se verifica cuando el correo pertenece a un dominio institucional, la cuenta
-esta activa, el perfil de prestador esta `Activo`, tiene al menos
-`VERIFY_MIN_CATEGORIES` categorias y al menos `VERIFY_MIN_PORTFOLIO_WORKS`
-trabajos. Si deja de cumplir, pierde la insignia. El Administrador puede
-forzar o revocar la verificacion (`verificado_override`); con `null` vuelve a
-las reglas automaticas.
+está activa, el perfil de prestador está `Activo`, tiene carrera y semestre
+entre 1 y 10, al menos `VERIFY_MIN_CATEGORIES` categorías y
+`VERIFY_MIN_PORTFOLIO_WORKS` trabajos, al menos
+`VERIFY_MIN_COMPLETED_NEGOTIATIONS` negociaciones completadas como prestador,
+y `VERIFY_MIN_RATINGS` calificaciones con promedio mayor o igual a
+`VERIFY_MIN_RATING`. Si deja de cumplir, pierde la insignia. El Administrador
+puede forzar o revocar la verificación (`verificado_override`); con `null`
+vuelve a las reglas automáticas.
 
 ## Cuentas demo (`npm run db:seed`)
 
 | Rol | Email | Estado |
 |-----|-------|--------|
-| Prestador | `santiago.morales@uniautonoma.edu.co` | Verificado (2 categorias + 2 trabajos) |
+| Prestador | `santiago.morales@uniautonoma.edu.co` | Verificado (perfil, portafolio, negociación completada y promedio 5) |
 | Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` | Panel admin + flujo como solicitante |
-| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | Perfil activo sin portafolio (para `/admin/verificacion`) |
+| Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | Perfil activo sin portafolio ni negociaciones (para `/admin/verificacion`) |
 
-Las contrasenas no se listan en la documentacion. En el despliegue de produccion
+Las contraseñas no se listan en la documentacion. En el despliegue de produccion
 se rotaron y se entregan por separado; si siembras una base nueva con
 `npm run db:seed`, el script `src/scripts/seedDemo.ts` define las credenciales
 iniciales del seed.

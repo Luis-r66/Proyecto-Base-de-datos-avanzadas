@@ -1,5 +1,6 @@
 import { Schema, model, models, Document, Types } from "mongoose";
 import bcrypt from "bcryptjs";
+import { INSTITUCION_ACTUAL } from "../config/institucion";
 
 export interface IEducacion {
   institucion: string;
@@ -46,9 +47,9 @@ const usuarioSchema = new Schema<IUsuario>(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password_hash: { type: String, required: true, select: false },
     foto_perfil_url: { type: String, trim: true },
-    carrera: { type: String, trim: true },
-    semestre: { type: Number, min: 1, max: 20 },
-    institucion: { type: String, trim: true },
+    carrera: { type: String, required: true, trim: true, maxlength: 100 },
+    semestre: { type: Number, required: true, min: 1, max: 10 },
+    institucion: { type: String, required: true, trim: true, maxlength: 100, default: INSTITUCION_ACTUAL },
     tipo_usuario: { type: [String], enum: ["Solicitante", "Prestador", "Admin"], default: ["Solicitante"], required: true },
     biografia: { type: String, maxlength: 1000 },
     habilidades: [{ type: String, trim: true }],

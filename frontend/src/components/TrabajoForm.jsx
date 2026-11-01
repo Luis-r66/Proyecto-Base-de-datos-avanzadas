@@ -37,14 +37,14 @@ export default function TrabajoForm({
       )}
 
       <div className="field">
-        <label htmlFor="tcategoria">Categoria</label>
+        <label htmlFor="tcategoria">Categoría</label>
         <select
           id="tcategoria"
           value={categoriaId}
           onChange={(e) => setCategoriaId(e.target.value)}
           required
         >
-          <option value="">Selecciona una categoria</option>
+          <option value="">Selecciona una categoría</option>
           {categorias.map((c) => (
             <option key={c._id} value={c._id}>
               {c.nombre}
@@ -54,25 +54,25 @@ export default function TrabajoForm({
       </div>
 
       <div className="field">
-        <label htmlFor="ttitulo">Titulo del trabajo</label>
+        <label htmlFor="ttitulo">Título del trabajo</label>
         <input
           id="ttitulo"
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
           maxLength={200}
-          placeholder="Ej: Asesoria de calculo diferencial"
+          placeholder="Ej: Asesoría de cálculo diferencial"
           required
         />
       </div>
 
       <div className="field">
-        <label htmlFor="tdescripcion">Descripcion</label>
+        <label htmlFor="tdescripcion">Descripción</label>
         <textarea
           id="tdescripcion"
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
           maxLength={5000}
-          placeholder="Que hiciste, para quien y como lo resolviste."
+          placeholder="Qué hiciste, para quién y cómo lo resolviste."
           required
         />
       </div>
@@ -83,7 +83,7 @@ export default function TrabajoForm({
           id="thabilidades"
           value={habilidades}
           onChange={(e) => setHabilidades(e.target.value)}
-          placeholder="Excel, Python, Redaccion"
+          placeholder="Excel, Python, Redacción"
         />
       </div>
 

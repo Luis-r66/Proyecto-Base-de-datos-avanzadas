@@ -77,7 +77,7 @@ export default function NegociacionDetalle() {
   function acordar(evento) {
     evento.preventDefault();
     if (precioAcordado === "" || Number(precioAcordado) < 0) {
-      setAccionError("Ingresa un precio acordado valido.");
+      setAccionError("Ingresa un precio acordado válido.");
       return;
     }
     if (!formaPagoAcordada.trim()) {
@@ -90,19 +90,19 @@ export default function NegociacionDetalle() {
           precio_acordado: Number(precioAcordado),
           forma_pago: formaPagoAcordada.trim(),
         }),
-      "Negociacion acordada."
+      "Negociación acordada."
     );
   }
 
   function cancelar() {
-    if (!window.confirm("¿Cancelar esta negociacion? Esta accion no se puede deshacer.")) return;
-    ejecutar(() => cancelarNegociacion(id), "Negociacion cancelada.");
+    if (!window.confirm("¿Cancelar esta negociación? Esta acción no se puede deshacer.")) return;
+    ejecutar(() => cancelarNegociacion(id), "Negociación cancelada.");
   }
 
   if (cargando) {
     return (
       <main className="container">
-        <p className="muted">Cargando negociacion...</p>
+        <p className="muted">Cargando negociación...</p>
       </main>
     );
   }
@@ -110,7 +110,7 @@ export default function NegociacionDetalle() {
   if (!neg) {
     return (
       <main className="container">
-        <p className="empty">{errorCarga || "Negociacion no encontrada."}</p>
+        <p className="empty">{errorCarga || "Negociación no encontrada."}</p>
         <p className="hint">
           <Link to="/negociaciones" className="btn btn--ghost btn--sm">
             Volver a mis negociaciones
@@ -138,7 +138,7 @@ export default function NegociacionDetalle() {
             {neg.codigo_seguimiento} <EstadoBadge estado={neg.estado} />
           </h1>
           <p className="muted">
-            {neg.categoria_id?.nombre || "Sin categoria"} · Tu rol: {neg.rol_usuario}
+            {neg.categoria_id?.nombre || "Sin categoría"} · Tu rol: {neg.rol_usuario}
           </p>
         </div>
         <Link to="/negociaciones" className="btn btn--ghost btn--sm">
@@ -159,7 +159,7 @@ export default function NegociacionDetalle() {
 
       <section className="card card--flat">
         <dl className="detail-grid">
-          <dt>Descripcion</dt>
+          <dt>Descripción</dt>
           <dd className="detalle-texto">{neg.descripcion_trabajo}</dd>
 
           <dt>Solicitante</dt>
@@ -195,9 +195,9 @@ export default function NegociacionDetalle() {
               type="button"
               className="btn btn--ghost"
               disabled={accionando}
-              onClick={() => ejecutar(() => marcarNegociando(id), "Negociacion en curso de negociacion.")}
+              onClick={() => ejecutar(() => marcarNegociando(id), "Negociación en curso de negociación.")}
             >
-              Marcar en negociacion
+              Marcar en negociación
             </button>
           )}
 
@@ -223,7 +223,7 @@ export default function NegociacionDetalle() {
               type="button"
               className="btn btn--primary"
               disabled={accionando}
-              onClick={() => ejecutar(() => completarNegociacion(id), "Negociacion completada.")}
+              onClick={() => ejecutar(() => completarNegociacion(id), "Negociación completada.")}
             >
               Marcar completado
             </button>
@@ -231,7 +231,7 @@ export default function NegociacionDetalle() {
 
           {puedeCancelar && (
             <button type="button" className="btn btn--danger" disabled={accionando} onClick={cancelar}>
-              Cancelar negociacion
+              Cancelar negociación
             </button>
           )}
         </div>
@@ -282,17 +282,17 @@ export default function NegociacionDetalle() {
 
       {neg.estado === "Completado" && (
         <section className="card card--flat section">
-          <h2 className="section__title">Calificacion</h2>
+          <h2 className="section__title">Calificación</h2>
           {neg.mi_calificacion ? (
             <p>
-              Tu calificacion: <Estrellas valor={neg.mi_calificacion.puntaje} compacto />{" "}
+              Tu calificación: <Estrellas valor={neg.mi_calificacion.puntaje} compacto />{" "}
               {neg.mi_calificacion.comentario ? `"${neg.mi_calificacion.comentario}"` : ""}
             </p>
           ) : (
             <CalificarNegociacion
               negociacionId={neg._id}
               onCalificada={async () => {
-                setAccionOk("Calificacion enviada.");
+                setAccionOk("Calificación enviada.");
                 await cargar();
               }}
             />

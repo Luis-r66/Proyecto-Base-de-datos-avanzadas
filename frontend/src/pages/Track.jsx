@@ -30,7 +30,7 @@ export default function Track() {
     if (!CODIGO_RE.test(normalizado)) {
       setNeg(null);
       setCargando(false);
-      setError("El codigo debe tener el formato NEG-AAAA-NNNN.");
+      setError("El código debe tener el formato NEG-AAAA-NNNN.");
       return;
     }
     let activo = true;
@@ -58,7 +58,7 @@ export default function Track() {
     evento.preventDefault();
     const codigoLimpio = input.trim().toUpperCase();
     if (!CODIGO_RE.test(codigoLimpio)) {
-      setError("El codigo debe tener el formato NEG-AAAA-NNNN.");
+      setError("El código debe tener el formato NEG-AAAA-NNNN.");
       return;
     }
     navigate(`/track/${codigoLimpio}`);
@@ -69,15 +69,15 @@ export default function Track() {
 
   return (
     <main className="container container--narrow">
-      <h1 className="page-title">Seguimiento de negociacion</h1>
+      <h1 className="page-title">Seguimiento de negociación</h1>
       <p className="muted">
-        Consulta el estado de una negociacion con su codigo, sin iniciar sesion.
+        Consulta el estado de una negociación con su código, sin iniciar sesión.
       </p>
 
       <section className="card card--flat">
         <form className="form" onSubmit={consultar}>
           <div className="field">
-            <label htmlFor="codigo">Codigo de seguimiento</label>
+            <label htmlFor="codigo">Código de seguimiento</label>
             <input
               id="codigo"
               value={input}
@@ -108,7 +108,7 @@ export default function Track() {
               <h2 className="page-title">
                 {neg.codigo_seguimiento} <EstadoBadge estado={neg.estado} />
               </h2>
-              <p className="muted">{neg.categoria_id?.nombre || "Sin categoria"}</p>
+              <p className="muted">{neg.categoria_id?.nombre || "Sin categoría"}</p>
             </div>
             <Link to="/" className="btn btn--ghost btn--sm">
               Ir al inicio
@@ -116,9 +116,9 @@ export default function Track() {
           </div>
 
           {neg.estado === "Cancelado" ? (
-            <p className="alert alert--error">Esta negociacion fue cancelada.</p>
+            <p className="alert alert--error">Esta negociación fue cancelada.</p>
           ) : neg.estado === "Disputado" ? (
-            <p className="alert alert--error">Esta negociacion esta en disputa.</p>
+            <p className="alert alert--error">Esta negociación está en disputa.</p>
           ) : (
             <ol className="timeline">
               {PASOS.map((paso, i) => (
@@ -136,7 +136,7 @@ export default function Track() {
           )}
 
           <dl className="detail-grid">
-            <dt>Descripcion</dt>
+            <dt>Descripción</dt>
             <dd className="detalle-texto">{neg.descripcion_trabajo}</dd>
             <dt>Solicitante</dt>
             <dd>{neg.solicitante_id?.nombre || "-"}</dd>

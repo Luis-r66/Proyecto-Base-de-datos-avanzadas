@@ -30,7 +30,7 @@ router.get("/portafolio/:id", getTrabajoPublicoHandler);
 // Portafolio publico de un prestador (sin sesion)
 router.get("/prestador/:id/portafolio", validate(paginationQuerySchema, "query"), getPortafolioPublicoHandler);
 
-// Portafolio propio (CRUD, solo dueno). Va antes de /:id para no colisionar.
+// Portafolio propio (CRUD, solo dueño). Va antes de /:id para no colisionar.
 router.get("/prestador/portafolio", authenticate, validate(paginationQuerySchema, "query"), getMisTrabajosHandler);
 router.post("/prestador/portafolio", authenticate, validate(createTrabajoSchema, "body"), createTrabajoHandler);
 router.get("/prestador/portafolio/:trabajoId", authenticate, getTrabajoHandler);

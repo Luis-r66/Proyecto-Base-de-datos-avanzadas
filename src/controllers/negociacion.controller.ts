@@ -49,7 +49,7 @@ export async function cancelarHandler(req: Request, res: Response) {
 export async function porCodigoHandler(req: Request, res: Response) {
   const codigo = String(req.params.codigo || "");
   if (!/^NEG-\d{4}-\d{4}$/.test(codigo)) {
-    throw new AppError(400, "INVALID_CODE", "Codigo de seguimiento invalido");
+    throw new AppError(400, "INVALID_CODE", "Código de seguimiento inválido");
   }
   res.json(await porCodigo(codigo));
 }

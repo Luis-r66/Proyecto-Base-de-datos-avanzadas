@@ -88,7 +88,7 @@ export default function Negociaciones() {
                     <EstadoBadge estado={neg.estado} />
                   </h3>
                   <p className="row__sub">
-                    {neg.categoria_id?.nombre || "Sin categoria"} ·{" "}
+                    {neg.categoria_id?.nombre || "Sin categoría"} ·{" "}
                     {neg.descripcion_trabajo.slice(0, 90)}
                     {neg.descripcion_trabajo.length > 90 ? "..." : ""}
                   </p>
@@ -116,7 +116,7 @@ export default function Negociaciones() {
             Anterior
           </button>
           <span className="muted">
-            Pagina {pagina} de {negociaciones.pagination.totalPages}
+            Página {pagina} de {negociaciones.pagination.totalPages}
           </span>
           <button
             type="button"

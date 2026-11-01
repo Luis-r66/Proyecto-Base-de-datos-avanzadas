@@ -50,7 +50,7 @@ export default function AdminVerificacion() {
 
   async function cambiar(usuarioId, nombre, valor) {
     const texto =
-      valor === true ? "verificar" : valor === false ? "revocar la verificacion de" : "volver a automatico a";
+      valor === true ? "verificar" : valor === false ? "revocar la verificación de" : "volver a automático a";
     if (!window.confirm(`¿Seguro que quieres ${texto} ${nombre}?`)) return;
     setAccionando(usuarioId);
     setError("");
@@ -73,7 +73,7 @@ export default function AdminVerificacion() {
           <h1 className="page-title">Verificaciones</h1>
           <p className="muted">Total: {datos.pagination.total}</p>
         </div>
-        <div className="tabs" role="tablist" aria-label="Filtro de verificacion">
+        <div className="tabs" role="tablist" aria-label="Filtro de verificación">
           <button
             type="button"
             role="tab"
@@ -141,7 +141,7 @@ export default function AdminVerificacion() {
                       ? "Manual: verificado"
                       : override === false
                       ? "Manual: revocado"
-                      : "Automatico"}
+                      : "Automático"}
                   </span>
                 </div>
 
@@ -155,7 +155,7 @@ export default function AdminVerificacion() {
                         ))}
                       </ul>
                     ) : (
-                      <p className="row__sub">Nada aun.</p>
+                      <p className="row__sub">Nada aún.</p>
                     )}
                   </div>
                   <div>
@@ -200,7 +200,7 @@ export default function AdminVerificacion() {
                       disabled={accionando === item.usuario_id}
                       onClick={() => cambiar(item.usuario_id, u.nombre, null)}
                     >
-                      Volver a automatico
+                      Volver a automático
                     </button>
                   )}
                 </div>
@@ -221,7 +221,7 @@ export default function AdminVerificacion() {
             Anterior
           </button>
           <span className="muted">
-            Pagina {pagina} de {datos.pagination.totalPages}
+            Página {pagina} de {datos.pagination.totalPages}
           </span>
           <button
             type="button"

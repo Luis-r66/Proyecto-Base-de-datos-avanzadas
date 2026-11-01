@@ -128,7 +128,7 @@ export default function Favoritos() {
             Anterior
           </button>
           <span className="muted">
-            Pagina {pagina} de {favoritos.pagination.totalPages}
+            Página {pagina} de {favoritos.pagination.totalPages}
           </span>
           <button
             type="button"

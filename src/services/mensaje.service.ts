@@ -26,9 +26,9 @@ async function usuarioDePrestador(prestadorId: Types.ObjectId, session?: any): P
 export async function sendMessage(remitenteId: Types.ObjectId, negId: Types.ObjectId, data: SendMessageInput) {
   return await withTransaction(async (s) => {
     const neg: any = await Negociacion.findById(negId).session(s);
-    if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+    if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
     if (!(await esParte(neg, remitenteId, s))) {
-      throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
+      throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociación");
     }
     let contenido = data.contenido;
     let esPred = false;
@@ -57,7 +57,7 @@ export async function sendMessage(remitenteId: Types.ObjectId, negId: Types.Obje
 
 export async function getMensajes(userId: Types.ObjectId, negId: Types.ObjectId, page = 1, limit = 20) {
   const neg: any = await Negociacion.findById(negId);
-  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
   if (!(await esParte(neg, userId))) throw new AppError(403, "FORBIDDEN", "No eres parte");
   const [data, total] = await Promise.all([
     Mensaje.find({ negociacion_id: negId }).sort({ fecha_envio: 1 }).skip((page - 1) * limit).limit(limit)
@@ -80,7 +80,7 @@ export async function getNotificaciones(userId: Types.ObjectId, page = 1, limit 
 
 export async function marcarNotificacionLeida(notifId: Types.ObjectId, userId: Types.ObjectId) {
   const n: any = await Notificacion.findOne({ _id: notifId, usuario_id: userId });
-  if (!n) throw new AppError(404, "NOTIFICACION_NOT_FOUND", "Notificacion no encontrada");
+  if (!n) throw new AppError(404, "NOTIFICACION_NOT_FOUND", "Notificación no encontrada");
   n.leido = true;
   await n.save();
 }

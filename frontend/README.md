@@ -32,7 +32,7 @@ VITE_API_URL=http://localhost:3001/api
 | Prestador | `santiago.morales@uniautonoma.edu.co` |
 | Prestador pendiente | `andres.gomez@uniautonoma.edu.co` |
 
-> Las contrasenas no se publican. En produccion se rotaron y se entregan por separado; en una base nueva sembrada con `npm run db:seed` se usan las definidas en `src/scripts/seedDemo.ts`. El bloque de credenciales ya no se muestra en `/login`.
+> Las contraseñas no se publican. En produccion se rotaron y se entregan por separado; en una base nueva sembrada con `npm run db:seed` se usan las definidas en `src/scripts/seedDemo.ts`. El bloque de credenciales ya no se muestra en `/login`.
 
 ## Sprint 0
 
@@ -43,7 +43,7 @@ VITE_API_URL=http://localhost:3001/api
 
 ## Sprint 1
 
-- `/registro`: alta con validacion de contrasena y correo institucional.
+- `/registro`: alta con validación de contraseña, correo institucional `@uniautonoma.edu.co`, carrera obligatoria y semestre 1-10.
 - `/convertirme-prestador`: crea o edita el perfil (categorias, tarifa, metodos de pago y disponibilidad).
 - `/mi-portafolio`: CRUD de trabajos con paginacion.
 - `/buscar`: busqueda por categoria, orden por calificacion o reciente, paginacion.

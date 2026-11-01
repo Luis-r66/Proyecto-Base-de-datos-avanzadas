@@ -12,7 +12,7 @@ import { getErrorMessage } from "../utils/errores";
 import { formatearFecha } from "../utils/fechas";
 import "../styles/cards.css";
 
-const DIAS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
+const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 const VACIO = { data: [], pagination: { page: 1, totalPages: 1, total: 0 } };
 
 export default function PrestadorPublico() {
@@ -173,7 +173,7 @@ export default function PrestadorPublico() {
           )}
           {perfil.metodos_pago_aceptados?.length > 0 && (
             <>
-              <dt>Metodos de pago</dt>
+              <dt>Métodos de pago</dt>
               <dd>{perfil.metodos_pago_aceptados.join(", ")}</dd>
             </>
           )}
@@ -182,7 +182,7 @@ export default function PrestadorPublico() {
               <dt>Disponibilidad</dt>
               <dd>
                 {perfil.disponibilidad
-                  .map((d) => `${DIAS[d.dia] || "Dia"} ${d.hora_inicio}-${d.hora_fin}`)
+                  .map((d) => `${DIAS[d.dia] || "Día"} ${d.hora_inicio}-${d.hora_fin}`)
                   .join(" · ")}
               </dd>
             </>
@@ -192,7 +192,7 @@ export default function PrestadorPublico() {
         <div className="acciones">
           {!sesion ? (
             <Link to="/login" className="btn btn--primary">
-              Inicia sesion para solicitar apoyo
+              Inicia sesión para solicitar apoyo
             </Link>
           ) : esPropio ? (
             <>
@@ -229,7 +229,7 @@ export default function PrestadorPublico() {
           <div className="card card--flat">
             <h2 className="section__title">Solicitar apoyo</h2>
             <p className="muted">
-              Cuentale que necesitas. Se creara una negociacion y podran conversar.
+              Cuéntale qué necesitas. Se creará una negociación y podrán conversar.
             </p>
             <SolicitarApoyo
               perfil={perfil}
@@ -242,14 +242,14 @@ export default function PrestadorPublico() {
       <section className="section">
         <h2 className="section__title">Portafolio</h2>
         {portafolio.data.length === 0 ? (
-          <p className="empty">Este prestador aun no ha publicado trabajos.</p>
+          <p className="empty">Este prestador aún no ha publicado trabajos.</p>
         ) : (
           <div className="grid-cards">
             {portafolio.data.map((trabajo) => (
               <article key={trabajo._id} className="prestador-card">
                 <h3 className="prestador-card__name">{trabajo.titulo}</h3>
                 <p className="row__sub">
-                  {trabajo.categoria_id?.nombre || "Sin categoria"} ·{" "}
+                  {trabajo.categoria_id?.nombre || "Sin categoría"} ·{" "}
                   {formatearFecha(trabajo.fecha_realizado)}
                 </p>
                 <p className="prestador-card__desc">{trabajo.descripcion}</p>
@@ -266,7 +266,7 @@ export default function PrestadorPublico() {
         <h2 className="section__title">Calificaciones</h2>
         {!sesion ? (
           <p className="empty">
-            <Link to="/login">Inicia sesion</Link> para ver las calificaciones de este prestador.
+            <Link to="/login">Inicia sesión</Link> para ver las calificaciones de este prestador.
           </p>
         ) : calificaciones && calificaciones.data.length > 0 ? (
           <ul className="rows">
@@ -286,7 +286,7 @@ export default function PrestadorPublico() {
             ))}
           </ul>
         ) : (
-          <p className="empty">Aun no tiene calificaciones.</p>
+          <p className="empty">Aún no tiene calificaciones.</p>
         )}
       </section>
     </main>

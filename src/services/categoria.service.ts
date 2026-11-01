@@ -6,10 +6,10 @@ import { CreateCategoriaInput, UpdateCategoriaInput } from "../utils/categoria.v
 
 export async function createCategoria(data: CreateCategoriaInput) {
   const exists = await Categoria.findOne({ nombre: data.nombre, carrera_asociada: data.carrera_asociada });
-  if (exists) throw new AppError(409, "CATEGORIA_EXISTS", "Ya existe una categoria con ese nombre en esta carrera");
+  if (exists) throw new AppError(409, "CATEGORIA_EXISTS", "Ya existe una categoría con ese nombre en esta carrera");
   if (data.categoria_padre_id) {
     const padre = await Categoria.findById(data.categoria_padre_id);
-    if (!padre) throw new AppError(404, "PARENT_NOT_FOUND", "Categoria padre no encontrada");
+    if (!padre) throw new AppError(404, "PARENT_NOT_FOUND", "Categoría padre no encontrada");
   }
   const cat = await Categoria.create(data);
   return { _id: cat._id, nombre: cat.nombre, carrera_asociada: cat.carrera_asociada, categoria_padre_id: cat.categoria_padre_id };
@@ -27,25 +27,25 @@ export async function getCategorias(page = 1, limit = 20, carrera?: string) {
 
 export async function getCategoriaById(id: Types.ObjectId) {
   const cat = await Categoria.findById(id).lean();
-  if (!cat) throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoria no encontrada");
+  if (!cat) throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoría no encontrada");
   return cat;
 }
 
 export async function updateCategoria(id: Types.ObjectId, data: UpdateCategoriaInput) {
   const cat: any = await Categoria.findById(id);
-  if (!cat) throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoria no encontrada");
+  if (!cat) throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoría no encontrada");
   if (data.nombre || data.carrera_asociada) {
     const dup = await Categoria.findOne({
       _id: { $ne: id },
       nombre: data.nombre ?? cat.nombre,
       carrera_asociada: data.carrera_asociada ?? cat.carrera_asociada,
     });
-    if (dup) throw new AppError(409, "CATEGORIA_EXISTS", "Ya existe una categoria con ese nombre en esta carrera");
+    if (dup) throw new AppError(409, "CATEGORIA_EXISTS", "Ya existe una categoría con ese nombre en esta carrera");
   }
   if (data.categoria_padre_id) {
-    if (data.categoria_padre_id === id.toString()) throw new AppError(400, "INVALID_PARENT", "Una categoria no puede ser padre de si misma");
+    if (data.categoria_padre_id === id.toString()) throw new AppError(400, "INVALID_PARENT", "Una categoría no puede ser padre de sí misma");
     const padre = await Categoria.findById(data.categoria_padre_id);
-    if (!padre) throw new AppError(404, "PARENT_NOT_FOUND", "Categoria padre no encontrada");
+    if (!padre) throw new AppError(404, "PARENT_NOT_FOUND", "Categoría padre no encontrada");
   }
   Object.assign(cat, data);
   await cat.save();
@@ -54,12 +54,12 @@ export async function updateCategoria(id: Types.ObjectId, data: UpdateCategoriaI
 
 export async function deleteCategoria(id: Types.ObjectId) {
   const cat = await Categoria.findById(id);
-  if (!cat) throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoria no encontrada");
+  if (!cat) throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoría no encontrada");
   if (await Categoria.exists({ categoria_padre_id: id })) {
-    throw new AppError(409, "HAS_CHILDREN", "No se puede eliminar: tiene subcategorias");
+    throw new AppError(409, "HAS_CHILDREN", "No se puede eliminar: tiene subcategorías");
   }
   if (await PerfilPrestador.exists({ categorias_ids: id })) {
-    throw new AppError(409, "IN_USE", "No se puede eliminar: hay prestadores usandola");
+    throw new AppError(409, "IN_USE", "No se puede eliminar: hay prestadores usándola");
   }
   await cat.deleteOne();
 }

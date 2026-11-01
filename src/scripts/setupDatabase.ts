@@ -18,15 +18,15 @@ import { MensajePredeterminado } from "../models/MensajePredeterminado";
 const USUARIOS_VALIDATION = {
   $jsonSchema: {
     bsonType: "object",
-    required: ["email", "password_hash", "nombre", "tipo_usuario", "estado_cuenta"],
+    required: ["email", "password_hash", "nombre", "tipo_usuario", "estado_cuenta", "carrera", "semestre", "institucion"],
     properties: {
       nombre: { bsonType: "string", maxLength: 100 },
       email: { bsonType: "string", pattern: "^.+@.+\\..+$" },
       password_hash: { bsonType: "string" },
       foto_perfil_url: { bsonType: "string" },
-      carrera: { bsonType: "string" },
-      semestre: { bsonType: "number", minimum: 1, maximum: 20 },
-      institucion: { bsonType: "string" },
+      carrera: { bsonType: "string", minLength: 1, maxLength: 100 },
+      semestre: { bsonType: "number", minimum: 1, maximum: 10 },
+      institucion: { bsonType: "string", minLength: 1, maxLength: 100 },
       tipo_usuario: {
         bsonType: "array",
         items: { bsonType: "string", enum: ["Solicitante", "Prestador", "Admin"] },
@@ -108,9 +108,9 @@ async function main() {
   }
 
   await db.command({ collMod: "usuarios", validator: USUARIOS_VALIDATION, validationLevel: "strict" });
-  console.log("  validacion usuarios");
+  console.log("  validación usuarios");
   await db.command({ collMod: "negociaciones", validator: NEGOCIACIONES_VALIDATION, validationLevel: "strict" });
-  console.log("  validacion negociaciones");
+  console.log("  validación negociaciones");
 
   // Eliminar indices obsoletos antes de crear los definitivos
   for (const [collName, names] of Object.entries(legacyIndexes)) {

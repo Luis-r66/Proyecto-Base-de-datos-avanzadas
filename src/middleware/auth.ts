@@ -21,7 +21,7 @@ export function authenticate(req: Request, _res: Response, next: NextFunction) {
     req.user = { sub: new Types.ObjectId(p.sub), email: p.email, tipo_usuario: p.tipo_usuario };
     next();
   } catch {
-    throw new AppError(401, "TOKEN_EXPIRED", "Token invalido o expirado");
+    throw new AppError(401, "TOKEN_EXPIRED", "Token inválido o expirado");
   }
 }
 
@@ -29,7 +29,7 @@ export function requireRole(...roles: string[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) throw new AppError(401, "UNAUTHORIZED", "Usuario no autenticado");
     if (!req.user.tipo_usuario.some((r) => roles.includes(r))) {
-      throw new AppError(403, "FORBIDDEN", "No tienes permisos para esta accion");
+      throw new AppError(403, "FORBIDDEN", "No tienes permisos para esta acción");
     }
     next();
   };

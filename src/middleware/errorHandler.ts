@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 
 /**
  * Contrato de error unico para todo el backend:
- *   { "error": "mensaje en espanol", "code": "CODIGO", "details"?: ... }
+ *   { "error": "mensaje en español", "code": "CODIGO", "details"?: ... }
  */
 export class AppError extends Error {
   constructor(
@@ -36,7 +36,7 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
 
   if (err instanceof ZodError) {
     return res.status(400).json({
-      error: "Datos de entrada invalidos",
+      error: "Datos de entrada inválidos",
       code: "VALIDATION_ERROR",
       details: err.flatten().fieldErrors,
     });
@@ -49,13 +49,13 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
   }
   if (err instanceof mongoose.Error.ValidationError) {
     return res.status(400).json({
-      error: "Error de validacion",
+      error: "Error de validación",
       code: "VALIDATION_ERROR",
       details: Object.values(err.errors).map((x: any) => x.message),
     });
   }
   if (err instanceof mongoose.Error.CastError) {
-    return res.status(400).json({ error: "ID invalido: " + err.path, code: "INVALID_ID" });
+    return res.status(400).json({ error: "ID inválido: " + err.path, code: "INVALID_ID" });
   }
   if (e.code === 11000) {
     const field = Object.keys(e.keyValue || {})[0] || "campo";
@@ -63,7 +63,7 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
   }
   if (e.code === 121) {
     return res.status(400).json({
-      error: "El documento no pasa la validacion de MongoDB",
+      error: "El documento no pasa la validación de MongoDB",
       code: "VALIDATION_ERROR",
       details: e.errInfo?.details,
     });

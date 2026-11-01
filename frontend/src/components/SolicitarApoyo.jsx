@@ -13,13 +13,13 @@ export default function SolicitarApoyo({ perfil, onCreada }) {
   const [enviando, setEnviando] = useState(false);
 
   if (categorias.length === 0) {
-    return <p className="muted">Este prestador no tiene categorias activas para solicitar apoyo.</p>;
+    return <p className="muted">Este prestador no tiene categorías activas para solicitar apoyo.</p>;
   }
 
   async function enviar(evento) {
     evento.preventDefault();
     if (!categoriaId || !descripcion.trim()) {
-      setError("Selecciona una categoria y describe lo que necesitas.");
+      setError("Selecciona una categoría y describe lo que necesitas.");
       return;
     }
     setEnviando(true);
@@ -59,7 +59,7 @@ export default function SolicitarApoyo({ perfil, onCreada }) {
       )}
 
       <div className="field">
-        <label htmlFor="sacategoria">Categoria</label>
+        <label htmlFor="sacategoria">Categoría</label>
         <select
           id="sacategoria"
           value={categoriaId}
@@ -75,13 +75,13 @@ export default function SolicitarApoyo({ perfil, onCreada }) {
       </div>
 
       <div className="field">
-        <label htmlFor="sadescripcion">Que necesitas?</label>
+        <label htmlFor="sadescripcion">¿Qué necesitas?</label>
         <textarea
           id="sadescripcion"
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
           maxLength={5000}
-          placeholder="Describe el trabajo, el tema y cuando lo necesitas."
+          placeholder="Describe el trabajo, el tema y cuándo lo necesitas."
           required
         />
       </div>

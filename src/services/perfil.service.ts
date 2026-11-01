@@ -25,7 +25,7 @@ export async function createPerfil(usuarioId: Types.ObjectId, data: CreatePerfil
   }
   const count = await Categoria.countDocuments({ _id: { $in: data.categorias_ids } });
   if (count !== data.categorias_ids.length)
-    throw new AppError(400, "INVALID_CATEGORIES", "Una o mas categorias no existen");
+    throw new AppError(400, "INVALID_CATEGORIES", "Una o más categorías no existen");
 
   const perfil = await withTransaction(async (s) => {
     const created = await PerfilPrestador.create(
@@ -84,7 +84,7 @@ export async function updateMiPerfil(usuarioId: Types.ObjectId, data: UpdatePerf
   if (data.categorias_ids) {
     const count = await Categoria.countDocuments({ _id: { $in: data.categorias_ids } });
     if (count !== data.categorias_ids.length)
-      throw new AppError(400, "INVALID_CATEGORIES", "Una o mas categorias no existen");
+      throw new AppError(400, "INVALID_CATEGORIES", "Una o más categorías no existen");
   }
   Object.assign(p, data);
   await p.save();
@@ -98,7 +98,7 @@ export async function createTrabajo(usuarioId: Types.ObjectId, data: CreateTraba
   if (perfil.estado !== "Activo")
     throw new AppError(403, "PERFIL_INACTIVE", "Solo prestadores activos pueden publicar");
   if (!(await Categoria.findById(data.categoria_id))) {
-    throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoria no encontrada");
+    throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoría no encontrada");
   }
   const trabajo = await TrabajoPortafolio.create({
     prestador_id: perfil._id,
@@ -148,12 +148,12 @@ export async function getPortafolioPublico(prestadorId: Types.ObjectId, page = 1
 async function trabajoDelDueno(usuarioId: Types.ObjectId, trabajoId: Types.ObjectId) {
   const perfil = await PerfilPrestador.findOne({ usuario_id: usuarioId });
   if (!perfil) {
-    throw new AppError(403, "FORBIDDEN", "Solo el dueno puede acceder a este trabajo");
+    throw new AppError(403, "FORBIDDEN", "Solo el dueño puede acceder a este trabajo");
   }
   const trabajo = await TrabajoPortafolio.findById(trabajoId);
   if (!trabajo) throw new AppError(404, "TRABAJO_NOT_FOUND", "Trabajo no encontrado");
   if (trabajo.prestador_id.toString() !== perfil._id.toString()) {
-    throw new AppError(403, "FORBIDDEN", "Solo el dueno puede modificar este trabajo");
+    throw new AppError(403, "FORBIDDEN", "Solo el dueño puede modificar este trabajo");
   }
   return trabajo;
 }
@@ -170,7 +170,7 @@ export async function updateTrabajoDelDueno(
 ) {
   const trabajo = await trabajoDelDueno(usuarioId, trabajoId);
   if (data.categoria_id && !(await Categoria.findById(data.categoria_id))) {
-    throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoria no encontrada");
+    throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoría no encontrada");
   }
   Object.assign(trabajo, data);
   await trabajo.save();

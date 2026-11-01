@@ -70,13 +70,13 @@ export default function ReportarNegociacion({ negociacionId, reportadoId }) {
         </div>
 
         <div className="field">
-          <label htmlFor="rmotivo">Descripcion</label>
+          <label htmlFor="rmotivo">Descripción</label>
           <textarea
             id="rmotivo"
             value={motivo}
             onChange={(e) => setMotivo(e.target.value)}
             maxLength={2000}
-            placeholder="Explica que paso."
+            placeholder="Explica qué pasó."
             required
           />
         </div>

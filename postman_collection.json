@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "TutorLink API",
-    "description": "Backend TutorLink - apoyo academico entre estudiantes. Puerto 3001. Los login usan credenciales del seed local; en produccion las contrasenas fueron rotadas.",
+    "description": "Backend TutorLink - apoyo academico entre estudiantes. Puerto 3001. Los login usan credenciales del seed local; en produccion las contraseñas fueron rotadas.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -87,7 +87,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Demo TutorLink\",\n  \"email\": \"demo{{$timestamp}}@uniautonoma.edu.co\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\"\n}"
+              "raw": "{\n  \"nombre\": \"Demo TutorLink\",\n  \"email\": \"demo{{$timestamp}}@uniautonoma.edu.co\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\",\n  \"carrera\": \"Ingeniería de Sistemas\",\n  \"semestre\": 5\n}"
             },
             "auth": {
               "type": "noauth"
@@ -521,7 +521,7 @@
       ]
     },
     {
-      "name": "Portafolio (dueno)",
+      "name": "Portafolio (dueño)",
       "item": [
         {
           "name": "Publicar trabajo",

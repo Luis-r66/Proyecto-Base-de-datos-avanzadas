@@ -23,7 +23,7 @@ export async function notifHandler(req: Request, res: Response) {
 
 export async function leerNotifHandler(req: Request, res: Response) {
   await marcarNotificacionLeida(isObjectIdOr400(req.params.id), req.user!.sub);
-  res.json({ message: "Notificacion marcada como leida" });
+  res.json({ message: "Notificación marcada como leída" });
 }
 
 export async function leerTodasHandler(req: Request, res: Response) {

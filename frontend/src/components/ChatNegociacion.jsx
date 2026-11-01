@@ -91,7 +91,7 @@ export default function ChatNegociacion({ negociacionId, rol }) {
         {cargando ? (
           <p className="muted">Cargando mensajes...</p>
         ) : mensajes.length === 0 ? (
-          <p className="muted">Aun no hay mensajes. Escribe el primero.</p>
+          <p className="muted">Aún no hay mensajes. Escribe el primero.</p>
         ) : (
           mensajes.map((m) => {
             const propio = String(m.remitente_id?._id) === String(usuario?.id);
@@ -110,7 +110,7 @@ export default function ChatNegociacion({ negociacionId, rol }) {
       {predets.length > 0 && (
         <div className="chat__predets">
           <label htmlFor="predet" className="muted">
-            Mensaje rapido
+            Mensaje rápido
           </label>
           <select
             id="predet"

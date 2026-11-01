@@ -38,8 +38,8 @@ export default function AdminDashboard() {
 
   return (
     <main className="container">
-      <h1 className="page-title">Panel de administracion</h1>
-      <p className="muted">Gestiona verificaciones, reportes y el catalogo de categorias.</p>
+      <h1 className="page-title">Panel de administración</h1>
+      <p className="muted">Gestiona verificaciones, reportes y el catálogo de categorías.</p>
 
       {error && (
         <p className="alert alert--error" role="alert">
@@ -65,17 +65,17 @@ export default function AdminDashboard() {
           </Link>
           <Link to="/admin/reportes?estado=En_revision" className="stat">
             <span className="stat__valor">{stats.enRevision}</span>
-            <span className="stat__texto">Reportes en revision</span>
+            <span className="stat__texto">Reportes en revisión</span>
           </Link>
           <Link to="/admin/categorias" className="stat">
             <span className="stat__valor">{stats.categorias}</span>
-            <span className="stat__texto">Categorias</span>
+            <span className="stat__texto">Categorías</span>
           </Link>
         </div>
       )}
 
       <section className="section">
-        <h2 className="section__title">Accesos rapidos</h2>
+        <h2 className="section__title">Accesos rápidos</h2>
         <div className="acciones">
           <Link to="/admin/verificacion" className="btn btn--primary">
             Verificaciones
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
             Reportes
           </Link>
           <Link to="/admin/categorias" className="btn btn--ghost">
-            Categorias
+            Categorías
           </Link>
         </div>
       </section>

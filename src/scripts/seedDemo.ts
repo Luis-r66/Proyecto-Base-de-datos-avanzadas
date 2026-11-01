@@ -18,6 +18,7 @@ import { sendMessage } from "../services/mensaje.service";
 import { calificar, reportar } from "../services/calificacion.service";
 import bcrypt from "bcryptjs";
 import { env } from "../config/env";
+import { INSTITUCION_ACTUAL } from "../config/institucion";
 import { Types } from "mongoose";
 
 const DOMINIO = (env.INSTITUTIONAL_EMAIL_DOMAINS || "uniautonoma.edu.co").split(",")[0].trim();
@@ -55,7 +56,7 @@ async function main() {
     `santiago.morales@${DOMINIO}`,
     "Santiago123",
     ["Solicitante"],
-    { carrera: "Ingeniería de Sistemas", semestre: 6, institucion: "Universidad Autónoma", habilidades: ["Python", "JavaScript"], biografia: "Estudiante de ingeniería, apoyo en programación e inglés." }
+    { carrera: "Ingeniería de Sistemas", semestre: 6, institucion: INSTITUCION_ACTUAL, habilidades: ["Python", "JavaScript"], biografia: "Estudiante de ingeniería, apoyo en programación e inglés." }
   );
 
   const luis = await ensureUser(
@@ -63,7 +64,7 @@ async function main() {
     `luis.riascos@${DOMINIO}`,
     "Luis1234",
     ["Solicitante", "Admin"],
-    { carrera: "Ingeniería de Sistemas", semestre: 7, institucion: "Universidad Autónoma", biografia: "Estudiante y administrador de la plataforma." }
+    { carrera: "Ingeniería de Sistemas", semestre: 7, institucion: INSTITUCION_ACTUAL, biografia: "Estudiante y administrador de la plataforma." }
   );
 
   const andres = await ensureUser(
@@ -71,7 +72,7 @@ async function main() {
     `andres.gomez@${DOMINIO}`,
     "Andres1234",
     ["Solicitante"],
-    { carrera: "Ingeniería Industrial", semestre: 4, institucion: "Universidad Autónoma" }
+    { carrera: "Ingeniería Industrial", semestre: 4, institucion: INSTITUCION_ACTUAL }
   );
 
   // --- Perfil prestador de Santiago (Activo) ---

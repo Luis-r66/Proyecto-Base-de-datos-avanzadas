@@ -7,7 +7,7 @@
 - Formato de error unico:
 
 ```json
-{ "error": "mensaje en espanol", "code": "CODIGO", "details": { } }
+{ "error": "mensaje en español", "code": "CODIGO", "details": { } }
 ```
 
 `details` solo aparece en errores de validacion.
@@ -29,10 +29,10 @@
 
 - **Publico**: sin token.
 - **Autenticado**: cualquier usuario con sesion (Solicitante, Prestador o Admin).
-- **Participante**: solo `solicitante_id` o el dueno del `prestador_id` de la negociacion.
+- **Participante**: solo `solicitante_id` o el dueño del `prestador_id` de la negociacion.
 - **Prestador**: usuario con perfil de prestador.
 - **Admin**: `tipo_usuario` incluye `Admin`.
-- **Dueno**: propietario del recurso (p. ej. autor del trabajo de portafolio).
+- **Dueño**: propietario del recurso (p. ej. autor del trabajo de portafolio).
 
 ---
 
@@ -40,12 +40,12 @@
 
 | Metodo | Ruta | Rol | Cuerpo | Respuesta |
 |--------|------|-----|--------|-----------|
-| POST | `/api/auth/register` | Publico | `{nombre, email, password, confirmPassword, carrera?, semestre?, institucion?}` | 201 `{accessToken, refreshToken, user}` |
+| POST | `/api/auth/register` | Publico | `{nombre, email, password, confirmPassword, carrera, semestre}` (email `@uniautonoma.edu.co`, semestre 1-10; la institución se asigna en el servidor) | 201 `{accessToken, refreshToken, user}` |
 | POST | `/api/auth/login` | Publico | `{email, password}` | 200 `{accessToken, refreshToken, user}` |
 | POST | `/api/auth/refresh` | Publico | `{refreshToken}` | 200 `{accessToken, refreshToken}` |
 | GET | `/api/auth/me` | Autenticado | - | 200 `{id, nombre, email, carrera, semestre, institucion, tipo_usuario, calificacion_promedio, total_calificaciones, verificado, estado_cuenta, fecha_registro}` |
 
-Reglas: email unico, password minimo 8 con mayuscula, minuscula y numero. Errores: 409 `EMAIL_EXISTS`, 401 `INVALID_CREDENTIALS`, 400 `VALIDATION_ERROR`.
+Reglas: email único e institucional (`@uniautonoma.edu.co`), carrera obligatoria, semestre obligatorio entre 1 y 10, password mínimo 8 con mayúscula, minúscula y número. La institución se guarda como `Corporación Universitaria Autónoma del Cauca`. Errores: 409 `EMAIL_EXISTS`, 401 `INVALID_CREDENTIALS`, 400 `VALIDATION_ERROR`.
 
 ---
 
@@ -84,11 +84,11 @@ Errores: 409 `PERFIL_EXISTS`, 400 `INVALID_CATEGORIES`, 403 `ACCOUNT_INACTIVE`, 
 | GET | `/api/perfiles/portafolio/:id` | Publico | - | 200 trabajo con `categoria_id` y `prestador_id.usuario_id` poblados |
 | POST | `/api/perfiles/prestador/portafolio` | Prestador activo | `{categoria_id, titulo, descripcion, habilidades_usadas?, imagenes_urls?}` | 201 trabajo |
 | GET | `/api/perfiles/prestador/portafolio` | Prestador | `?page&limit` | 200 `{data, pagination}` |
-| GET | `/api/perfiles/prestador/portafolio/:trabajoId` | Dueno | - | 200 trabajo |
-| PATCH | `/api/perfiles/prestador/portafolio/:trabajoId` | Dueno | `{categoria_id?, titulo?, descripcion?, habilidades_usadas?, imagenes_urls?}` | 200 trabajo |
-| DELETE | `/api/perfiles/prestador/portafolio/:trabajoId` | Dueno | - | 204 |
+| GET | `/api/perfiles/prestador/portafolio/:trabajoId` | Dueño | - | 200 trabajo |
+| PATCH | `/api/perfiles/prestador/portafolio/:trabajoId` | Dueño | `{categoria_id?, titulo?, descripcion?, habilidades_usadas?, imagenes_urls?}` | 200 trabajo |
+| DELETE | `/api/perfiles/prestador/portafolio/:trabajoId` | Dueño | - | 204 |
 
-Errores: 403 `PERFIL_INACTIVE`, 403 `FORBIDDEN` (no es dueno), 404 `TRABAJO_NOT_FOUND`, 404 `CATEGORIA_NOT_FOUND`.
+Errores: 403 `PERFIL_INACTIVE`, 403 `FORBIDDEN` (no es dueño), 404 `TRABAJO_NOT_FOUND`, 404 `CATEGORIA_NOT_FOUND`.
 
 ---
 
@@ -112,7 +112,7 @@ Cada item incluye `usuario.nombre`, `usuario.calificacion_promedio`, `usuario.to
 | GET | `/api/negociaciones/mis` | Autenticado | `?page&limit&estado` | Igual que el anterior (alias conservado) |
 | GET | `/api/negociaciones/:id` | Participante | - | 200 negociacion populada + `rol_usuario` y `mi_calificacion` (null si aun no califico) |
 | PATCH | `/api/negociaciones/:id/negociar` | Participante | - | 200 estado `Negociando` (solo desde `Propuesta`) |
-| PATCH | `/api/negociaciones/:id/acordar` | Prestador dueno | `{precio_acordado, forma_pago}` | 200 estado `Acordado` (valida cupo maximo 5 en transaccion) |
+| PATCH | `/api/negociaciones/:id/acordar` | Prestador dueño | `{precio_acordado, forma_pago}` | 200 estado `Acordado` (valida cupo maximo 5 en transaccion) |
 | PATCH | `/api/negociaciones/:id/en-progreso` | Participante | - | 200 estado `En_progreso` (solo desde `Acordado`) |
 | PATCH | `/api/negociaciones/:id/completar` | Participante | - | 200 estado `Completado` (solo desde `En_progreso`) |
 | PATCH | `/api/negociaciones/:id/cancelar` | Participante | - | 200 estado `Cancelado` (no si `Completado`/`Cancelado`) |
@@ -199,14 +199,18 @@ Errores: 403 `FORBIDDEN`, 400 `SELF_REPORT`, 404 `REPORTE_NOT_FOUND`.
 
 ## Verificacion institucional (automatica)
 
-El backend calcula `usuario.verificado` automaticamente cuando:
+El backend calcula `usuario.verificado` automáticamente cuando se cumplen todas:
 
 1. El correo pertenece a un dominio de `INSTITUTIONAL_EMAIL_DOMAINS` (por defecto `uniautonoma.edu.co`).
-2. La cuenta esta `activo` (si `VERIFY_REQUIRE_ACTIVE_ACCOUNT=true`).
-3. Tiene perfil de prestador `Activo` con al menos `VERIFY_MIN_CATEGORIES` categorias.
-4. Tiene al menos `VERIFY_MIN_PORTFOLIO_WORKS` trabajos de portafolio.
+2. La cuenta está `activo` (si `VERIFY_REQUIRE_ACTIVE_ACCOUNT=true`).
+3. Tiene carrera y un semestre válido entre 1 y 10.
+4. Tiene perfil de prestador `Activo` con al menos `VERIFY_MIN_CATEGORIES` categorías.
+5. Tiene al menos `VERIFY_MIN_PORTFOLIO_WORKS` trabajos de portafolio.
+6. Tiene al menos `VERIFY_MIN_COMPLETED_NEGOTIATIONS` negociaciones en estado `Completado` como prestador.
+7. Tiene al menos `VERIFY_MIN_RATINGS` calificación(es) recibida(s).
+8. Su `calificacion_promedio` global es mayor o igual a `VERIFY_MIN_RATING` (4 por defecto).
 
-Se reevalua al registrarse, crear/editar perfil, crear/eliminar trabajos, iniciar sesion y en `GET /auth/me`. Si deja de cumplir, pierde la insignia. El Admin puede forzar/revocar con `verificado_override`.
+Se reevalúa al registrarse, crear/editar perfil, crear/eliminar trabajos, completar una negociación, recibir una calificación, iniciar sesión y en `GET /auth/me`. Si deja de cumplir, pierde la insignia. El Admin puede forzar/revocar con `verificado_override`.
 
 ## Cuentas demo (`npm run db:seed`)
 
@@ -216,7 +220,7 @@ Se reevalua al registrarse, crear/editar perfil, crear/eliminar trabajos, inicia
 | Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` |
 | Prestador pendiente | `andres.gomez@uniautonoma.edu.co` |
 
-> Las contrasenas no se publican: en produccion se rotaron y se entregan por separado. En una base nueva sembrada con `npm run db:seed` se usan las credenciales definidas en `src/scripts/seedDemo.ts`. El login ya no muestra credenciales demo.
+> Las contraseñas no se publican: en produccion se rotaron y se entregan por separado. En una base nueva sembrada con `npm run db:seed` se usan las credenciales definidas en `src/scripts/seedDemo.ts`. El login ya no muestra credenciales demo.
 
 ## Notas para el frontend
 

@@ -5,6 +5,7 @@ import { getErrorMessage, getErrorDetails } from "../utils/errores";
 import "../styles/forms.css";
 
 const PASSWORD_RE = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$/;
+const DOMINIO_INSTITUCIONAL = "@uniautonoma.edu.co";
 
 export default function Registro() {
   const { usuario, registrar } = useAuth();
@@ -16,7 +17,6 @@ export default function Registro() {
     confirmPassword: "",
     carrera: "",
     semestre: "",
-    institucion: "",
   });
   const [error, setError] = useState("");
   const [detalles, setDetalles] = useState([]);
@@ -30,15 +30,16 @@ export default function Registro() {
 
   function validar() {
     if (form.nombre.trim().length < 2) return "El nombre debe tener al menos 2 caracteres.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return "Correo invalido.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return "Correo inválido.";
+    if (!form.email.trim().toLowerCase().endsWith(DOMINIO_INSTITUCIONAL))
+      return `Usa tu correo institucional ${DOMINIO_INSTITUCIONAL}.`;
     if (!PASSWORD_RE.test(form.password))
-      return "La contrasena debe tener al menos 8 caracteres, una mayuscula, una minuscula y un numero.";
-    if (form.password !== form.confirmPassword) return "Las contrasenas no coinciden.";
-    if (form.semestre !== "") {
-      const semestre = Number(form.semestre);
-      if (!Number.isInteger(semestre) || semestre < 1 || semestre > 20)
-        return "El semestre debe estar entre 1 y 20.";
-    }
+      return "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.";
+    if (form.password !== form.confirmPassword) return "Las contraseñas no coinciden.";
+    if (!form.carrera.trim()) return "La carrera es obligatoria.";
+    const semestre = Number(form.semestre);
+    if (form.semestre === "" || !Number.isInteger(semestre) || semestre < 1 || semestre > 10)
+      return "El semestre debe estar entre 1 y 10.";
     return "";
   }
 
@@ -57,13 +58,12 @@ export default function Registro() {
     try {
       const payload = {
         nombre: form.nombre.trim(),
-        email: form.email.trim(),
+        email: form.email.trim().toLowerCase(),
         password: form.password,
         confirmPassword: form.confirmPassword,
+        carrera: form.carrera.trim(),
+        semestre: Number(form.semestre),
       };
-      if (form.carrera.trim()) payload.carrera = form.carrera.trim();
-      if (form.semestre !== "") payload.semestre = Number(form.semestre);
-      if (form.institucion.trim()) payload.institucion = form.institucion.trim();
 
       await registrar(payload);
       navigate("/login", { replace: true, state: { registrado: true, email: payload.email } });
@@ -79,7 +79,7 @@ export default function Registro() {
     <main className="container container--narrow">
       <section className="card card--flat">
         <h1 className="page-title">Crear cuenta</h1>
-        <p className="muted">Registrate con tu correo institucional para empezar.</p>
+        <p className="muted">Regístrate con tu correo institucional para empezar.</p>
 
         <form className="form" onSubmit={enviar}>
           {error && (
@@ -111,11 +111,12 @@ export default function Registro() {
               placeholder="nombre@uniautonoma.edu.co"
               required
             />
+            <span className="hint">Solo correos {DOMINIO_INSTITUCIONAL}.</span>
           </div>
 
           <div className="grid-2">
             <div className="field">
-              <label htmlFor="rpassword">Contrasena</label>
+              <label htmlFor="rpassword">Contraseña</label>
               <input
                 id="rpassword"
                 type="password"
@@ -127,7 +128,7 @@ export default function Registro() {
               />
             </div>
             <div className="field">
-              <label htmlFor="rconfirm">Confirmar contrasena</label>
+              <label htmlFor="rconfirm">Confirmar contraseña</label>
               <input
                 id="rconfirm"
                 type="password"
@@ -142,30 +143,30 @@ export default function Registro() {
 
           <div className="grid-2">
             <div className="field">
-              <label htmlFor="rcarrera">Carrera (opcional)</label>
-              <input id="rcarrera" value={form.carrera} onChange={cambiar("carrera")} />
+              <label htmlFor="rcarrera">Carrera</label>
+              <input
+                id="rcarrera"
+                value={form.carrera}
+                onChange={cambiar("carrera")}
+                maxLength={100}
+                placeholder="Ingeniería de Sistemas"
+                required
+              />
             </div>
             <div className="field">
-              <label htmlFor="rsemestre">Semestre (opcional)</label>
+              <label htmlFor="rsemestre">Semestre</label>
               <input
                 id="rsemestre"
                 type="number"
                 min="1"
-                max="20"
+                max="10"
+                step="1"
                 value={form.semestre}
                 onChange={cambiar("semestre")}
+                placeholder="1 a 10"
+                required
               />
             </div>
-          </div>
-
-          <div className="field">
-            <label htmlFor="rinstitucion">Institucion (opcional)</label>
-            <input
-              id="rinstitucion"
-              value={form.institucion}
-              onChange={cambiar("institucion")}
-              placeholder="Universidad Autonoma"
-            />
           </div>
 
           <div className="form__actions">
@@ -176,7 +177,7 @@ export default function Registro() {
         </form>
 
         <p className="muted hint">
-          Ya tienes cuenta? <Link to="/login">Inicia sesion</Link>
+          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
         </p>
       </section>
     </main>

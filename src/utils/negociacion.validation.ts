@@ -2,8 +2,8 @@
 import { objectId } from "./validators";
 
 export const iniciarSchema = z.object({
-  prestador_id: objectId("ID de prestador invalido"),
-  categoria_id: objectId("ID de categoria invalido"),
+  prestador_id: objectId("ID de prestador inválido"),
+  categoria_id: objectId("ID de categoría inválido"),
   descripcion_trabajo: z.string().min(1).max(5000).trim(),
   precio_propuesto: z.number().min(0).optional(),
   forma_pago: z.string().trim().min(1).optional(),

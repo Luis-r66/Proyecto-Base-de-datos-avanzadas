@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const DIAS = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
+const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
 function separarLista(texto) {
   return texto
@@ -65,7 +65,7 @@ export default function PerfilPrestadorForm({
     setErrorLocal("");
 
     if (seleccion.length === 0) {
-      setErrorLocal("Selecciona al menos una categoria.");
+      setErrorLocal("Selecciona al menos una categoría.");
       return;
     }
     if (monto !== "" && Number(monto) < 0) {
@@ -106,7 +106,7 @@ export default function PerfilPrestadorForm({
       )}
 
       <fieldset className="fieldset">
-        <legend>Categorias en las que ofreces apoyo</legend>
+        <legend>Categorías en las que ofreces apoyo</legend>
         <div className="checks">
           {categorias.map((c) => (
             <label key={c._id} className="check">
@@ -130,18 +130,18 @@ export default function PerfilPrestadorForm({
           id="ptipos"
           value={tipos}
           onChange={(e) => setTipos(e.target.value)}
-          placeholder="Asesoria, Taller, Correccion"
+          placeholder="Asesoría, Taller, Corrección"
         />
       </div>
 
       <div className="field">
-        <label htmlFor="pdesc">Descripcion</label>
+        <label htmlFor="pdesc">Descripción</label>
         <textarea
           id="pdesc"
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
           maxLength={2000}
-          placeholder="Cuentales a los solicitantes como puedes ayudarlos."
+          placeholder="Cuéntales a los solicitantes cómo puedes ayudarlos."
         />
       </div>
 
@@ -163,13 +163,13 @@ export default function PerfilPrestadorForm({
           <select id="punidad" value={unidad} onChange={(e) => setUnidad(e.target.value)}>
             <option value="hora">Por hora</option>
             <option value="proyecto">Por proyecto</option>
-            <option value="dia">Por dia</option>
+            <option value="dia">Por día</option>
           </select>
         </div>
       </div>
 
       <div className="field">
-        <label htmlFor="pmetodos">Metodos de pago aceptados (separados por coma)</label>
+        <label htmlFor="pmetodos">Métodos de pago aceptados (separados por coma)</label>
         <input
           id="pmetodos"
           value={metodos}
@@ -186,7 +186,7 @@ export default function PerfilPrestadorForm({
         {disponibilidad.map((fila, indice) => (
           <div className="disp-row" key={indice}>
             <select
-              aria-label="Dia"
+              aria-label="Día"
               value={fila.dia}
               onChange={(e) => cambiarDisp(indice, "dia", Number(e.target.value))}
             >

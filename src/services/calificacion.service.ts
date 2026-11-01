@@ -8,6 +8,7 @@ import { PerfilPrestador } from "../models/PerfilPrestador";
 import { AppError } from "../middleware/errorHandler";
 import { withTransaction } from "../config/db";
 import { CalificarInput, ReporteInput } from "../utils/calificacion.validation";
+import { evaluarVerificacionSilenciosa } from "./verificacion.service";
 
 async function esParte(neg: any, userId: Types.ObjectId, session?: any): Promise<boolean> {
   if (neg.solicitante_id.toString() === userId.toString()) return true;
@@ -18,17 +19,17 @@ async function esParte(neg: any, userId: Types.ObjectId, session?: any): Promise
 }
 
 export async function calificar(calificadorId: Types.ObjectId, data: CalificarInput) {
-  return await withTransaction(async (s) => {
+  const created = await withTransaction(async (s) => {
     const neg: any = await Negociacion.findById(data.negociacion_id).session(s);
-    if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+    if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
     if (neg.estado !== "Completado") {
       throw new AppError(409, "INVALID_STATE", "Solo se califica negociaciones completadas");
     }
     if (!(await esParte(neg, calificadorId, s))) {
-      throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
+      throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociación");
     }
     if (await Calificacion.findOne({ negociacion_id: data.negociacion_id, calificador_id: calificadorId }).session(s)) {
-      throw new AppError(409, "ALREADY_RATED", "Ya calificaste esta negociacion");
+      throw new AppError(409, "ALREADY_RATED", "Ya calificaste esta negociación");
     }
     const esSolicitante = neg.solicitante_id.toString() === calificadorId.toString();
     let calificadoId: Types.ObjectId;
@@ -39,7 +40,7 @@ export async function calificar(calificadorId: Types.ObjectId, data: CalificarIn
     } else {
       calificadoId = neg.solicitante_id;
     }
-    const created = await Calificacion.create([{
+    const doc = await Calificacion.create([{
       negociacion_id: data.negociacion_id, calificador_id: calificadorId,
       calificado_id: calificadoId, puntaje: data.puntaje, comentario: data.comentario,
     }], { session: s });
@@ -54,10 +55,13 @@ export async function calificar(calificadorId: Types.ObjectId, data: CalificarIn
       }, { session: s });
     }
     await Notificacion.create([{
-      usuario_id: calificadoId, tipo: "calificacion", referencia_id: created[0]._id, leido: false,
+      usuario_id: calificadoId, tipo: "calificacion", referencia_id: doc[0]._id, leido: false,
     }], { session: s });
-    return created[0];
+    return doc[0];
   });
+
+  await evaluarVerificacionSilenciosa(created.calificado_id);
+  return created;
 }
 
 export async function misCalificaciones(userId: Types.ObjectId, page = 1, limit = 10) {
@@ -71,9 +75,9 @@ export async function misCalificaciones(userId: Types.ObjectId, page = 1, limit 
 
 export async function reportar(reportanteId: Types.ObjectId, data: ReporteInput) {
   const neg: any = await Negociacion.findById(data.negociacion_id);
-  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
   if (!(await esParte(neg, reportanteId))) {
-    throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
+    throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociación");
   }
   if (data.reportado_id === reportanteId.toString()) {
     throw new AppError(400, "SELF_REPORT", "No puedes reportarte a ti mismo");

@@ -1,7 +1,7 @@
 ﻿import { z } from "zod";
 import { objectId, optionalObjectId } from "./validators";
 
-const hora = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Hora invalida (HH:MM)");
+const hora = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Hora inválida (HH:MM)");
 
 const disponibilidadItem = z
   .object({
@@ -17,7 +17,7 @@ const disponibilidadItem = z
 const disponibilidadSchema = z.array(disponibilidadItem).optional();
 
 export const createPerfilSchema = z.object({
-  categorias_ids: z.array(objectId("ID de categoria invalido")).min(1),
+  categorias_ids: z.array(objectId("ID de categoría inválido")).min(1),
   tipos_actividad: z.array(z.string().trim().min(1)).optional(),
   descripcion: z.string().max(2000).optional(),
   tarifa_referencia: z.object({
@@ -44,7 +44,7 @@ export const updatePerfilSchema = z.object({
 });
 
 export const createTrabajoSchema = z.object({
-  categoria_id: objectId("ID de categoria invalido"),
+  categoria_id: objectId("ID de categoría inválido"),
   titulo: z.string().min(1).max(200).trim(),
   descripcion: z.string().min(1).max(5000).trim(),
   habilidades_usadas: z.array(z.string().trim()).optional(),
@@ -52,7 +52,7 @@ export const createTrabajoSchema = z.object({
 });
 
 export const updateTrabajoSchema = z.object({
-  categoria_id: optionalObjectId("ID de categoria invalido"),
+  categoria_id: optionalObjectId("ID de categoría inválido"),
   titulo: z.string().min(1).max(200).trim().optional(),
   descripcion: z.string().min(1).max(5000).trim().optional(),
   habilidades_usadas: z.array(z.string().trim()).optional(),

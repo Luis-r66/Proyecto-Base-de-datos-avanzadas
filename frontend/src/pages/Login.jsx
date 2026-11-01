@@ -39,13 +39,13 @@ export default function Login() {
   return (
     <main className="container container--narrow">
       <section className="card card--flat">
-        <h1 className="page-title">Iniciar sesion</h1>
+        <h1 className="page-title">Iniciar sesión</h1>
         <p className="muted">Accede a TutorLink con tu correo institucional.</p>
 
         <form className="form" onSubmit={enviar}>
           {registrado && (
             <p className="alert alert--ok" role="status">
-              Cuenta creada. Ya puedes iniciar sesion.
+              Cuenta creada. Ya puedes iniciar sesión.
             </p>
           )}
           {error && (
@@ -69,7 +69,7 @@ export default function Login() {
           </div>
 
           <div className="field">
-            <label htmlFor="password">Contrasena</label>
+            <label htmlFor="password">Contraseña</label>
             <input
               id="password"
               type="password"
@@ -87,11 +87,11 @@ export default function Login() {
         </form>
 
         <p className="muted hint">
-          No tienes cuenta? <Link to="/registro">Registrate</Link>
+          ¿No tienes cuenta? <Link to="/registro">Regístrate</Link>
         </p>
 
         <p className="muted hint">
-          Tienes un codigo? <Link to="/track">Consulta tu negociacion</Link> sin iniciar sesion.
+          ¿Tienes un código? <Link to="/track">Consulta tu negociación</Link> sin iniciar sesión.
         </p>
       </section>
     </main>

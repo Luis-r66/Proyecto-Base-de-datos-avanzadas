@@ -7,7 +7,7 @@ import { SearchInput, DestacadosInput } from "../utils/busqueda.validation";
 
 export async function searchPrestadores(userId: Types.ObjectId, data: SearchInput) {
   if (!(await Categoria.findById(data.categoria_id))) {
-    throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoria no encontrada");
+    throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoría no encontrada");
   }
   const skip = (data.page - 1) * data.limit;
   const match: any = { estado: "Activo", categorias_ids: new Types.ObjectId(data.categoria_id) };

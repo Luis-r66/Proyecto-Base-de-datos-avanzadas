@@ -58,13 +58,13 @@ export default function CalificarNegociacion({ negociacionId, onCalificada }) {
           value={comentario}
           onChange={(e) => setComentario(e.target.value)}
           maxLength={1000}
-          placeholder="Como fue tu experiencia?"
+          placeholder="¿Cómo fue tu experiencia?"
         />
       </div>
 
       <div className="form__actions">
         <button type="submit" className="btn btn--primary" disabled={enviando}>
-          {enviando ? "Enviando..." : "Enviar calificacion"}
+          {enviando ? "Enviando..." : "Enviar calificación"}
         </button>
       </div>
     </form>

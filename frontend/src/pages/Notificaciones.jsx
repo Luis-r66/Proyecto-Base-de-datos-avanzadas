@@ -11,7 +11,7 @@ import "../styles/cards.css";
 
 const LIMITE = 15;
 const VACIO = { data: [], pagination: { page: 1, totalPages: 1, total: 0 }, no_leidas: 0 };
-const TIPOS = { mensaje: "Mensaje", negociacion: "Negociacion", calificacion: "Calificacion" };
+const TIPOS = { mensaje: "Mensaje", negociacion: "Negociación", calificacion: "Calificación" };
 
 function destino(notificacion) {
   if (notificacion.tipo === "negociacion") return `/negociaciones/${notificacion.referencia_id}`;
@@ -84,7 +84,7 @@ export default function Notificaciones() {
         <div>
           <h1 className="page-title">Notificaciones</h1>
           <p className="muted">
-            {datos.no_leidas > 0 ? `${datos.no_leidas} sin leer` : "Todo al dia"}
+            {datos.no_leidas > 0 ? `${datos.no_leidas} sin leer` : "Todo al día"}
           </p>
         </div>
         {datos.no_leidas > 0 && (
@@ -94,7 +94,7 @@ export default function Notificaciones() {
             onClick={marcarTodas}
             disabled={marcando}
           >
-            {marcando ? "Marcando..." : "Marcar todas como leidas"}
+            {marcando ? "Marcando..." : "Marcar todas como leídas"}
           </button>
         )}
       </div>
@@ -118,10 +118,10 @@ export default function Notificaciones() {
                   <p className="notif__tipo">{TIPOS[n.tipo] || n.tipo}</p>
                   <p className="row__title">
                     {n.tipo === "mensaje"
-                      ? "Tienes un mensaje nuevo en una negociacion"
+                      ? "Tienes un mensaje nuevo en una negociación"
                       : n.tipo === "negociacion"
-                      ? "Tu negociacion cambio de estado"
-                      : "Recibiste una calificacion"}
+                      ? "Tu negociación cambio de estado"
+                      : "Recibiste una calificación"}
                   </p>
                   <p className="row__sub">{formatearFechaHora(n.fecha)}</p>
                 </div>
@@ -132,7 +132,7 @@ export default function Notificaciones() {
                       className="btn btn--ghost btn--sm"
                       onClick={() => marcarUna(n)}
                     >
-                      Marcar leida
+                      Marcar leída
                     </button>
                   )}
                   <button
@@ -160,7 +160,7 @@ export default function Notificaciones() {
             Anterior
           </button>
           <span className="muted">
-            Pagina {pagina} de {datos.pagination.totalPages}
+            Página {pagina} de {datos.pagination.totalPages}
           </span>
           <button
             type="button"

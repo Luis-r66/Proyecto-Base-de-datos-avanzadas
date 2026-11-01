@@ -50,7 +50,7 @@ export default function CategoriaForm({
 
   return (
     <form className="form card card--flat" onSubmit={enviar}>
-      <h3 className="form__title">{initialData ? "Editar categoria" : "Nueva categoria"}</h3>
+      <h3 className="form__title">{initialData ? "Editar categoría" : "Nueva categoría"}</h3>
 
       {(errorLocal || error) && (
         <p className="alert alert--error" role="alert">
@@ -66,7 +66,7 @@ export default function CategoriaForm({
           value={form.nombre}
           onChange={cambiar}
           maxLength={100}
-          placeholder="Ej. Calculo diferencial"
+          placeholder="Ej. Cálculo diferencial"
           required
         />
       </div>
@@ -79,20 +79,20 @@ export default function CategoriaForm({
           value={form.carrera_asociada}
           onChange={cambiar}
           maxLength={100}
-          placeholder="Ej. Ingenieria"
+          placeholder="Ej. Ingeniería"
           required
         />
       </div>
 
       <div className="field">
-        <label htmlFor="categoria_padre_id">Categoria padre (opcional)</label>
+        <label htmlFor="categoria_padre_id">Categoría padre (opcional)</label>
         <select
           id="categoria_padre_id"
           name="categoria_padre_id"
           value={form.categoria_padre_id}
           onChange={cambiar}
         >
-          <option value="">Sin categoria padre</option>
+          <option value="">Sin categoría padre</option>
           {padres.map((c) => (
             <option key={c._id} value={c._id}>
               {c.nombre} ({c.carrera_asociada})

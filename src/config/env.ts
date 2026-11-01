@@ -10,7 +10,7 @@ const boolFromEnv = (fallback: boolean) =>
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().default(3001),
-  MONGODB_URI: z.string().regex(/^mongodb(\+srv)?:\/\//, "MONGODB_URI invalida"),
+  MONGODB_URI: z.string().regex(/^mongodb(\+srv)?:\/\//, "MONGODB_URI inválida"),
   JWT_ACCESS_SECRET: z.string().min(32),
   JWT_REFRESH_SECRET: z.string().min(32),
   JWT_ACCESS_EXPIRY: z.string().default("15m"),
@@ -25,6 +25,9 @@ const envSchema = z.object({
   VERIFY_REQUIRE_PROVIDER_PROFILE: boolFromEnv(true),
   VERIFY_MIN_CATEGORIES: z.coerce.number().int().min(1).default(1),
   VERIFY_MIN_PORTFOLIO_WORKS: z.coerce.number().int().min(0).default(1),
+  VERIFY_MIN_COMPLETED_NEGOTIATIONS: z.coerce.number().int().min(1).default(1),
+  VERIFY_MIN_RATINGS: z.coerce.number().int().min(1).default(1),
+  VERIFY_MIN_RATING: z.coerce.number().min(0).max(5).default(4),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -35,7 +38,7 @@ export function getEnv(): Env {
   if (cached) return cached;
   const r = envSchema.safeParse(process.env);
   if (!r.success) {
-    console.error("Variables de entorno invalidas:", JSON.stringify(r.error.flatten().fieldErrors, null, 2));
+    console.error("Variables de entorno inválidas:", JSON.stringify(r.error.flatten().fieldErrors, null, 2));
     process.exit(1);
   }
   cached = r.data;

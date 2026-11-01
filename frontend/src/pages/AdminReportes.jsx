@@ -10,7 +10,7 @@ const VACIO = { data: [], pagination: { page: 1, totalPages: 1, total: 0 } };
 const ESTADOS = [
   ["", "Todos"],
   ["Abierto", "Abierto"],
-  ["En_revision", "En revision"],
+  ["En_revision", "En revisión"],
   ["Cerrado", "Cerrado"],
 ];
 const CATEGORIAS = {
@@ -19,7 +19,7 @@ const CATEGORIAS = {
   no_pago: "No pago",
   otro: "Otro",
 };
-const ETIQUETA_ESTADO = { Abierto: "Abierto", En_revision: "En revision", Cerrado: "Cerrado" };
+const ETIQUETA_ESTADO = { Abierto: "Abierto", En_revision: "En revisión", Cerrado: "Cerrado" };
 
 export default function AdminReportes() {
   const [params, setParams] = useSearchParams();
@@ -125,7 +125,7 @@ export default function AdminReportes() {
                     {r.reportado_id?.nombre || "Usuario"} ({r.reportado_id?.email || "-"})
                   </p>
                   <p className="row__sub">
-                    Negociacion {r.negociacion_id?.codigo_seguimiento || "-"} ·{" "}
+                    Negociación {r.negociacion_id?.codigo_seguimiento || "-"} ·{" "}
                     {formatearFechaHora(r.fecha_reporte)}
                   </p>
                 </div>
@@ -138,7 +138,7 @@ export default function AdminReportes() {
                     onChange={(e) => cambiarEstado(r, e.target.value)}
                   >
                     <option value="Abierto">Abierto</option>
-                    <option value="En_revision">En revision</option>
+                    <option value="En_revision">En revisión</option>
                     <option value="Cerrado">Cerrado</option>
                   </select>
                 </div>
@@ -159,7 +159,7 @@ export default function AdminReportes() {
             Anterior
           </button>
           <span className="muted">
-            Pagina {pagina} de {datos.pagination.totalPages}
+            Página {pagina} de {datos.pagination.totalPages}
           </span>
           <button
             type="button"

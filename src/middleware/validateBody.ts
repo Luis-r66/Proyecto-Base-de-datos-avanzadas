@@ -17,7 +17,7 @@ export function validate(schema: ZodTypeAny, source: ValidationSource = "body") 
       next();
     } catch (err) {
       if (err instanceof ZodError) {
-        throw new AppError(400, "VALIDATION_ERROR", "Datos de entrada invalidos", err.flatten().fieldErrors);
+        throw new AppError(400, "VALIDATION_ERROR", "Datos de entrada inválidos", err.flatten().fieldErrors);
       }
       throw err;
     }
@@ -32,7 +32,7 @@ export function validateBody(schema: ZodTypeAny) {
 export function isObjectIdOr400(value: unknown, name = "id"): Types.ObjectId {
   const s = String(value ?? "");
   if (!Types.ObjectId.isValid(s)) {
-    throw new AppError(400, "INVALID_ID", `${name} invalido`);
+    throw new AppError(400, "INVALID_ID", `${name} inválido`);
   }
   return new Types.ObjectId(s);
 }

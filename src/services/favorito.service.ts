@@ -19,7 +19,7 @@ export async function toggleFavorito(userId: Types.ObjectId, prestadorId: Types.
 export async function quitarFavorito(userId: Types.ObjectId, prestadorId: Types.ObjectId) {
   const res = await Favorito.deleteOne({ usuario_id: userId, prestador_id: prestadorId });
   if (res.deletedCount === 0) {
-    throw new AppError(404, "FAVORITO_NOT_FOUND", "Ese prestador no esta en tus favoritos");
+    throw new AppError(404, "FAVORITO_NOT_FOUND", "Ese prestador no está en tus favoritos");
   }
   return { removed: true };
 }

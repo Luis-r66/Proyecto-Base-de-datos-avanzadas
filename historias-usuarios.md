@@ -7,13 +7,13 @@ Coleccion Postman: postman_collection.json
 ## Cuentas de prueba (solo demo)
 
 - Prestador: santiago.morales@uniautonoma.edu.co
-  Roles: Solicitante + Prestador. Verificado automaticamente (2 categorias y 2 trabajos).
+  Roles: Solicitante + Prestador. Verificado automáticamente (perfil, portafolio, negociación completada y promedio 5).
 - Solicitante + Admin: luis.riascos@uniautonoma.edu.co
   Roles: Solicitante + Admin.
 - Prestador pendiente: andres.gomez@uniautonoma.edu.co
   Roles: Solicitante + Prestador. Perfil activo sin portafolio (pendiente de verificar).
 
-Las contrasenas no se publican. En produccion se rotaron y se entregan por
+Las contraseñas no se publican. En produccion se rotaron y se entregan por
 separado; en una base nueva sembrada con `npm run db:seed` se usan las
 credenciales definidas en `src/scripts/seedDemo.ts`.
 
@@ -36,10 +36,11 @@ lo cual tambien evidencia la validacion de email unico.
 
 ## Las 10 funcionalidades
 
-1. Historia: Como estudiante nuevo, quiero registrarme con mi correo,
-   para acceder a la plataforma.
+1. Historia: Como estudiante nuevo, quiero registrarme con mi correo
+   institucional, carrera y semestre, para acceder a la plataforma.
    Funcionalidad: Registro de usuario.
    Endpoint: POST /api/auth/register. Resultado: 201 + accessToken.
+   Reglas: correo @uniautonoma.edu.co, carrera obligatoria y semestre 1-10.
    Evidencia en Atlas: documento nuevo en usuarios, password con hash.
 
 2. Historia: Como estudiante, quiero publicar mi perfil de prestador,
@@ -137,9 +138,10 @@ lo cual tambien evidencia la validacion de email unico.
 - H016: Como usuario, quiero ver y gestionar notificaciones,
   para no perder eventos. (GET/PATCH /api/mensajes/notificaciones)
 - H017: Como administrador, quiero que los usuarios institucionales obtengan
-  la insignia de verificado, para dar confianza. La verificacion es automatica
-  (correo institucional, cuenta activa, perfil activo, categorias y trabajos de
-  portafolio) y el administrador puede forzarla o revocarla.
+  la insignia de verificado, para dar confianza. La verificación es automática
+  (correo institucional, cuenta activa, carrera y semestre 1-10, perfil activo,
+  categorías, portafolio, al menos una negociación completada como prestador y
+  promedio de calificación ≥ 4) y el administrador puede forzarla o revocarla.
   (PATCH /api/admin/usuarios/:id/verificar con verificado true, false o null)
 
 ## Reglas verificables en demo

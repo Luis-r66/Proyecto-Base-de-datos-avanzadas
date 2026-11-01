@@ -37,7 +37,7 @@ export default function MiPortafolio() {
   }, [cargar]);
 
   async function borrar(trabajo) {
-    if (!window.confirm(`¿Eliminar "${trabajo.titulo}"? Esta accion no se puede deshacer.`)) return;
+    if (!window.confirm(`¿Eliminar "${trabajo.titulo}"? Esta acción no se puede deshacer.`)) return;
     setEliminando(trabajo._id);
     setError("");
     try {
@@ -55,7 +55,7 @@ export default function MiPortafolio() {
     return (
       <main className="container">
         <section className="card">
-          <h1 className="page-title">Aun no eres prestador</h1>
+          <h1 className="page-title">Aún no eres prestador</h1>
           <p className="muted">Crea tu perfil de prestador para publicar trabajos en tu portafolio.</p>
           <p className="hint">
             <Link to="/convertirme-prestador" className="btn btn--primary">
@@ -94,7 +94,7 @@ export default function MiPortafolio() {
         <p className="muted">Cargando...</p>
       ) : trabajos.data.length === 0 ? (
         <p className="empty">
-          Tu portafolio esta vacio. Publica tu primer trabajo para que los solicitantes te conozcan.
+          Tu portafolio está vacío. Publica tu primer trabajo para que los solicitantes te conozcan.
         </p>
       ) : (
         <ul className="rows">
@@ -104,7 +104,7 @@ export default function MiPortafolio() {
                 <div>
                   <h3 className="row__title">{trabajo.titulo}</h3>
                   <p className="row__sub">
-                    {trabajo.categoria_id?.nombre || "Sin categoria"} ·{" "}
+                    {trabajo.categoria_id?.nombre || "Sin categoría"} ·{" "}
                     {formatearFecha(trabajo.fecha_realizado)}
                   </p>
                 </div>
@@ -141,7 +141,7 @@ export default function MiPortafolio() {
             Anterior
           </button>
           <span className="muted">
-            Pagina {pagina} de {trabajos.pagination.totalPages}
+            Página {pagina} de {trabajos.pagination.totalPages}
           </span>
           <button
             type="button"

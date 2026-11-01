@@ -70,7 +70,7 @@ export default function Header() {
           ) : (
             <>
               <NavLink to="/login" className="navlink">
-                Iniciar sesion
+                Iniciar sesión
               </NavLink>
               <NavLink to="/registro" className="navlink">
                 Registrarse

@@ -78,18 +78,18 @@ export default function Buscar() {
   return (
     <main className="container">
       <h1 className="page-title">Buscar prestadores</h1>
-      <p className="muted">Elige una categoria y encuentra estudiantes que ofrecen apoyo.</p>
+      <p className="muted">Elige una categoría y encuentra estudiantes que ofrecen apoyo.</p>
 
       <section className="card card--flat">
         {cargandoCategorias ? (
-          <p className="muted">Cargando categorias...</p>
+          <p className="muted">Cargando categorías...</p>
         ) : categorias.length === 0 ? (
-          <p className="empty">No hay categorias disponibles todavia.</p>
+          <p className="empty">No hay categorías disponibles todavia.</p>
         ) : (
           <form className="form" onSubmit={enviar}>
             <div className="grid-3">
               <div className="field">
-                <label htmlFor="bcategoria">Categoria</label>
+                <label htmlFor="bcategoria">Categoría</label>
                 <select
                   id="bcategoria"
                   value={categoriaId}
@@ -103,12 +103,12 @@ export default function Buscar() {
                 </select>
               </div>
               <div className="field">
-                <label htmlFor="btermino">Descripcion (opcional)</label>
+                <label htmlFor="btermino">Descripción (opcional)</label>
                 <input
                   id="btermino"
                   value={termino}
                   onChange={(e) => setTermino(e.target.value)}
-                  placeholder="calculo, tesis, excel..."
+                  placeholder="cálculo, tesis, excel..."
                   maxLength={100}
                 />
               </div>
@@ -123,7 +123,7 @@ export default function Buscar() {
                   }}
                 >
                   <option value="rating">Mejor calificados</option>
-                  <option value="reciente">Mas recientes</option>
+                  <option value="reciente">Más recientes</option>
                 </select>
               </div>
             </div>
@@ -146,7 +146,7 @@ export default function Buscar() {
         <p className="muted">Buscando prestadores...</p>
       ) : buscado && resultado.data.length === 0 ? (
         <p className="empty">
-          No encontramos prestadores para esta categoria. Prueba con otra o vuelve mas tarde.
+          No encontramos prestadores para esta categoría. Prueba con otra o vuelve más tarde.
         </p>
       ) : (
         <>
@@ -172,7 +172,7 @@ export default function Buscar() {
             Anterior
           </button>
           <span className="muted">
-            Pagina {pagina} de {resultado.pagination.totalPages}
+            Página {pagina} de {resultado.pagination.totalPages}
           </span>
           <button
             type="button"

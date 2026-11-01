@@ -77,7 +77,7 @@ export default function AdminCategorias() {
   }
 
   async function borrar(categoria) {
-    const confirmado = window.confirm(`Eliminar la categoria "${categoria.nombre}"?`);
+    const confirmado = window.confirm(`¿Eliminar la categoría "${categoria.nombre}"?`);
     if (!confirmado) return;
     try {
       await eliminarCategoria(categoria._id);
@@ -93,11 +93,11 @@ export default function AdminCategorias() {
     <main className="container">
       <div className="page-head">
         <div>
-          <h1 className="page-title">Categorias</h1>
+          <h1 className="page-title">Categorías</h1>
           <p className="muted">Administra las areas de apoyo de la plataforma.</p>
         </div>
         <button type="button" className="btn btn--primary" onClick={abrirCrear}>
-          Nueva categoria
+          Nueva categoría
         </button>
       </div>
 
@@ -119,10 +119,10 @@ export default function AdminCategorias() {
       )}
 
       {cargando ? (
-        <p className="muted">Cargando categorias...</p>
+        <p className="muted">Cargando categorías...</p>
       ) : categorias.data.length === 0 ? (
         <div className="empty">
-          <p>No hay categorias creadas todavia.</p>
+          <p>No hay categorías creadas todavia.</p>
         </div>
       ) : (
         <ul className="rows">
@@ -133,7 +133,7 @@ export default function AdminCategorias() {
                   <p className="row__title">{categoria.nombre}</p>
                   <p className="row__sub">
                     {categoria.carrera_asociada}
-                    {categoria.categoria_padre_id ? " - subcategoria" : ""}
+                    {categoria.categoria_padre_id ? " - subcategoría" : ""}
                   </p>
                 </div>
                 <div className="row__actions">
@@ -169,7 +169,7 @@ export default function AdminCategorias() {
             Anterior
           </button>
           <span className="muted">
-            Pagina {pagina} de {categorias.pagination.totalPages}
+            Página {pagina} de {categorias.pagination.totalPages}
           </span>
           <button
             type="button"

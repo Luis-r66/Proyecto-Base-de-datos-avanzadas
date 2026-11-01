@@ -2,7 +2,7 @@ export function getErrorMessage(error) {
   const data = error?.response?.data;
   if (data?.error) return data.error;
   if (data?.message) return data.message;
-  return error?.message || "Ocurrio un error inesperado";
+  return error?.message || "Ocurrió un error inesperado";
 }
 
 export function getErrorDetails(error) {

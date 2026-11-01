@@ -33,9 +33,9 @@ export default function Home() {
     <main className="container">
       <section className="card hero">
         <span className="chip">TutorLink</span>
-        <h1 className="page-title">Encuentra apoyo academico entre estudiantes</h1>
+        <h1 className="page-title">Encuentra apoyo académico entre estudiantes</h1>
         <p className="muted">
-          Conecta con companeros que ofrecen asesorias, talleres y trabajos. Negocia, conversa y
+          Conecta con compañeros que ofrecen asesorías, talleres y trabajos. Negocia, conversa y
           califica dentro de la plataforma.
         </p>
 
@@ -51,31 +51,31 @@ export default function Home() {
                 </Link>
               ) : (
                 <Link to="/convertirme-prestador" className="btn btn--ghost">
-                  Conviertete en prestador
+                  Conviértete en prestador
                 </Link>
               )}
               {isAdmin && (
                 <Link to="/admin/categorias" className="btn btn--ghost">
-                  Administrar categorias
+                  Administrar categorías
                 </Link>
               )}
               <p className="muted">
-                Sesion iniciada como <strong>{usuario.nombre}</strong>.
+                Sesión iniciada como <strong>{usuario.nombre}</strong>.
               </p>
               <Link to="/track" className="btn btn--ghost btn--sm">
-                Consultar por codigo
+                Consultar por código
               </Link>
             </>
           ) : (
             <>
               <Link to="/login" className="btn btn--primary">
-                Iniciar sesion
+                Iniciar sesión
               </Link>
               <Link to="/registro" className="btn btn--ghost">
                 Crear cuenta
               </Link>
               <Link to="/track" className="btn btn--ghost btn--sm">
-                Consultar por codigo
+                Consultar por código
               </Link>
             </>
           )}

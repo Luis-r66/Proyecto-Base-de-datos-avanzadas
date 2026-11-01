@@ -67,12 +67,12 @@ export default function ConvertirmePrestador() {
       <div className="page-head">
         <div>
           <h1 className="page-title">
-            {perfil ? "Editar perfil de prestador" : "Conviertete en prestador"}
+            {perfil ? "Editar perfil de prestador" : "Conviértete en prestador"}
           </h1>
           <p className="muted">
             {perfil
-              ? "Actualiza tus categorias, tarifas y disponibilidad."
-              : "Ofrece apoyo academico a otros estudiantes completando tu perfil."}
+              ? "Actualiza tus categorías, tarifas y disponibilidad."
+              : "Ofrece apoyo académico a otros estudiantes completando tu perfil."}
           </p>
         </div>
         {perfil && (
@@ -91,7 +91,7 @@ export default function ConvertirmePrestador() {
         {cargando ? (
           <p className="muted">Cargando...</p>
         ) : categorias.length === 0 ? (
-          <p className="empty">No hay categorias activas. Pide a un administrador que cree una.</p>
+          <p className="empty">No hay categorías activas. Pide a un administrador que cree una.</p>
         ) : (
           <PerfilPrestadorForm
             perfil={perfil}

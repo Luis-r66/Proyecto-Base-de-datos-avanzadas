@@ -2,7 +2,7 @@
 import { objectId } from "./validators";
 
 export const searchSchema = z.object({
-  categoria_id: objectId("ID de categoria invalido"),
+  categoria_id: objectId("ID de categoría inválido"),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(10),
   sort: z.enum(["rating", "reciente"]).default("rating"),

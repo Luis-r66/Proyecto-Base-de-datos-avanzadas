@@ -55,7 +55,7 @@ export default function EditarTrabajo() {
       <div className="page-head">
         <div>
           <h1 className="page-title">Editar trabajo</h1>
-          <p className="muted">Actualiza la informacion de este trabajo.</p>
+          <p className="muted">Actualiza la información de este trabajo.</p>
         </div>
         <Link to="/mi-portafolio" className="btn btn--ghost btn--sm">
           Volver

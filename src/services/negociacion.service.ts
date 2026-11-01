@@ -8,6 +8,7 @@ import { withTransaction } from "../config/db";
 import { generateTrackingCode } from "../utils/trackingCode";
 import { ACTIVE_NEGOTIATION_STATES } from "../config/indexes";
 import { IniciarInput, AcordarInput } from "../utils/negociacion.validation";
+import { evaluarVerificacionSilenciosa } from "./verificacion.service";
 
 const MAX_ACTIVAS = 5;
 
@@ -89,9 +90,9 @@ export async function iniciar(solicitanteId: Types.ObjectId, data: IniciarInput)
 export async function acordar(perfilId: Types.ObjectId, negId: Types.ObjectId, data: AcordarInput) {
   return await withTransaction(async (s) => {
     const neg: any = await Negociacion.findById(negId).session(s);
-    if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+    if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
     if (neg.prestador_id.toString() !== perfilId.toString()) {
-      throw new AppError(403, "FORBIDDEN", "No eres el prestador de esta negociacion");
+      throw new AppError(403, "FORBIDDEN", "No eres el prestador de esta negociación");
     }
     if (!["Propuesta", "Negociando"].includes(neg.estado)) {
       throw new AppError(409, "INVALID_STATE", "No se puede acordar en este estado");
@@ -101,7 +102,7 @@ export async function acordar(perfilId: Types.ObjectId, negId: Types.ObjectId, d
       estado: { $in: ["Acordado", "En_progreso"] },
     }).session(s);
     if (activas >= MAX_ACTIVAS) {
-      throw new AppError(409, "CAPACITY_EXCEEDED", `Maximo ${MAX_ACTIVAS} negociaciones activas`);
+      throw new AppError(409, "CAPACITY_EXCEEDED", `Máximo ${MAX_ACTIVAS} negociaciones activas`);
     }
     neg.estado = "Acordado";
     neg.precio_acordado = data.precio_acordado;
@@ -118,10 +119,10 @@ export async function acordar(perfilId: Types.ObjectId, negId: Types.ObjectId, d
 
 export async function marcarNegociando(negId: Types.ObjectId, userId: Types.ObjectId) {
   const neg: any = await Negociacion.findById(negId);
-  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
-  if (!(await esParte(neg, userId))) throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
+  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
+  if (!(await esParte(neg, userId))) throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociación");
   if (neg.estado !== "Propuesta") {
-    throw new AppError(409, "INVALID_STATE", "Solo una negociacion en Propuesta puede pasar a Negociando");
+    throw new AppError(409, "INVALID_STATE", "Solo una negociación en Propuesta puede pasar a Negociando");
   }
   neg.estado = "Negociando";
   await neg.save();
@@ -130,7 +131,7 @@ export async function marcarNegociando(negId: Types.ObjectId, userId: Types.Obje
 
 export async function aEnProgreso(negId: Types.ObjectId, userId: Types.ObjectId) {
   const neg: any = await Negociacion.findById(negId);
-  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
   if (!(await esParte(neg, userId))) throw new AppError(403, "FORBIDDEN", "No eres parte");
   if (neg.estado !== "Acordado") throw new AppError(409, "INVALID_STATE", "Solo Acordado pasa a En_progreso");
   neg.estado = "En_progreso";
@@ -140,20 +141,24 @@ export async function aEnProgreso(negId: Types.ObjectId, userId: Types.ObjectId)
 
 export async function completar(negId: Types.ObjectId, userId: Types.ObjectId) {
   const neg: any = await Negociacion.findById(negId);
-  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
   if (!(await esParte(neg, userId))) throw new AppError(403, "FORBIDDEN", "No eres parte");
   if (neg.estado !== "En_progreso") throw new AppError(409, "INVALID_STATE", "Solo En_progreso se completa");
   neg.estado = "Completado";
   await neg.save();
+
+  const perfil = await PerfilPrestador.findById(neg.prestador_id);
+  if (perfil) await evaluarVerificacionSilenciosa(perfil.usuario_id);
+
   return neg;
 }
 
 export async function cancelar(negId: Types.ObjectId, userId: Types.ObjectId) {
   const neg: any = await Negociacion.findById(negId);
-  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
   if (!(await esParte(neg, userId))) throw new AppError(403, "FORBIDDEN", "No eres parte");
   if (["Completado", "Cancelado"].includes(neg.estado)) {
-    throw new AppError(409, "INVALID_STATE", `No se puede cancelar una negociacion en estado ${neg.estado}`);
+    throw new AppError(409, "INVALID_STATE", `No se puede cancelar una negociación en estado ${neg.estado}`);
   }
   neg.estado = "Cancelado";
   await neg.save();
@@ -165,15 +170,15 @@ export async function porCodigo(codigo: string) {
     .populate("solicitante_id", "nombre foto_perfil_url verificado")
     .populate({ path: "prestador_id", populate: { path: "usuario_id", select: "nombre foto_perfil_url verificado" } })
     .populate("categoria_id", "nombre");
-  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
   return neg;
 }
 
 export async function porId(negId: Types.ObjectId, userId: Types.ObjectId) {
   const neg: any = await Negociacion.findById(negId);
-  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociacion no encontrada");
+  if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
   if (!(await esParte(neg, userId))) {
-    throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociacion");
+    throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociación");
   }
   const doc: any = await Negociacion.findById(negId)
     .populate("solicitante_id", "nombre foto_perfil_url verificado")
