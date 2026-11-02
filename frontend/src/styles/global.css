@@ -195,7 +195,7 @@ textarea {
   }
 }
 
-/* Shell con sesiÃ³n */
+/* Shell con sesión */
 .app-shell {
   min-height: 100vh;
 }
@@ -354,7 +354,7 @@ textarea {
   min-height: calc(100vh - var(--topbar-h));
 }
 
-/* MenÃº del avatar */
+/* Menú del avatar */
 .avatar-menu {
   position: relative;
 }
@@ -491,7 +491,7 @@ textarea {
   gap: 8px;
 }
 
-/* AutenticaciÃ³n */
+/* Autenticación */
 .auth-shell {
   position: relative;
   display: grid;
@@ -515,7 +515,7 @@ textarea {
   font-weight: 700;
 }
 
-/* NavegaciÃ³n mÃ³vil */
+/* Navegación móvil */
 .mobile-nav {
   display: none;
 }
@@ -899,7 +899,7 @@ textarea {
 }
 
 .trust-list li::before {
-  content: "âœ“";
+  content: "\2713";
   display: inline-grid;
   place-items: center;
   width: 20px;
