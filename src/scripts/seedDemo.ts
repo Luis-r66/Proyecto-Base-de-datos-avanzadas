@@ -1,4 +1,4 @@
-﻿import 'dotenv/config';
+import 'dotenv/config';
 import { connectDB, getConnection } from "../config/db";
 import { Usuario } from "../models/Usuario";
 import { Categoria } from "../models/Categoria";
@@ -35,10 +35,23 @@ async function ensureUser(nombre: string, email: string, password: string, tipo:
   return u;
 }
 
-async function ensureCat(nombre: string, carrera: string) {
-  let c = await Categoria.findOne({ nombre, carrera_asociada: carrera });
-  if (c) { console.log(`  ${nombre} (ya existe)`); return c; }
-  const r: any = await createCategoria({ nombre, carrera_asociada: carrera });
+async function ensureCat(nombre: string, carrera: string, padreId?: string) {
+  let c: any = await Categoria.findOne({ nombre, carrera_asociada: carrera });
+  if (c) {
+    if (padreId !== undefined && String(c.categoria_padre_id || "") !== padreId) {
+      c.categoria_padre_id = padreId || null;
+      await c.save();
+      console.log(`  ${nombre} (padre actualizado)`);
+    } else {
+      console.log(`  ${nombre} (ya existe)`);
+    }
+    return c;
+  }
+  const r: any = await createCategoria({
+    nombre,
+    carrera_asociada: carrera,
+    categoria_padre_id: padreId,
+  });
   console.log(`  ${nombre} creada`);
   return await Categoria.findById(r._id);
 }
@@ -47,8 +60,40 @@ async function main() {
   console.log(`Seed iniciando... (dominio institucional: ${DOMINIO})`);
   await connectDB();
 
-  const prog: any = await ensureCat("Fundamentos de Programación", "Ingeniería");
-  const ingles: any = await ensureCat("Inglés Académico", "Humanidades");
+  const pProgramacion: any = await ensureCat("Programación", "Ingeniería de Software y Computación");
+  const pMatematicas: any = await ensureCat("Matemáticas", "Ingeniería");
+  const pNaturales: any = await ensureCat("Ciencias Naturales", "Ingeniería");
+  const pIngenieria: any = await ensureCat("Ingeniería Aplicada", "Ingeniería");
+  const pHumanidades: any = await ensureCat("Humanidades e Idiomas", "Humanidades");
+  const pEconomicas: any = await ensureCat("Ciencias Económicas y Administrativas", "Administración de Empresas");
+  const pDerecho: any = await ensureCat("Derecho y Ciencias Sociales", "Derecho");
+  const pEducacion: any = await ensureCat("Educación y Deporte", "Licenciatura en Educación Infantil");
+  const pTransversal: any = await ensureCat("Investigación y Habilidades Transversales", "Todas");
+
+  const prog: any = await ensureCat("Fundamentos de Programación", "Ingeniería", pProgramacion._id.toString());
+  const bases: any = await ensureCat("Bases de Datos", "Ingeniería de Software y Computación", pProgramacion._id.toString());
+  const web: any = await ensureCat("Desarrollo Web y Móvil", "Ingeniería de Software y Computación", pProgramacion._id.toString());
+  const calculo1: any = await ensureCat("Cálculo I", "Ingeniería", pMatematicas._id.toString());
+  const calculo2: any = await ensureCat("Cálculo II", "Ingeniería", pMatematicas._id.toString());
+  const algebra: any = await ensureCat("Álgebra Lineal", "Ingeniería", pMatematicas._id.toString());
+  const estadistica: any = await ensureCat("Estadística y Probabilidad", "Ingeniería", pMatematicas._id.toString());
+  const datos: any = await ensureCat("Matemáticas para Ciencia de Datos", "Matemáticas Aplicadas en Ciencia de Datos", pMatematicas._id.toString());
+  const fisica: any = await ensureCat("Física", "Ingeniería", pNaturales._id.toString());
+  const quimica: any = await ensureCat("Química", "Ingeniería", pNaturales._id.toString());
+  const circuitos: any = await ensureCat("Circuitos y Electrónica", "Ingeniería Electrónica", pIngenieria._id.toString());
+  const energia: any = await ensureCat("Energía y Termodinámica", "Ingeniería Energética", pIngenieria._id.toString());
+  const estructuras: any = await ensureCat("Estructuras y Construcción", "Ingeniería Civil", pIngenieria._id.toString());
+  const ambiental: any = await ensureCat("Gestión Ambiental", "Ingeniería Ambiental y de Saneamiento", pIngenieria._id.toString());
+  const ingles: any = await ensureCat("Inglés Académico", "Humanidades", pHumanidades._id.toString());
+  const lectura: any = await ensureCat("Lectura y Escritura Académica", "Humanidades", pHumanidades._id.toString());
+  const contabilidad: any = await ensureCat("Contabilidad y Finanzas", "Contaduría Pública", pEconomicas._id.toString());
+  const administracion: any = await ensureCat("Administración y Emprendimiento", "Administración de Empresas", pEconomicas._id.toString());
+  const derecho: any = await ensureCat("Derecho y Ciencias Políticas", "Derecho", pDerecho._id.toString());
+  const gobierno: any = await ensureCat("Gobierno y Relaciones Internacionales", "Gobierno y Relaciones Internacionales", pDerecho._id.toString());
+  const pedagogia: any = await ensureCat("Pedagogía y Educación Infantil", "Licenciatura en Educación Infantil", pEducacion._id.toString());
+  const deporte: any = await ensureCat("Entrenamiento Deportivo", "Entrenamiento Deportivo", pEducacion._id.toString());
+  const metodologia: any = await ensureCat("Metodología de la Investigación", "Todas", pTransversal._id.toString());
+  const redaccion: any = await ensureCat("Redacción de Trabajos Académicos", "Todas", pTransversal._id.toString());
 
   // --- Cuentas ---
   const santiago = await ensureUser(
@@ -56,7 +101,7 @@ async function main() {
     `santiago.morales@${DOMINIO}`,
     "Santiago123",
     ["Solicitante"],
-    { carrera: "Ingeniería de Sistemas", semestre: 6, institucion: INSTITUCION_ACTUAL, habilidades: ["Python", "JavaScript"], biografia: "Estudiante de ingeniería, apoyo en programación e inglés." }
+    { carrera: "Ingeniería de Software y Computación", semestre: 6, institucion: INSTITUCION_ACTUAL, habilidades: ["Python", "JavaScript"], biografia: "Estudiante de ingeniería, apoyo en programación e inglés." }
   );
 
   const luis = await ensureUser(
@@ -64,7 +109,7 @@ async function main() {
     `luis.riascos@${DOMINIO}`,
     "Luis1234",
     ["Solicitante", "Admin"],
-    { carrera: "Ingeniería de Sistemas", semestre: 7, institucion: INSTITUCION_ACTUAL, biografia: "Estudiante y administrador de la plataforma." }
+    { carrera: "Ingeniería de Software y Computación", semestre: 7, institucion: INSTITUCION_ACTUAL, biografia: "Estudiante y administrador de la plataforma." }
   );
 
   const andres = await ensureUser(
@@ -72,17 +117,17 @@ async function main() {
     `andres.gomez@${DOMINIO}`,
     "Andres1234",
     ["Solicitante"],
-    { carrera: "Ingeniería Industrial", semestre: 4, institucion: INSTITUCION_ACTUAL }
+    { carrera: "Ingeniería Ambiental y de Saneamiento", semestre: 4, institucion: INSTITUCION_ACTUAL }
   );
 
   // --- Perfil prestador de Santiago (Activo) ---
   let perfilSantiago: any = await PerfilPrestador.findOne({ usuario_id: santiago._id });
   if (!perfilSantiago) {
     const r: any = await crearPerfil(santiago._id, {
-      categorias_ids: [prog._id.toString(), ingles._id.toString()],
+      categorias_ids: [prog._id.toString(), ingles._id.toString(), bases._id.toString(), calculo1._id.toString()],
       tipos_actividad: ["Tutorías", "Trabajos escritos"],
       descripcion: "Ayudo con programación, cálculo e inglés académico.",
-      tarifa_referencia: { monto: 150, moneda: "MXN", unidad: "hora" },
+      tarifa_referencia: { monto: 150, moneda: "COP", unidad: "hora" },
       metodos_pago_aceptados: ["Transferencia", "Efectivo"],
     });
     perfilSantiago = await PerfilPrestador.findById(r._id);
@@ -112,9 +157,9 @@ async function main() {
   let perfilAndres: any = await PerfilPrestador.findOne({ usuario_id: andres._id });
   if (!perfilAndres) {
     const r: any = await crearPerfil(andres._id, {
-      categorias_ids: [prog._id.toString()],
+      categorias_ids: [prog._id.toString(), estadistica._id.toString(), metodologia._id.toString()],
       descripcion: "Apoyo en fundamentos de programación.",
-      tarifa_referencia: { monto: 100, moneda: "MXN", unidad: "hora" },
+      tarifa_referencia: { monto: 100, moneda: "COP", unidad: "hora" },
     });
     perfilAndres = await PerfilPrestador.findById(r._id);
     console.log("  Perfil de Andrés creado (sin portafolio -> pendiente)");
@@ -204,3 +249,4 @@ async function main() {
 }
 
 main().catch((e) => { console.error("Error:", e.message); process.exit(1); });
+

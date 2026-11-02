@@ -22,7 +22,7 @@ export const createPerfilSchema = z.object({
   descripcion: z.string().max(2000).optional(),
   tarifa_referencia: z.object({
     monto: z.number().min(0),
-    moneda: z.string().length(3).default("MXN"),
+    moneda: z.literal("COP").default("COP"),
     unidad: z.enum(["hora", "proyecto", "dia"]).default("hora"),
   }).optional(),
   metodos_pago_aceptados: z.array(z.string().trim()).optional(),
@@ -35,7 +35,7 @@ export const updatePerfilSchema = z.object({
   descripcion: z.string().max(2000).optional(),
   tarifa_referencia: z.object({
     monto: z.number().min(0),
-    moneda: z.string().length(3),
+    moneda: z.literal("COP").default("COP"),
     unidad: z.enum(["hora", "proyecto", "dia"]),
   }).optional(),
   metodos_pago_aceptados: z.array(z.string().trim()).optional(),

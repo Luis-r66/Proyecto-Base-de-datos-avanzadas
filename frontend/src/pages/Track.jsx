@@ -142,12 +142,12 @@ export default function Track() {
             <dd>{neg.solicitante_id?.nombre || "-"}</dd>
             <dt>Prestador</dt>
             <dd>{neg.prestador_id?.usuario_id?.nombre || "-"}</dd>
-            <dt>Precio</dt>
+            <dt>Precio (COP)</dt>
             <dd>
               {neg.precio_acordado != null
-                ? `$${neg.precio_acordado} (acordado)`
+                ? `$${neg.precio_acordado} COP (acordado)`
                 : neg.precio_propuesto != null
-                ? `$${neg.precio_propuesto} (propuesto)`
+                ? `$${neg.precio_propuesto} COP (propuesto)`
                 : "Sin definir"}
             </dd>
             <dt>Forma de pago</dt>

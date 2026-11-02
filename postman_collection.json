@@ -87,7 +87,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Demo TutorLink\",\n  \"email\": \"demo{{$timestamp}}@uniautonoma.edu.co\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\",\n  \"carrera\": \"Ingeniería de Sistemas\",\n  \"semestre\": 5\n}"
+              "raw": "{\n  \"nombre\": \"Demo TutorLink\",\n  \"email\": \"demo{{$timestamp}}@uniautonoma.edu.co\",\n  \"password\": \"Password123\",\n  \"confirmPassword\": \"Password123\",\n  \"carrera\": \"Ingeniería de Software y Computación\",\n  \"semestre\": 5\n}"
             },
             "auth": {
               "type": "noauth"
@@ -385,7 +385,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categorias_ids\": [\n    \"{{cat_id}}\"\n  ],\n  \"tipos_actividad\": [\n    \"Tutorias\"\n  ],\n  \"descripcion\": \"Perfil de demostracion\",\n  \"tarifa_referencia\": {\n    \"monto\": 150,\n    \"moneda\": \"MXN\",\n    \"unidad\": \"hora\"\n  },\n  \"metodos_pago_aceptados\": [\n    \"Transferencia\"\n  ]\n}"
+              "raw": "{\n  \"categorias_ids\": [\n    \"{{cat_id}}\"\n  ],\n  \"tipos_actividad\": [\n    \"Tutorias\"\n  ],\n  \"descripcion\": \"Perfil de demostracion\",\n  \"tarifa_referencia\": {\n    \"monto\": 150,\n    \"moneda\": \"COP\",\n    \"unidad\": \"hora\"\n  },\n  \"metodos_pago_aceptados\": [\n    \"Transferencia\"\n  ]\n}"
             }
           },
           "event": [

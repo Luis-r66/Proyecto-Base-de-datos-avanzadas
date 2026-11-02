@@ -40,6 +40,8 @@ VITE_API_URL=http://localhost:3001/api
 - Layout con sidebar y topbar en escritorio; navegación inferior en móvil.
 - Inicio dinámico en `/`: landing para visitantes y dashboard híbrido para usuarios.
 - Avatar con iniciales y menú hacia `/mi-perfil`.
+- Registro con carrera oficial y semestre 1-10; precios en COP.
+- Categorías con jerarquía padre/subcategoría.
 
 ## Sprint 0
 

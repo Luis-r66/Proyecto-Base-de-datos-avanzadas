@@ -22,6 +22,14 @@ export default function SolicitarApoyo({ perfil, onCreada }) {
       setError("Selecciona una categoría y describe lo que necesitas.");
       return;
     }
+    if (precio === "" || Number(precio) < 0) {
+      setError("Indica el precio propuesto.");
+      return;
+    }
+    if (!formaPago.trim()) {
+      setError("Indica la forma de pago.");
+      return;
+    }
     setEnviando(true);
     setError("");
     setDetalles([]);
@@ -30,9 +38,9 @@ export default function SolicitarApoyo({ perfil, onCreada }) {
         prestador_id: perfil._id,
         categoria_id: categoriaId,
         descripcion_trabajo: descripcion.trim(),
+        precio_propuesto: Number(precio),
+        forma_pago: formaPago.trim(),
       };
-      if (precio !== "") payload.precio_propuesto = Number(precio);
-      if (formaPago.trim()) payload.forma_pago = formaPago.trim();
       const neg = await iniciarNegociacion(payload);
       onCreada(neg);
     } catch (err) {
@@ -88,7 +96,7 @@ export default function SolicitarApoyo({ perfil, onCreada }) {
 
       <div className="grid-2">
         <div className="field">
-          <label htmlFor="saprecio">Precio propuesto (opcional)</label>
+          <label htmlFor="saprecio">Precio propuesto (COP)</label>
           <input
             id="saprecio"
             type="number"
@@ -96,16 +104,18 @@ export default function SolicitarApoyo({ perfil, onCreada }) {
             step="0.01"
             value={precio}
             onChange={(e) => setPrecio(e.target.value)}
-            placeholder="100"
+            placeholder="150000"
+            required
           />
         </div>
         <div className="field">
-          <label htmlFor="sapago">Forma de pago (opcional)</label>
+          <label htmlFor="sapago">Forma de pago</label>
           <input
             id="sapago"
             value={formaPago}
             onChange={(e) => setFormaPago(e.target.value)}
             placeholder="Transferencia"
+            required
           />
         </div>
       </div>

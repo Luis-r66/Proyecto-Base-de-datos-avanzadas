@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { dominiosInstitucionales } from "../config/env";
+import { CARRERAS } from "../config/carreras";
 
 const dominioPrincipal = dominiosInstitucionales()[0] || "uniautonoma.edu.co";
 
@@ -24,7 +25,12 @@ export const registerSchema = z
       .regex(/[a-z]/, "Minúscula requerida")
       .regex(/[0-9]/, "Número requerido"),
     confirmPassword: z.string(),
-    carrera: z.string().min(1, "La carrera es obligatoria").max(100).trim(),
+    carrera: z
+      .string()
+      .trim()
+      .refine((valor) => CARRERAS.includes(valor), {
+        message: "Selecciona una carrera válida",
+      }),
     semestre: z
       .number()
       .int("El semestre debe ser un número entero")

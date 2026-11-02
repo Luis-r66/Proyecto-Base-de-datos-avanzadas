@@ -1,0 +1,15 @@
+export const CARRERAS = [
+  "Administración de Empresas",
+  "Contaduría Pública",
+  "Derecho",
+  "Entrenamiento Deportivo",
+  "Finanzas y Negocios Internacionales",
+  "Gobierno y Relaciones Internacionales",
+  "Ingeniería Ambiental y de Saneamiento",
+  "Ingeniería Civil",
+  "Ingeniería de Software y Computación",
+  "Ingeniería Electrónica",
+  "Ingeniería Energética",
+  "Licenciatura en Educación Infantil",
+  "Matemáticas Aplicadas en Ciencia de Datos",
+];

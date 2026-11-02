@@ -163,3 +163,22 @@ textarea:-webkit-autofill {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.category-groups {
+  display: grid;
+  gap: 16px;
+}
+
+.category-group {
+  display: grid;
+  gap: 8px;
+}
+
+.category-group h4 {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

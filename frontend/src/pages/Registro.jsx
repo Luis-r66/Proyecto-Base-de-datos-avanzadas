@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { listarCarreras } from "../api/carreras";
 import { getErrorMessage, getErrorDetails } from "../utils/errores";
 import "../styles/forms.css";
 
@@ -21,6 +22,25 @@ export default function Registro() {
   const [error, setError] = useState("");
   const [detalles, setDetalles] = useState([]);
   const [enviando, setEnviando] = useState(false);
+  const [carreras, setCarreras] = useState([]);
+  const [cargandoCarreras, setCargandoCarreras] = useState(true);
+
+  useEffect(() => {
+    let activo = true;
+    listarCarreras()
+      .then((datos) => {
+        if (activo) setCarreras(datos);
+      })
+      .catch((err) => {
+        if (activo) setError(getErrorMessage(err));
+      })
+      .finally(() => {
+        if (activo) setCargandoCarreras(false);
+      });
+    return () => {
+      activo = false;
+    };
+  }, []);
 
   if (usuario) return <Navigate to="/" replace />;
 
@@ -36,7 +56,7 @@ export default function Registro() {
     if (!PASSWORD_RE.test(form.password))
       return "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.";
     if (form.password !== form.confirmPassword) return "Las contraseñas no coinciden.";
-    if (!form.carrera.trim()) return "La carrera es obligatoria.";
+    if (!form.carrera) return "Selecciona tu carrera.";
     const semestre = Number(form.semestre);
     if (form.semestre === "" || !Number.isInteger(semestre) || semestre < 1 || semestre > 10)
       return "El semestre debe estar entre 1 y 10.";
@@ -144,14 +164,22 @@ export default function Registro() {
           <div className="grid-2">
             <div className="field">
               <label htmlFor="rcarrera">Carrera</label>
-              <input
+              <select
                 id="rcarrera"
                 value={form.carrera}
                 onChange={cambiar("carrera")}
-                maxLength={100}
-                placeholder="Ingeniería de Sistemas"
+                disabled={cargandoCarreras}
                 required
-              />
+              >
+                <option value="">
+                  {cargandoCarreras ? "Cargando carreras..." : "Selecciona tu carrera"}
+                </option>
+                {carreras.map((carrera) => (
+                  <option key={carrera} value={carrera}>
+                    {carrera}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="field">
               <label htmlFor="rsemestre">Semestre</label>

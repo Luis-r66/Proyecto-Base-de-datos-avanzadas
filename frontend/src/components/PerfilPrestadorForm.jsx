@@ -92,7 +92,7 @@ export default function PerfilPrestadorForm({
       estado,
     };
     if (monto !== "") {
-      payload.tarifa_referencia = { monto: Number(monto), moneda: "MXN", unidad };
+      payload.tarifa_referencia = { monto: Number(monto), moneda: "COP", unidad };
     }
     onSubmit(payload);
   }
@@ -107,20 +107,60 @@ export default function PerfilPrestadorForm({
 
       <fieldset className="fieldset">
         <legend>Categorías en las que ofreces apoyo</legend>
-        <div className="checks">
-          {categorias.map((c) => (
-            <label key={c._id} className="check">
-              <input
-                type="checkbox"
-                checked={seleccion.includes(c._id)}
-                onChange={() => alternarCategoria(c._id)}
-              />
-              <span>
-                {c.nombre}
-                {c.carrera_asociada ? ` · ${c.carrera_asociada}` : ""}
-              </span>
-            </label>
-          ))}
+        <div className="category-groups">
+          {categorias
+            .filter((categoria) => !categoria.categoria_padre_id)
+            .map((padre) => {
+              const hijas = categorias.filter(
+                (categoria) => categoria.categoria_padre_id === padre._id
+              );
+              if (hijas.length === 0) {
+                return (
+                  <label key={padre._id} className="check">
+                    <input
+                      type="checkbox"
+                      checked={seleccion.includes(padre._id)}
+                      onChange={() => alternarCategoria(padre._id)}
+                    />
+                    <span>{padre.nombre}</span>
+                  </label>
+                );
+              }
+              return (
+                <div key={padre._id} className="category-group">
+                  <h4>{padre.nombre}</h4>
+                  <div className="checks">
+                    {hijas.map((categoria) => (
+                      <label key={categoria._id} className="check">
+                        <input
+                          type="checkbox"
+                          checked={seleccion.includes(categoria._id)}
+                          onChange={() => alternarCategoria(categoria._id)}
+                        />
+                        <span>{categoria.nombre}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+          {categorias
+            .filter(
+              (categoria) =>
+                categoria.categoria_padre_id &&
+                !categorias.some((posiblePadre) => posiblePadre._id === categoria.categoria_padre_id)
+            )
+            .map((categoria) => (
+              <label key={categoria._id} className="check">
+                <input
+                  type="checkbox"
+                  checked={seleccion.includes(categoria._id)}
+                  onChange={() => alternarCategoria(categoria._id)}
+                />
+                <span>{categoria.nombre}</span>
+              </label>
+            ))}
         </div>
       </fieldset>
 
@@ -147,7 +187,7 @@ export default function PerfilPrestadorForm({
 
       <div className="grid-2">
         <div className="field">
-          <label htmlFor="pmonto">Tarifa de referencia (MXN)</label>
+          <label htmlFor="pmonto">Tarifa de referencia (COP)</label>
           <input
             id="pmonto"
             type="number"

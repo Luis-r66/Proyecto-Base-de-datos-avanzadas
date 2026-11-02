@@ -45,9 +45,17 @@
 | POST | `/api/auth/refresh` | Publico | `{refreshToken}` | 200 `{accessToken, refreshToken}` |
 | GET | `/api/auth/me` | Autenticado | - | 200 `{id, nombre, email, foto_perfil_url, carrera, semestre, institucion, biografia, habilidades, tipo_usuario, calificacion_promedio, total_calificaciones, verificado, estado_cuenta, fecha_registro}` |
 
-Reglas: email único e institucional (`@uniautonoma.edu.co`), carrera obligatoria, semestre obligatorio entre 1 y 10, password mínimo 8 con mayúscula, minúscula y número. La institución se guarda como `Corporación Universitaria Autónoma del Cauca`. Errores: 409 `EMAIL_EXISTS`, 401 `INVALID_CREDENTIALS`, 400 `VALIDATION_ERROR`.
+Reglas: email único e institucional (`@uniautonoma.edu.co`), carrera obligatoria del catálogo de `/api/carreras`, semestre obligatorio entre 1 y 10, password mínimo 8 con mayúscula, minúscula y número. La institución se guarda como `Corporación Universitaria Autónoma del Cauca`. Errores: 409 `EMAIL_EXISTS`, 401 `INVALID_CREDENTIALS`, 400 `VALIDATION_ERROR`.
 
 ---
+
+## Carreras
+
+| Metodo | Ruta | Rol | Respuesta |
+|--------|------|-----|-----------|
+| GET | `/api/carreras` | Publico | 200 `{data:[string]}` con los programas oficiales de pregrado |
+
+El registro solo acepta una carrera de este catálogo. Las carreras se actualizan con los programas oficiales de la Corporación Universitaria Autónoma del Cauca.
 
 ## Categorias
 
@@ -59,7 +67,9 @@ Reglas: email único e institucional (`@uniautonoma.edu.co`), carrera obligatori
 | PATCH | `/api/categorias/:id` | **Admin** | `{nombre?, carrera_asociada?, categoria_padre_id?}` | 200 categoria |
 | DELETE | `/api/categorias/:id` | **Admin** | - | 204 |
 
-Errores: 409 `CATEGORIA_EXISTS` (nombre unico por carrera), 409 `HAS_CHILDREN`, 409 `IN_USE`, 404 `PARENT_NOT_FOUND`.
+Errores: 409 `CATEGORIA_EXISTS` (nombre único por carrera), 409 `HAS_CHILDREN`, 409 `IN_USE`, 404 `PARENT_NOT_FOUND`.
+
+Las categorías pueden tener jerarquía padre/subcategoría mediante `categoria_padre_id`. La búsqueda por una categoría padre incluye automáticamente sus subcategorías.
 
 ---
 
@@ -67,7 +77,7 @@ Errores: 409 `CATEGORIA_EXISTS` (nombre unico por carrera), 409 `HAS_CHILDREN`, 
 
 | Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
 |--------|------|-----|----------------|-----------|
-| POST | `/api/perfiles/prestador` | Autenticado | `{categorias_ids[], tipos_actividad?, descripcion?, tarifa_referencia?{monto,moneda,unidad}, metodos_pago_aceptados?, disponibilidad?[{dia,hora_inicio,hora_fin}]}` | 201 perfil |
+| POST | `/api/perfiles/prestador` | Autenticado | `{categorias_ids[], tipos_actividad?, descripcion?, tarifa_referencia?{monto,moneda:"COP",unidad}, metodos_pago_aceptados?, disponibilidad?[{dia,hora_inicio,hora_fin}]}` | 201 perfil |
 | GET | `/api/perfiles/prestador` | Autenticado | - | 200 mi perfil (con categorias pobladas) |
 | PATCH | `/api/perfiles/prestador` | Autenticado | `{categorias_ids?, tipos_actividad?, descripcion?, tarifa_referencia?, metodos_pago_aceptados?, disponibilidad?, estado?}` | 200 perfil |
 | GET | `/api/perfiles/prestador/:id` | Publico | - | 200 `{_id, usuario:{nombre,carrera,semestre,institucion,verificado,calificacion_promedio,total_calificaciones,biografia,habilidades,foto_perfil_url}, categorias, disponibilidad, tarifa_referencia, metodos_pago_aceptados, descripcion, tipos_actividad, estado, fecha_creacion}` |
@@ -107,7 +117,7 @@ Cada item incluye `usuario.nombre`, `usuario.calificacion_promedio`, `usuario.to
 
 | Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
 |--------|------|-----|----------------|-----------|
-| POST | `/api/negociaciones` | Autenticado | `{prestador_id, categoria_id, descripcion_trabajo, precio_propuesto?, forma_pago?}` | 201 negociacion (estado `Propuesta`, `codigo_seguimiento`) |
+| POST | `/api/negociaciones` | Autenticado | `{prestador_id, categoria_id, descripcion_trabajo, precio_propuesto, forma_pago}` (precio y pago obligatorios, COP) | 201 negociacion (estado `Propuesta`, `codigo_seguimiento`) |
 | GET | `/api/negociaciones` | Autenticado | `?page&limit&estado` | 200 `{data, pagination}` con `rol_usuario` y `otra_parte:{_id,nombre,foto_perfil_url,verificado}` |
 | GET | `/api/negociaciones/mis` | Autenticado | `?page&limit&estado` | Igual que el anterior (alias conservado) |
 | GET | `/api/negociaciones/:id` | Participante | - | 200 negociacion populada + `rol_usuario` y `mi_calificacion` (null si aun no califico) |

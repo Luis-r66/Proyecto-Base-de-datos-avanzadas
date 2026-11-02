@@ -8,6 +8,7 @@ import { env } from "./config/env";
 
 import authRoutes from "./routes/auth.routes";
 import categoriasRoutes from "./routes/categorias.routes";
+import carrerasRoutes from "./routes/carreras.routes";
 import perfilRoutes from "./routes/perfil.routes";
 import negociacionRoutes from "./routes/negociacion.routes";
 import mensajeRoutes from "./routes/mensaje.routes";
@@ -35,6 +36,7 @@ app.get("/health", (_req: Request, res: Response) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/categorias", categoriasRoutes);
+app.use("/api/carreras", carrerasRoutes);
 app.use("/api/perfiles", perfilRoutes);
 app.use("/api/negociaciones", negociacionRoutes);
 app.use("/api/mensajes", mensajeRoutes);

@@ -37,7 +37,7 @@ const perfilSchema = new Schema<IPerfilPrestador>(
     descripcion: { type: String, maxlength: 2000 },
     tarifa_referencia: {
       monto: { type: Number, min: 0 },
-      moneda: { type: String, default: "MXN" },
+      moneda: { type: String, enum: ["COP"], default: "COP" },
       unidad: { type: String, enum: ["hora", "proyecto", "dia"], default: "hora" },
     },
     metodos_pago_aceptados: [{ type: String, trim: true }],

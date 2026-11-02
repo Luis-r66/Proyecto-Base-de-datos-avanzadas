@@ -22,6 +22,15 @@ export default function Buscar() {
   const [error, setError] = useState("");
   const [buscado, setBuscado] = useState(false);
 
+  const padres = categorias.filter((categoria) => !categoria.categoria_padre_id);
+  const hijasDe = (padreId) =>
+    categorias.filter((categoria) => categoria.categoria_padre_id === padreId);
+  const idsCategorias = new Set(categorias.map((categoria) => categoria._id));
+  const huerfanas = categorias.filter(
+    (categoria) =>
+      categoria.categoria_padre_id && !idsCategorias.has(categoria.categoria_padre_id)
+  );
+
   useEffect(() => {
     let activo = true;
     listarCategorias({ page: 1, limit: 50 })
@@ -95,9 +104,29 @@ export default function Buscar() {
                   value={categoriaId}
                   onChange={(e) => setCategoriaId(e.target.value)}
                 >
-                  {categorias.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.nombre}
+                  {padres.map((padre) => {
+                    const hijas = hijasDe(padre._id);
+                    if (hijas.length === 0) {
+                      return (
+                        <option key={padre._id} value={padre._id}>
+                          {padre.nombre}
+                        </option>
+                      );
+                    }
+                    return (
+                      <optgroup key={padre._id} label={padre.nombre}>
+                        <option value={padre._id}>{padre.nombre} (todas)</option>
+                        {hijas.map((categoria) => (
+                          <option key={categoria._id} value={categoria._id}>
+                            {categoria.nombre}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
+                  {huerfanas.map((categoria) => (
+                    <option key={categoria._id} value={categoria._id}>
+                      {categoria.nombre}
                     </option>
                   ))}
                 </select>

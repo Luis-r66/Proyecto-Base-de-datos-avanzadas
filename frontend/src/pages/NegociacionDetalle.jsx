@@ -172,8 +172,8 @@ export default function NegociacionDetalle() {
             {prestadorUsuario?.nombre} <VerificadoBadge verificado={prestadorUsuario?.verificado} />
           </dd>
 
-          <dt>{neg.precio_acordado != null ? "Precio acordado" : "Precio propuesto"}</dt>
-          <dd>{precio != null ? `$${precio}` : "Sin definir"}</dd>
+          <dt>{neg.precio_acordado != null ? "Precio acordado (COP)" : "Precio propuesto (COP)"}</dt>
+          <dd>{precio != null ? `$${precio} COP` : "Sin definir"}</dd>
 
           <dt>Forma de pago</dt>
           <dd>{neg.forma_pago || "Sin definir"}</dd>
@@ -241,7 +241,7 @@ export default function NegociacionDetalle() {
             <h2 className="form__title">Acordar condiciones</h2>
             <div className="grid-2">
               <div className="field">
-                <label htmlFor="nprecio">Precio acordado</label>
+                <label htmlFor="nprecio">Precio acordado (COP)</label>
                 <input
                   id="nprecio"
                   type="number"

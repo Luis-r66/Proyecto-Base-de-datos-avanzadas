@@ -5,12 +5,31 @@ import { Categoria } from "../models/Categoria";
 import { AppError } from "../middleware/errorHandler";
 import { SearchInput, DestacadosInput } from "../utils/busqueda.validation";
 
+async function idsConDescendientes(categoriaId: string): Promise<Types.ObjectId[]> {
+  const encontrados = new Set<string>([categoriaId]);
+  let pendientes = [new Types.ObjectId(categoriaId)];
+
+  while (pendientes.length > 0) {
+    const hijos = await Categoria.find({ categoria_padre_id: { $in: pendientes } })
+      .select("_id")
+      .lean();
+    const nuevos = hijos
+      .map((hijo) => (hijo as any)._id as Types.ObjectId)
+      .filter((id) => !encontrados.has(id.toString()));
+    nuevos.forEach((id) => encontrados.add(id.toString()));
+    pendientes = nuevos;
+  }
+
+  return Array.from(encontrados).map((id) => new Types.ObjectId(id));
+}
+
 export async function searchPrestadores(userId: Types.ObjectId, data: SearchInput) {
   if (!(await Categoria.findById(data.categoria_id))) {
     throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoría no encontrada");
   }
+  const idsCategoria = await idsConDescendientes(data.categoria_id);
   const skip = (data.page - 1) * data.limit;
-  const match: any = { estado: "Activo", categorias_ids: new Types.ObjectId(data.categoria_id) };
+  const match: any = { estado: "Activo", categorias_ids: { $in: idsCategoria } };
   if (data.termino) {
     match.$or = [
       { descripcion: { $regex: data.termino, $options: "i" } },
@@ -39,7 +58,7 @@ export async function searchPrestadores(userId: Types.ObjectId, data: SearchInpu
   ];
   const [results, total] = await Promise.all([
     PerfilPrestador.aggregate(pipeline),
-    PerfilPrestador.countDocuments({ estado: "Activo", categorias_ids: new Types.ObjectId(data.categoria_id) }),
+    PerfilPrestador.countDocuments({ estado: "Activo", categorias_ids: { $in: idsCategoria } }),
   ]);
   await Busqueda.create({
     usuario_id: userId, termino_busqueda: data.termino || "",
