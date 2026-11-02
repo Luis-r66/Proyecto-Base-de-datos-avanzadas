@@ -39,6 +39,18 @@ export default function PerfilPrestadorForm({
   const [estado, setEstado] = useState(perfil?.estado || "Activo");
 
   const mensaje = errorLocal || error;
+  const padres = categorias
+    .filter((categoria) => !categoria.categoria_padre_id)
+    .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  const hijasDe = (padreId) =>
+    categorias
+      .filter((categoria) => categoria.categoria_padre_id === padreId)
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  const huerfanas = categorias.filter(
+    (categoria) =>
+      categoria.categoria_padre_id &&
+      !categorias.some((posiblePadre) => posiblePadre._id === categoria.categoria_padre_id)
+  );
 
   function alternarCategoria(id) {
     setSeleccion((actual) =>
@@ -108,12 +120,8 @@ export default function PerfilPrestadorForm({
       <fieldset className="fieldset">
         <legend>Categorías en las que ofreces apoyo</legend>
         <div className="category-groups">
-          {categorias
-            .filter((categoria) => !categoria.categoria_padre_id)
-            .map((padre) => {
-              const hijas = categorias.filter(
-                (categoria) => categoria.categoria_padre_id === padre._id
-              );
+          {padres.map((padre) => {
+              const hijas = hijasDe(padre._id);
               if (hijas.length === 0) {
                 return (
                   <label key={padre._id} className="check">
@@ -145,13 +153,7 @@ export default function PerfilPrestadorForm({
               );
             })}
 
-          {categorias
-            .filter(
-              (categoria) =>
-                categoria.categoria_padre_id &&
-                !categorias.some((posiblePadre) => posiblePadre._id === categoria.categoria_padre_id)
-            )
-            .map((categoria) => (
+          {huerfanas.map((categoria) => (
               <label key={categoria._id} className="check">
                 <input
                   type="checkbox"

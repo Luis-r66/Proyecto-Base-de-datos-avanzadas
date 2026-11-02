@@ -22,9 +22,13 @@ export default function Buscar() {
   const [error, setError] = useState("");
   const [buscado, setBuscado] = useState(false);
 
-  const padres = categorias.filter((categoria) => !categoria.categoria_padre_id);
+  const padres = categorias
+    .filter((categoria) => !categoria.categoria_padre_id)
+    .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   const hijasDe = (padreId) =>
-    categorias.filter((categoria) => categoria.categoria_padre_id === padreId);
+    categorias
+      .filter((categoria) => categoria.categoria_padre_id === padreId)
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   const idsCategorias = new Set(categorias.map((categoria) => categoria._id));
   const huerfanas = categorias.filter(
     (categoria) =>
