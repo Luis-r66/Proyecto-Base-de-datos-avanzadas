@@ -141,6 +141,31 @@ Propuesta --negociar--> Negociando --acordar--> Acordado --en-progreso--> En_pro
 
 ---
 
+## Conversaciones
+
+| Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
+|--------|------|-----|----------------|-----------|
+| POST | `/api/conversaciones` | Autenticado | `{prestador_id}` | 201 conversación (idempotente por par) |
+| GET | `/api/conversaciones` | Autenticado | `?page&limit` | 200 `{data, pagination}` con otra parte, prestador, categorías y no leídos |
+| GET | `/api/conversaciones/:id` | Participante | - | 200 detalle de conversación |
+| PATCH | `/api/conversaciones/:id/leer` | Participante | - | 200 |
+| PATCH | `/api/conversaciones/leer-todas` | Autenticado | - | 200 `{count}` |
+| GET | `/api/conversaciones/:id/mensajes` | Participante | `?page&limit` | 200 `{data, pagination}` |
+| POST | `/api/conversaciones/:id/mensajes` | Participante | `{contenido}` o `{mensaje_predeterminado_id}` | 201 mensaje |
+| GET | `/api/conversaciones/:id/ofertas` | Participante | - | 200 `[oferta]` |
+| POST | `/api/conversaciones/:id/ofertas` | Participante | `{categoria_id, descripcion, monto, forma_pago, plazo_entrega?}` | 201 oferta |
+
+## Ofertas
+
+| Metodo | Ruta | Rol | Respuesta |
+|--------|------|-----|-----------|
+| PATCH | `/api/ofertas/:id/aceptar` | Receptor | 200 `{oferta, negociacion}`; crea el contrato en estado `Acordado` |
+| PATCH | `/api/ofertas/:id/rechazar` | Receptor | 200 oferta `rechazada` |
+| PATCH | `/api/ofertas/:id/retirar` | Emisor | 200 oferta `retirada` |
+| PATCH | `/api/ofertas/:id/contraoferta` | Receptor | 201 nueva oferta enlazada |
+
+Reglas: precio y forma de pago obligatorios; monto en COP; una negociación activa por par; aceptar una oferta rechaza las demás ofertas pendientes de la conversación.
+
 ## Mensajes y notificaciones
 
 | Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
@@ -148,9 +173,13 @@ Propuesta --negociar--> Negociando --acordar--> Acordado --en-progreso--> En_pro
 | POST | `/api/mensajes/negociaciones/:id/mensajes` | Participante | `{contenido}` o `{mensaje_predeterminado_id}` | 201 `{_id, negociacion_id, remitente_id, contenido, es_predeterminado, leido, fecha_envio}` + notificacion |
 | GET | `/api/mensajes/negociaciones/:id/mensajes` | Participante | `?page&limit` | 200 `{data, pagination}` orden cronologico |
 | GET | `/api/mensajes/mensajes-predeterminados` | Autenticado | `?tipo_usuario=Solicitante\|Prestador&categoria` | 200 `{data:[{_id,texto,tipo_usuario,categoria}]}` |
-| GET | `/api/mensajes/notificaciones` | Autenticado | `?leido=true\|false&page&limit` | 200 `{data:[{_id,tipo,referencia_id,leido,fecha}], pagination, no_leidas}` |
+| GET | `/api/mensajes/notificaciones` | Autenticado | `?leido=true\|false&page&limit` | 200 `{data:[{_id,tipo,referencia_id,conversacion_id,leido,fecha}], pagination, no_leidas}` (tipo `mensaje`, `oferta`, `negociacion` o `calificacion`) |
 | PATCH | `/api/mensajes/notificaciones/:id/leer` | Autenticado | - | 200 `{message}` |
 | PATCH | `/api/mensajes/notificaciones/leer-todas` | Autenticado | - | 200 `{count}` |
+
+### Socket.IO
+
+Conexión con `auth.token` (access token). Eventos de servidor: `mensaje:nuevo`, `oferta:nueva`, `oferta:actualizada`. Eventos de cliente: `conversacion:unirse`, `conversacion:salir`, `typing`. Las salas son `usuario:<id>` y `conversacion:<id>`.
 
 ---
 

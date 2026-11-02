@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import {
   HomeIcon,
   SearchIcon,
+  ChatIcon,
   BriefcaseIcon,
   HeartIcon,
   UserIcon,
@@ -13,6 +14,7 @@ import {
 const PRINCIPAL = [
   { to: "/", label: "Inicio", Icono: HomeIcon, end: true },
   { to: "/buscar", label: "Buscar", Icono: SearchIcon },
+  { to: "/mensajes", label: "Mensajes", Icono: ChatIcon },
   { to: "/negociaciones", label: "Negociaciones", Icono: BriefcaseIcon },
   { to: "/favoritos", label: "Favoritos", Icono: HeartIcon },
   { to: "/mi-perfil", label: "Mi perfil", Icono: UserIcon },

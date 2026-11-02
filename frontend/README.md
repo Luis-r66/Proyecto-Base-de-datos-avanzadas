@@ -43,6 +43,13 @@ VITE_API_URL=http://localhost:3001/api
 - Registro con carrera oficial y semestre 1-10; precios en COP.
 - Categorías con jerarquía padre/subcategoría.
 
+## Chat y ofertas
+
+- `/mensajes`: bandeja de conversaciones con no leídos.
+- `/mensajes/:id`: chat en tiempo real con Socket.IO, ofertas, contraofertas, aceptar/rechazar y acceso al contrato.
+- El perfil del prestador abre el chat con el botón **“Chatear”**.
+- Aceptar una oferta crea la negociación con precio y forma de pago en COP.
+
 ## Sprint 0
 
 - Login con JWT y refresh silencioso.

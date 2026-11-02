@@ -7,6 +7,8 @@ export interface INegociacion extends Document {
   codigo_seguimiento: string;
   solicitante_id: Types.ObjectId;
   prestador_id: Types.ObjectId;
+  conversacion_id?: Types.ObjectId;
+  oferta_id?: Types.ObjectId;
   categoria_id: Types.ObjectId;
   descripcion_trabajo: string;
   precio_propuesto?: number;
@@ -23,6 +25,8 @@ const s = new Schema<INegociacion>(
     codigo_seguimiento: { type: String, required: true, unique: true, trim: true },
     solicitante_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
     prestador_id: { type: Schema.Types.ObjectId, ref: "PerfilPrestador", required: true },
+    conversacion_id: { type: Schema.Types.ObjectId, ref: "Conversacion" },
+    oferta_id: { type: Schema.Types.ObjectId, ref: "Oferta" },
     categoria_id: { type: Schema.Types.ObjectId, ref: "Categoria", required: true },
     descripcion_trabajo: { type: String, required: true, trim: true, maxlength: 5000 },
     precio_propuesto: { type: Number, min: 0 },

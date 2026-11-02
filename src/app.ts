@@ -2,6 +2,8 @@
 import "express-async-errors";
 import express, { Request, Response } from "express";
 import cors from "cors";
+import http from "http";
+import { Server } from "socket.io";
 import { connectDB } from "./config/db";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { env } from "./config/env";
@@ -17,6 +19,10 @@ import busquedaRoutes from "./routes/busqueda.routes";
 import favoritoRoutes from "./routes/favorito.routes";
 import reportesRoutes from "./routes/reportes.routes";
 import adminRoutes from "./routes/admin.routes";
+import conversacionRoutes from "./routes/conversacion.routes";
+import ofertaRoutes from "./routes/oferta.routes";
+import { setSocketServer } from "./config/socket";
+import { setupSocket } from "./socket";
 
 const app = express();
 
@@ -43,6 +49,8 @@ app.use("/api/mensajes", mensajeRoutes);
 app.use("/api/busquedas", busquedaRoutes);
 app.use("/api/reportes", reportesRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/conversaciones", conversacionRoutes);
+app.use("/api/ofertas", ofertaRoutes);
 app.use("/api", calificacionRoutes);
 app.use("/api", favoritoRoutes);
 
@@ -52,7 +60,16 @@ app.use(errorHandler);
 async function start() {
   try {
     await connectDB();
-    const server = app.listen(env.PORT, "0.0.0.0", () => {
+    const server = http.createServer(app);
+    const io = new Server(server, {
+      cors: {
+        origin: allowedOrigins.includes("*") ? true : allowedOrigins,
+        credentials: true,
+      },
+    });
+    setSocketServer(io);
+    setupSocket(io);
+    server.listen(env.PORT, "0.0.0.0", () => {
       console.log("Servidor en http://localhost:" + env.PORT);
     });
     server.on("error", (e) => {

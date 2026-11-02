@@ -85,3 +85,114 @@
     width: 100%;
   }
 }
+
+.chat-page__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.chat-page__identidad {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-page__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.chat-page__chat {
+  min-width: 0;
+}
+
+.chat-page__side {
+  display: grid;
+  gap: 14px;
+  position: sticky;
+  top: calc(var(--topbar-h) + 20px);
+}
+
+.offer-list {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 22px;
+}
+
+.offer-card {
+  display: grid;
+  gap: 7px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.offer-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.offer-card__desc {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.offer-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 4px;
+}
+
+.offer-form__title {
+  margin-top: 10px;
+}
+
+.conversation-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+}
+
+.conversation-row:hover {
+  color: var(--text);
+}
+
+.conversation-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.conversation-row__badge {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--primary-strong);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+  .chat-page__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-page__side {
+    position: static;
+  }
+}

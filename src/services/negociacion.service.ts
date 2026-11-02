@@ -9,6 +9,7 @@ import { generateTrackingCode } from "../utils/trackingCode";
 import { ACTIVE_NEGOTIATION_STATES } from "../config/indexes";
 import { IniciarInput, AcordarInput } from "../utils/negociacion.validation";
 import { evaluarVerificacionSilenciosa } from "./verificacion.service";
+import { crearOConseguirConversacion } from "./conversacion.service";
 
 const MAX_ACTIVAS = 5;
 
@@ -54,6 +55,10 @@ export async function iniciar(solicitanteId: Types.ObjectId, data: IniciarInput)
     );
   }
 
+  const conversacion = await crearOConseguirConversacion(
+    solicitanteId,
+    new Types.ObjectId(data.prestador_id)
+  );
   const codigo = await generateTrackingCode();
   let neg: any;
   try {
@@ -61,6 +66,7 @@ export async function iniciar(solicitanteId: Types.ObjectId, data: IniciarInput)
       codigo_seguimiento: codigo,
       solicitante_id: solicitanteId,
       prestador_id: data.prestador_id,
+      conversacion_id: conversacion._id,
       categoria_id: data.categoria_id,
       descripcion_trabajo: data.descripcion_trabajo,
       precio_propuesto: data.precio_propuesto,
@@ -82,6 +88,7 @@ export async function iniciar(solicitanteId: Types.ObjectId, data: IniciarInput)
     usuario_id: prestadorUserId,
     tipo: "negociacion",
     referencia_id: neg._id,
+    conversacion_id: conversacion._id,
     leido: false,
   });
   return neg;

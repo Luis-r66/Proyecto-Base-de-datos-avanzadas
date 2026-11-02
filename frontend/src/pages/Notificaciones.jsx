@@ -11,9 +11,17 @@ import "../styles/cards.css";
 
 const LIMITE = 15;
 const VACIO = { data: [], pagination: { page: 1, totalPages: 1, total: 0 }, no_leidas: 0 };
-const TIPOS = { mensaje: "Mensaje", negociacion: "Negociación", calificacion: "Calificación" };
+const TIPOS = {
+  mensaje: "Mensaje",
+  negociacion: "Negociación",
+  calificacion: "Calificación",
+  oferta: "Oferta",
+};
 
 function destino(notificacion) {
+  if (notificacion.conversacion_id && ["mensaje", "oferta"].includes(notificacion.tipo)) {
+    return `/mensajes/${notificacion.conversacion_id}`;
+  }
   if (notificacion.tipo === "negociacion") return `/negociaciones/${notificacion.referencia_id}`;
   return "/negociaciones";
 }
@@ -118,9 +126,11 @@ export default function Notificaciones() {
                   <p className="notif__tipo">{TIPOS[n.tipo] || n.tipo}</p>
                   <p className="row__title">
                     {n.tipo === "mensaje"
-                      ? "Tienes un mensaje nuevo en una negociación"
+                      ? "Tienes un mensaje nuevo en una conversación"
                       : n.tipo === "negociacion"
-                      ? "Tu negociación cambio de estado"
+                      ? "Tu negociación cambió de estado"
+                      : n.tipo === "oferta"
+                      ? "Tienes una oferta o respuesta nueva"
                       : "Recibiste una calificación"}
                   </p>
                   <p className="row__sub">{formatearFechaHora(n.fecha)}</p>

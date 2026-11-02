@@ -4,6 +4,7 @@ import Estrellas from "../components/Estrellas";
 import EstadoBadge from "../components/EstadoBadge";
 import VerificadoBadge from "../components/VerificadoBadge";
 import ChatNegociacion from "../components/ChatNegociacion";
+import ChatConversacion from "../components/ChatConversacion";
 import CalificarNegociacion from "../components/CalificarNegociacion";
 import ReportarNegociacion from "../components/ReportarNegociacion";
 import {
@@ -301,7 +302,11 @@ export default function NegociacionDetalle() {
       )}
 
       <section className="section">
-        <ChatNegociacion negociacionId={neg._id} rol={neg.rol_usuario} />
+        {neg.conversacion_id ? (
+          <ChatConversacion conversacionId={neg.conversacion_id} rol={neg.rol_usuario} />
+        ) : (
+          <ChatNegociacion negociacionId={neg._id} rol={neg.rol_usuario} />
+        )}
       </section>
 
       {otro && (

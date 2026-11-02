@@ -42,6 +42,16 @@ export const indexDefinitions: Record<string, IndexDef[]> = {
   ],
   mensajes: [
     { key: { negociacion_id: 1 }, name: "idx_mensajes_negociacion" },
+    { key: { conversacion_id: 1, fecha_envio: 1 }, name: "idx_mensajes_conversacion" },
+  ],
+  conversaciones: [
+    { key: { clave_par: 1 }, unique: true, name: "idx_conversaciones_clave_unique" },
+    { key: { solicitante_id: 1, ultima_actividad: -1 }, name: "idx_conversaciones_solicitante" },
+    { key: { prestador_usuario_id: 1, ultima_actividad: -1 }, name: "idx_conversaciones_prestador" },
+  ],
+  ofertas: [
+    { key: { conversacion_id: 1, fecha_creacion: -1 }, name: "idx_ofertas_conversacion" },
+    { key: { receptor_id: 1, estado: 1 }, name: "idx_ofertas_receptor_estado" },
   ],
   busquedas: [
     { key: { usuario_id: 1 }, name: "idx_busquedas_usuario" },

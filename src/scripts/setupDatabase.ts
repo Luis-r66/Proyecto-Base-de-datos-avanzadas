@@ -73,6 +73,7 @@ const COLLECTIONS = [
   "usuarios", "perfiles_prestador", "trabajos_portafolio", "categorias",
   "negociaciones", "mensajes", "mensajes_predeterminados", "busquedas",
   "calificaciones", "favoritos", "notificaciones", "reportes",
+  "conversaciones", "ofertas",
 ];
 
 const MENSAJES = [

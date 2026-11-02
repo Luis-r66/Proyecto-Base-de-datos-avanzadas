@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import Estrellas from "../components/Estrellas";
 import VerificadoBadge from "../components/VerificadoBadge";
-import SolicitarApoyo from "../components/SolicitarApoyo";
+import { crearConversacion } from "../api/conversaciones";
 import { obtenerPerfilPublico, obtenerPortafolioPublico } from "../api/perfiles";
 import { calificacionesDePrestador } from "../api/calificaciones";
 import { listarFavoritos, toggleFavorito, quitarFavorito } from "../api/favoritos";
@@ -25,6 +25,8 @@ export default function PrestadorPublico() {
   const [esFavorito, setEsFavorito] = useState(false);
   const [favCargando, setFavCargando] = useState(false);
   const [favError, setFavError] = useState("");
+  const [chatError, setChatError] = useState("");
+  const [creandoChat, setCreandoChat] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
@@ -86,6 +88,19 @@ export default function PrestadorPublico() {
       activo = false;
     };
   }, [perfil, sesion]);
+
+  async function abrirChat() {
+    setCreandoChat(true);
+    setChatError("");
+    try {
+      const conversacion = await crearConversacion(perfil._id);
+      navigate(`/mensajes/${conversacion._id}`);
+    } catch (err) {
+      setChatError(getErrorMessage(err));
+    } finally {
+      setCreandoChat(false);
+    }
+  }
 
   async function alternarFavorito() {
     if (!sesion) {
@@ -227,14 +242,26 @@ export default function PrestadorPublico() {
       {sesion && !esPropio && (
         <section className="section">
           <div className="card card--flat">
-            <h2 className="section__title">Solicitar apoyo</h2>
+            <h2 className="section__title">¿Necesitas apoyo?</h2>
             <p className="muted">
-              Cuéntale qué necesitas. Se creará una negociación y podrán conversar.
+              Conversa con {u.nombre}, envía una oferta con precio y forma de pago, y acuerden
+              las condiciones dentro del chat.
             </p>
-            <SolicitarApoyo
-              perfil={perfil}
-              onCreada={(neg) => navigate(`/negociaciones/${neg._id}`)}
-            />
+            {chatError && (
+              <p className="alert alert--error" role="alert">
+                {chatError}
+              </p>
+            )}
+            <div className="form__actions">
+              <button
+                type="button"
+                className="btn btn--primary"
+                disabled={creandoChat}
+                onClick={abrirChat}
+              >
+                {creandoChat ? "Abriendo chat..." : `Chatear con ${u.nombre}`}
+              </button>
+            </div>
           </div>
         </section>
       )}

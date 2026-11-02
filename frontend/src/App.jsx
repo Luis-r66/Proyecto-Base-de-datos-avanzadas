@@ -17,6 +17,8 @@ import Negociaciones from "./pages/Negociaciones";
 import NegociacionDetalle from "./pages/NegociacionDetalle";
 import Favoritos from "./pages/Favoritos";
 import Notificaciones from "./pages/Notificaciones";
+import Mensajes from "./pages/Mensajes";
+import ConversacionDetalle from "./pages/ConversacionDetalle";
 import Track from "./pages/Track";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminVerificacion from "./pages/AdminVerificacion";
@@ -98,6 +100,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Notificaciones />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mensajes"
+            element={
+              <ProtectedRoute>
+                <Mensajes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mensajes/:id"
+            element={
+              <ProtectedRoute>
+                <ConversacionDetalle />
               </ProtectedRoute>
             }
           />

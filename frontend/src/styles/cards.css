@@ -470,3 +470,25 @@
     justify-content: space-between;
   }
 }
+
+.estado--pendiente {
+  background: var(--primary-weak);
+  color: #8ec1ff;
+}
+
+.estado--contraoferta {
+  background: var(--warning-weak);
+  color: #f7cf6b;
+}
+
+.estado--aceptada {
+  background: var(--success-weak);
+  color: #86efac;
+}
+
+.estado--rechazada,
+.estado--retirada,
+.estado--expirada {
+  background: var(--danger-weak);
+  color: #ff9d95;
+}

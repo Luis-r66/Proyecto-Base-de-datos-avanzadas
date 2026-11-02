@@ -1,11 +1,11 @@
 import { NavLink } from "react-router-dom";
-import { HomeIcon, SearchIcon, BriefcaseIcon, HeartIcon, UserIcon } from "./Icons";
+import { HomeIcon, SearchIcon, ChatIcon, BriefcaseIcon, UserIcon } from "./Icons";
 
 const ITEMS = [
   { to: "/", label: "Inicio", Icono: HomeIcon, end: true },
   { to: "/buscar", label: "Buscar", Icono: SearchIcon },
+  { to: "/mensajes", label: "Mensajes", Icono: ChatIcon },
   { to: "/negociaciones", label: "Negocios", Icono: BriefcaseIcon },
-  { to: "/favoritos", label: "Favoritos", Icono: HeartIcon },
   { to: "/mi-perfil", label: "Perfil", Icono: UserIcon },
 ];
 
