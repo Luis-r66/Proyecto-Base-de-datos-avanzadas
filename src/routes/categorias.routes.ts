@@ -6,14 +6,12 @@ import { createCategoriaSchema, updateCategoriaSchema } from "../utils/categoria
 
 const router = Router();
 
-// Cualquier usuario autenticado puede listar y consultar categorias
-// (los selectores del frontend lo necesitan).
-router.use(authenticate);
-
+// La lectura es publica para la landing y los selectores del frontend.
 router.get("/", listHandler);
 router.get("/:id", getHandler);
 
 // Solo Administrador puede crear, editar y eliminar
+router.use(authenticate);
 router.post("/", requireRole("Admin"), validate(createCategoriaSchema, "body"), createHandler);
 router.patch("/:id", requireRole("Admin"), validate(updateCategoriaSchema, "body"), updateHandler);
 router.delete("/:id", requireRole("Admin"), deleteHandler);

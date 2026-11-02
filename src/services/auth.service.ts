@@ -79,7 +79,9 @@ export async function getMe(userId: Types.ObjectId) {
   if (!user) throw new AppError(404, "USER_NOT_FOUND", "Usuario no encontrado");
   return {
     id: user._id, nombre: user.nombre, email: user.email,
+    foto_perfil_url: user.foto_perfil_url,
     carrera: user.carrera, semestre: user.semestre, institucion: user.institucion,
+    biografia: user.biografia, habilidades: user.habilidades,
     tipo_usuario: user.tipo_usuario, calificacion_promedio: user.calificacion_promedio,
     total_calificaciones: user.total_calificaciones, verificado: user.verificado,
     verificado_override: user.verificado_override,

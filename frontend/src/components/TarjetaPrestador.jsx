@@ -5,7 +5,9 @@ import VerificadoBadge from "./VerificadoBadge";
 
 export default function TarjetaPrestador({ perfil }) {
   const usuario = perfil.usuario || {};
-  const extra = [usuario.carrera, usuario.institucion].filter(Boolean).join(" · ");
+  const extra = [usuario.carrera, usuario.semestre ? `Semestre ${usuario.semestre}` : ""]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <article className="prestador-card">

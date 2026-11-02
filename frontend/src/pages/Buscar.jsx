@@ -13,7 +13,7 @@ export default function Buscar() {
   const [params] = useSearchParams();
   const [categorias, setCategorias] = useState([]);
   const [categoriaId, setCategoriaId] = useState("");
-  const [termino, setTermino] = useState("");
+  const [termino, setTermino] = useState(params.get("termino") || "");
   const [sort, setSort] = useState("rating");
   const [resultado, setResultado] = useState(VACIO);
   const [pagina, setPagina] = useState(1);

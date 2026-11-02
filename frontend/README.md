@@ -34,6 +34,13 @@ VITE_API_URL=http://localhost:3001/api
 
 > Las contraseñas no se publican. En produccion se rotaron y se entregan por separado; en una base nueva sembrada con `npm run db:seed` se usan las definidas en `src/scripts/seedDemo.ts`. El bloque de credenciales ya no se muestra en `/login`.
 
+## Diseño
+
+- Tema oscuro único: fondo `#0b0d10`, superficies `#14171c`, acento azul `#4c9dff`.
+- Layout con sidebar y topbar en escritorio; navegación inferior en móvil.
+- Inicio dinámico en `/`: landing para visitantes y dashboard híbrido para usuarios.
+- Avatar con iniciales y menú hacia `/mi-perfil`.
+
 ## Sprint 0
 
 - Login con JWT y refresh silencioso.

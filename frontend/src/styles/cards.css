@@ -7,10 +7,11 @@
 }
 
 .row {
-  background: var(--bg);
+  padding: 16px 18px;
+  border: 1px solid var(--border);
   border-radius: var(--r-lg);
+  background: var(--surface);
   box-shadow: var(--raised-sm);
-  padding: 14px 18px;
 }
 
 .row__main {
@@ -29,8 +30,8 @@
 
 .row__sub {
   margin: 2px 0 0;
-  font-size: 12.5px;
   color: var(--muted);
+  font-size: 12.5px;
 }
 
 .row__actions {
@@ -51,19 +52,32 @@
   flex-direction: column;
   gap: 10px;
   padding: 20px;
+  border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  background: var(--bg);
+  background: var(--surface);
   box-shadow: var(--raised-sm);
 }
 
+.prestador-card:hover {
+  border-color: var(--border-strong);
+}
+
 .prestador-card__top {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 12px;
 }
 
 .prestador-card__id {
+  grid-column: 2;
   min-width: 0;
+}
+
+.prestador-card__top .badge-verified {
+  grid-column: 2;
+  justify-self: start;
+  margin-left: 0;
 }
 
 .prestador-card__name {
@@ -73,7 +87,7 @@
 }
 
 .prestador-card__desc {
-  color: var(--text);
+  color: var(--muted);
   font-size: 13.5px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -135,6 +149,7 @@
 
 .imagenes img {
   width: 100%;
+  border: 1px solid var(--border);
   border-radius: var(--r-md);
   object-fit: cover;
 }
@@ -143,11 +158,12 @@
   margin-top: 16px;
 }
 
-/* Estados de negociacion */
+/* Estados de negociación */
 .estado {
   display: inline-flex;
   align-items: center;
   padding: 3px 10px;
+  border: 1px solid transparent;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
@@ -155,41 +171,41 @@
 }
 
 .estado--propuesta {
-  background: #eef0f4;
-  color: #4b4d57;
+  background: var(--surface-3);
+  color: #c7ccd6;
 }
 
 .estado--negociando {
-  background: #e8f0fa;
-  color: #0a66c2;
+  background: var(--primary-weak);
+  color: #8ec1ff;
 }
 
 .estado--acordado {
-  background: #e2f2e7;
-  color: #1d7a3c;
+  background: rgba(74, 222, 128, 0.13);
+  color: #7ee2a0;
 }
 
 .estado--en_progreso {
-  background: #fff2d8;
-  color: #8a5b00;
+  background: var(--warning-weak);
+  color: #f7cf6b;
 }
 
 .estado--completado {
-  background: #dcf0e3;
-  color: #146c34;
+  background: rgba(74, 222, 128, 0.18);
+  color: #86efac;
 }
 
 .estado--cancelado {
-  background: #f6e0dd;
-  color: #a3361c;
+  background: var(--danger-weak);
+  color: #ff9d95;
 }
 
 .estado--disputado {
-  background: #f3e2ee;
-  color: #7a2a60;
+  background: rgba(192, 132, 252, 0.14);
+  color: #d8b4fe;
 }
 
-/* Detalle de negociacion */
+/* Detalle de negociación */
 .detail-grid {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -217,7 +233,8 @@
 
 /* Notificaciones */
 .row--unread {
-  box-shadow: inset 4px 0 0 var(--primary), var(--raised-sm);
+  border-left: 3px solid var(--primary);
+  background: linear-gradient(90deg, var(--primary-weak), transparent 45%), var(--surface);
 }
 
 .notif__tipo {
@@ -229,7 +246,7 @@
   text-transform: uppercase;
 }
 
-/* Calificacion con estrellas */
+/* Calificación con estrellas */
 .rating {
   display: flex;
   align-items: center;
@@ -240,7 +257,7 @@
   padding: 0;
   border: 0;
   background: none;
-  color: #c2c3c9;
+  color: var(--star-soft);
   font-size: 27px;
   line-height: 1;
   cursor: pointer;
@@ -280,14 +297,16 @@
   display: grid;
   gap: 4px;
   padding: 22px;
+  border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  background: var(--bg);
+  background: var(--surface);
   box-shadow: var(--raised-sm);
   color: var(--text);
 }
 
 .stat:hover {
-  box-shadow: var(--raised);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
 .stat__valor {
@@ -306,8 +325,9 @@
   display: flex;
   gap: 6px;
   padding: 5px;
+  border: 1px solid var(--border);
   border-radius: 999px;
-  box-shadow: var(--inset);
+  background: var(--surface-2);
 }
 
 .tab {
@@ -316,16 +336,14 @@
   border-radius: 999px;
   background: none;
   color: var(--muted);
-  font-family: inherit;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
 
 .tab--activa {
-  background: var(--bg);
+  background: var(--surface-3);
   color: var(--primary);
-  box-shadow: var(--raised-sm);
 }
 
 .admin-item {
@@ -370,11 +388,6 @@
   color: var(--danger);
 }
 
-.chip--manual {
-  background: #fff2d8;
-  color: #8a5b00;
-}
-
 .reporte-estado {
   display: inline-flex;
   margin-left: 6px;
@@ -386,18 +399,18 @@
 }
 
 .reporte-estado--abierto {
-  background: #f6e0dd;
-  color: #a3361c;
+  background: var(--danger-weak);
+  color: #ff9d95;
 }
 
 .reporte-estado--en_revision {
-  background: #fff2d8;
-  color: #8a5b00;
+  background: var(--warning-weak);
+  color: #f7cf6b;
 }
 
 .reporte-estado--cerrado {
-  background: #e2f2e7;
-  color: #1d7a3c;
+  background: var(--success-weak);
+  color: #86efac;
 }
 
 /* Timeline de seguimiento */
@@ -422,16 +435,18 @@
 .timeline__punto {
   width: 10px;
   height: 10px;
+  border: 1px solid var(--border-strong);
   border-radius: 50%;
-  background: #c2c3c9;
+  background: var(--surface-3);
 }
 
 .timeline__paso--hecho {
-  color: #1d7a3c;
+  color: var(--success);
 }
 
 .timeline__paso--hecho .timeline__punto {
-  background: #1d7a3c;
+  border-color: transparent;
+  background: var(--success);
 }
 
 .timeline__paso--actual {
@@ -440,8 +455,9 @@
 }
 
 .timeline__paso--actual .timeline__punto {
+  border-color: transparent;
   background: var(--primary);
-  box-shadow: 0 0 0 4px rgba(10, 102, 194, 0.15);
+  box-shadow: 0 0 0 4px rgba(76, 157, 255, 0.15);
 }
 
 @media (max-width: 720px) {

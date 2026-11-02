@@ -35,7 +35,7 @@ export default function ReportarNegociacion({ negociacionId, reportadoId }) {
         categoria_reporte: categoria,
       });
       setMotivo("");
-      setOk("Reporte enviado. Un administrador lo revisara.");
+      setOk("Reporte enviado. Un administrador lo revisará.");
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {

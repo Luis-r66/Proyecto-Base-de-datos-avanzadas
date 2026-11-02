@@ -1,10 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import Header from "./components/Header";
+import AppShell from "./components/AppShell";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
+import MiPerfil from "./pages/MiPerfil";
 import Buscar from "./pages/Buscar";
 import ConvertirmePrestador from "./pages/ConvertirmePrestador";
 import MiPortafolio from "./pages/MiPortafolio";
@@ -27,15 +28,23 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<Registro />} />
-          <Route path="/prestador/:id" element={<PrestadorPublico />} />
-          <Route path="/portafolio/:id" element={<PortafolioDetalle />} />
-          <Route path="/track" element={<Track />} />
-          <Route path="/track/:codigo" element={<Track />} />
+        <AppShell>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
+            <Route path="/prestador/:id" element={<PrestadorPublico />} />
+            <Route path="/portafolio/:id" element={<PortafolioDetalle />} />
+            <Route path="/track" element={<Track />} />
+            <Route path="/track/:codigo" element={<Track />} />
+            <Route
+              path="/mi-perfil"
+              element={
+                <ProtectedRoute>
+                  <MiPerfil />
+                </ProtectedRoute>
+              }
+            />
           <Route
             path="/buscar"
             element={
@@ -142,6 +151,7 @@ export default function App() {
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </AppShell>
       </AuthProvider>
     </BrowserRouter>
   );

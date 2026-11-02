@@ -40,9 +40,15 @@ export function AuthProvider({ children }) {
     const data = await authApi.login({ email, password });
     localStorage.setItem(TOKEN_KEY, data.accessToken);
     localStorage.setItem(REFRESH_KEY, data.refreshToken);
-    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-    setUsuario(data.user);
-    return data.user;
+    let u = data.user;
+    try {
+      u = await authApi.me();
+    } catch {
+      u = data.user;
+    }
+    localStorage.setItem(USER_KEY, JSON.stringify(u));
+    setUsuario(u);
+    return u;
   }
 
   async function registrar(payload) {

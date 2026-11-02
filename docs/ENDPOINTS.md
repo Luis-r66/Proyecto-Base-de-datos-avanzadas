@@ -43,7 +43,7 @@
 | POST | `/api/auth/register` | Publico | `{nombre, email, password, confirmPassword, carrera, semestre}` (email `@uniautonoma.edu.co`, semestre 1-10; la institución se asigna en el servidor) | 201 `{accessToken, refreshToken, user}` |
 | POST | `/api/auth/login` | Publico | `{email, password}` | 200 `{accessToken, refreshToken, user}` |
 | POST | `/api/auth/refresh` | Publico | `{refreshToken}` | 200 `{accessToken, refreshToken}` |
-| GET | `/api/auth/me` | Autenticado | - | 200 `{id, nombre, email, carrera, semestre, institucion, tipo_usuario, calificacion_promedio, total_calificaciones, verificado, estado_cuenta, fecha_registro}` |
+| GET | `/api/auth/me` | Autenticado | - | 200 `{id, nombre, email, foto_perfil_url, carrera, semestre, institucion, biografia, habilidades, tipo_usuario, calificacion_promedio, total_calificaciones, verificado, estado_cuenta, fecha_registro}` |
 
 Reglas: email único e institucional (`@uniautonoma.edu.co`), carrera obligatoria, semestre obligatorio entre 1 y 10, password mínimo 8 con mayúscula, minúscula y número. La institución se guarda como `Corporación Universitaria Autónoma del Cauca`. Errores: 409 `EMAIL_EXISTS`, 401 `INVALID_CREDENTIALS`, 400 `VALIDATION_ERROR`.
 
@@ -53,8 +53,8 @@ Reglas: email único e institucional (`@uniautonoma.edu.co`), carrera obligatori
 
 | Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
 |--------|------|-----|----------------|-----------|
-| GET | `/api/categorias` | Autenticado | `?page&limit&carrera` | 200 `{data:[{_id,nombre,carrera_asociada,categoria_padre_id}], pagination}` |
-| GET | `/api/categorias/:id` | Autenticado | - | 200 categoria |
+| GET | `/api/categorias` | Publico | `?page&limit&carrera` | 200 `{data:[{_id,nombre,carrera_asociada,categoria_padre_id}], pagination}` |
+| GET | `/api/categorias/:id` | Publico | - | 200 categoria |
 | POST | `/api/categorias` | **Admin** | `{nombre, carrera_asociada, categoria_padre_id?}` | 201 categoria |
 | PATCH | `/api/categorias/:id` | **Admin** | `{nombre?, carrera_asociada?, categoria_padre_id?}` | 200 categoria |
 | DELETE | `/api/categorias/:id` | **Admin** | - | 204 |

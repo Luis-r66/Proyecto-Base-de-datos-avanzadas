@@ -310,7 +310,7 @@ export default function NegociacionDetalle() {
             <h2 className="section__title">Reportar problema</h2>
             <p className="muted">
               Si algo salio mal con {otro.nombre || "la otra parte"}, puedes reportarlo. Un
-              administrador revisara el caso.
+              administrador revisará el caso.
             </p>
             <ReportarNegociacion negociacionId={neg._id} reportadoId={otro._id} />
           </div>
