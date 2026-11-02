@@ -10,6 +10,7 @@ import { listarFavoritos, toggleFavorito, quitarFavorito } from "../api/favorito
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 import { formatearFecha } from "../utils/fechas";
+import { formatearCOP } from "../utils/moneda";
 import "../styles/cards.css";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -181,7 +182,7 @@ export default function PrestadorPublico() {
             <>
               <dt>Tarifa de referencia</dt>
               <dd>
-                ${perfil.tarifa_referencia.monto} {perfil.tarifa_referencia.moneda} /{" "}
+                {formatearCOP(perfil.tarifa_referencia.monto)} /{" "}
                 {perfil.tarifa_referencia.unidad}
               </dd>
             </>

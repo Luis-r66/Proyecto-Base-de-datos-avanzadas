@@ -1,0 +1,2 @@
+export const MONTO_MINIMO_COP = 10000;
+export const MONTO_MAXIMO_COP = 10000000;

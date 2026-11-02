@@ -1,5 +1,6 @@
 ﻿import { z } from "zod";
 import { objectId, optionalObjectId } from "./validators";
+import { MONTO_MINIMO_COP, MONTO_MAXIMO_COP } from "../config/moneda";
 
 const hora = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Hora inválida (HH:MM)");
 
@@ -21,7 +22,7 @@ export const createPerfilSchema = z.object({
   tipos_actividad: z.array(z.string().trim().min(1)).optional(),
   descripcion: z.string().max(2000).optional(),
   tarifa_referencia: z.object({
-    monto: z.number().min(0),
+    monto: z.number().int("La tarifa debe ser un entero").min(MONTO_MINIMO_COP, `La tarifa mínima es ${MONTO_MINIMO_COP} COP`).max(MONTO_MAXIMO_COP, `La tarifa máxima es ${MONTO_MAXIMO_COP} COP`),
     moneda: z.literal("COP").default("COP"),
     unidad: z.enum(["hora", "proyecto", "dia"]).default("hora"),
   }).optional(),
@@ -34,7 +35,7 @@ export const updatePerfilSchema = z.object({
   tipos_actividad: z.array(z.string().trim().min(1)).optional(),
   descripcion: z.string().max(2000).optional(),
   tarifa_referencia: z.object({
-    monto: z.number().min(0),
+    monto: z.number().int("La tarifa debe ser un entero").min(MONTO_MINIMO_COP, `La tarifa mínima es ${MONTO_MINIMO_COP} COP`).max(MONTO_MAXIMO_COP, `La tarifa máxima es ${MONTO_MAXIMO_COP} COP`),
     moneda: z.literal("COP").default("COP"),
     unidad: z.enum(["hora", "proyecto", "dia"]),
   }).optional(),

@@ -1,4 +1,5 @@
 import { Schema, model, models, Document, Types } from "mongoose";
+import { MONTO_MINIMO_COP, MONTO_MAXIMO_COP } from "../config/moneda";
 
 export type EstadoNegociacion = "Propuesta" | "Negociando" | "Acordado" | "En_progreso" | "Completado" | "Cancelado" | "Disputado";
 
@@ -29,8 +30,8 @@ const s = new Schema<INegociacion>(
     oferta_id: { type: Schema.Types.ObjectId, ref: "Oferta" },
     categoria_id: { type: Schema.Types.ObjectId, ref: "Categoria", required: true },
     descripcion_trabajo: { type: String, required: true, trim: true, maxlength: 5000 },
-    precio_propuesto: { type: Number, min: 0 },
-    precio_acordado: { type: Number, min: 0 },
+    precio_propuesto: { type: Number, min: MONTO_MINIMO_COP, max: MONTO_MAXIMO_COP, validate: Number.isInteger },
+    precio_acordado: { type: Number, min: MONTO_MINIMO_COP, max: MONTO_MAXIMO_COP, validate: Number.isInteger },
     forma_pago: { type: String, trim: true },
     estado: { type: String, enum: ["Propuesta", "Negociando", "Acordado", "En_progreso", "Completado", "Cancelado", "Disputado"], default: "Propuesta", required: true },
     fecha_creacion: { type: Date, default: Date.now },

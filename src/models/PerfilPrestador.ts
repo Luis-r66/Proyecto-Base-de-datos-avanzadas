@@ -1,4 +1,5 @@
 import { Schema, model, models, Document, Types } from "mongoose";
+import { MONTO_MINIMO_COP, MONTO_MAXIMO_COP } from "../config/moneda";
 
 export interface IDisponibilidad {
   dia: number;
@@ -36,7 +37,7 @@ const perfilSchema = new Schema<IPerfilPrestador>(
     disponibilidad: { type: [dispSchema], default: [] },
     descripcion: { type: String, maxlength: 2000 },
     tarifa_referencia: {
-      monto: { type: Number, min: 0 },
+      monto: { type: Number, min: MONTO_MINIMO_COP, max: MONTO_MAXIMO_COP, validate: Number.isInteger },
       moneda: { type: String, enum: ["COP"], default: "COP" },
       unidad: { type: String, enum: ["hora", "proyecto", "dia"], default: "hora" },
     },

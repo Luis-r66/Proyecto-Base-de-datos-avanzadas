@@ -55,8 +55,8 @@ const NEGOCIACIONES_VALIDATION = {
       prestador_id: { bsonType: "objectId" },
       categoria_id: { bsonType: "objectId" },
       descripcion_trabajo: { bsonType: "string", maxLength: 5000 },
-      precio_propuesto: { bsonType: "number", minimum: 0 },
-      precio_acordado: { bsonType: "number", minimum: 0 },
+      precio_propuesto: { bsonType: "number", minimum: 10000, maximum: 10000000 },
+      precio_acordado: { bsonType: "number", minimum: 10000, maximum: 10000000 },
       forma_pago: { bsonType: "string" },
       estado: {
         bsonType: "string",
@@ -85,7 +85,7 @@ const MENSAJES = [
   { texto: "El trabajo está completo, muchas gracias.", tipo_usuario: "Solicitante", categoria: "finalizacion" },
   { texto: "Hola, gracias por contactarme. ¿En qué puedo ayudarte?", tipo_usuario: "Prestador", categoria: "inicial" },
   { texto: "Mi disponibilidad es de lunes a viernes de 18:00 a 22:00.", tipo_usuario: "Prestador", categoria: "disponibilidad" },
-  { texto: "Mi tarifa es de 150 por hora o por proyecto.", tipo_usuario: "Prestador", categoria: "precio" },
+  { texto: "Mi tarifa es de $30.000 COP por hora o por proyecto.", tipo_usuario: "Prestador", categoria: "precio" },
   { texto: "Acepto pago por transferencia, PayPal o efectivo.", tipo_usuario: "Prestador", categoria: "pago" },
   { texto: "De acuerdo, empecemos. Necesito que me pases los detalles.", tipo_usuario: "Prestador", categoria: "acuerdo" },
   { texto: "Trabajo entregado. Quedo a la espera de tu revisión.", tipo_usuario: "Prestador", categoria: "finalizacion" },
@@ -145,7 +145,9 @@ async function main() {
 
   const existing = await MensajePredeterminado.find({}).lean();
   const garbled = existing.some((m: any) => typeof m.texto === "string" && m.texto.includes("\uFFFD"));
-  if (existing.length !== MENSAJES.length || garbled) {
+  const textosActuales = new Set(existing.map((m: any) => m.texto));
+  const desactualizado = MENSAJES.some((m) => !textosActuales.has(m.texto));
+  if (existing.length !== MENSAJES.length || garbled || desactualizado) {
     await MensajePredeterminado.deleteMany({});
     await MensajePredeterminado.insertMany(MENSAJES);
     console.log(`  ${MENSAJES.length} mensajes predeterminados (refrescados)`);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MONTO_MINIMO_COP, MONTO_MAXIMO_COP, formatearCOP } from "../utils/moneda";
 
 export default function OfertaForm({
   categorias = [],
@@ -27,8 +28,8 @@ export default function OfertaForm({
       setErrorLocal("Completa categoría, descripción, monto y forma de pago.");
       return;
     }
-    if (Number(monto) < 0) {
-      setErrorLocal("El monto no puede ser negativo.");
+    if (!Number.isInteger(Number(monto)) || Number(monto) < MONTO_MINIMO_COP || Number(monto) > MONTO_MAXIMO_COP) {
+      setErrorLocal(`El monto total debe ser un entero entre ${formatearCOP(MONTO_MINIMO_COP)} y ${formatearCOP(MONTO_MAXIMO_COP)}.`);
       return;
     }
     onSubmit({
@@ -79,17 +80,22 @@ export default function OfertaForm({
 
       <div className="grid-2">
         <div className="field">
-          <label htmlFor="ofmonto">Monto (COP)</label>
+          <label htmlFor="ofmonto">Monto total (COP)</label>
           <input
             id="ofmonto"
             type="number"
-            min="0"
-            step="0.01"
+            min={MONTO_MINIMO_COP}
+            max={MONTO_MAXIMO_COP}
+            step="500"
             value={monto}
             onChange={(evento) => setMonto(evento.target.value)}
-            placeholder="150000"
+            placeholder="30000"
             required
           />
+          <small className="muted">
+            Entre {formatearCOP(MONTO_MINIMO_COP)} y {formatearCOP(MONTO_MAXIMO_COP)}.
+          </small>
+          {monto !== "" && <small className="muted">Total: {formatearCOP(monto)}</small>}
         </div>
         <div className="field">
           <label htmlFor="ofpago">Forma de pago</label>

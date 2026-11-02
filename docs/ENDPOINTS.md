@@ -85,6 +85,8 @@ Las categorías pueden tener jerarquía padre/subcategoría mediante `categoria_
 
 Errores: 409 `PERFIL_EXISTS`, 400 `INVALID_CATEGORIES`, 403 `ACCOUNT_INACTIVE`, 404 `PERFIL_NOT_FOUND`.
 
+La tarifa es opcional, pero si se envía debe ser un entero entre `10000` y `10000000` COP.
+
 ---
 
 ## Portafolio
@@ -164,7 +166,7 @@ Propuesta --negociar--> Negociando --acordar--> Acordado --en-progreso--> En_pro
 | PATCH | `/api/ofertas/:id/retirar` | Emisor | 200 oferta `retirada` |
 | PATCH | `/api/ofertas/:id/contraoferta` | Receptor | 201 nueva oferta enlazada |
 
-Reglas: precio y forma de pago obligatorios; monto en COP; una negociación activa por par; aceptar una oferta rechaza las demás ofertas pendientes de la conversación.
+Reglas: precio y forma de pago obligatorios; monto entero entre `10000` y `10000000` COP; una negociación activa por par; aceptar una oferta rechaza las demás ofertas pendientes de la conversación.
 
 ## Mensajes y notificaciones
 
@@ -251,7 +253,7 @@ El backend calcula `usuario.verificado` automáticamente cuando se cumplen todas
 
 Se reevalúa al registrarse, crear/editar perfil, crear/eliminar trabajos, completar una negociación, recibir una calificación, iniciar sesión y en `GET /auth/me`. Si deja de cumplir, pierde la insignia. El Admin puede forzar/revocar con `verificado_override`.
 
-## Cuentas demo (`npm run db:seed`)
+## Cuentas de prueba (`npm run db:seed`)
 
 | Rol | Email |
 |-----|-------|
@@ -259,7 +261,7 @@ Se reevalúa al registrarse, crear/editar perfil, crear/eliminar trabajos, compl
 | Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` |
 | Prestador pendiente | `andres.gomez@uniautonoma.edu.co` |
 
-> Las contraseñas no se publican: en produccion se rotaron y se entregan por separado. En una base nueva sembrada con `npm run db:seed` se usan las credenciales definidas en `src/scripts/seedDemo.ts`. El login ya no muestra credenciales demo.
+> Las contraseñas no se publican: en producción se rotaron y se entregan por separado. El seed **no crea usuarios**; registra estas cuentas desde `/registro` o `POST /api/auth/register` antes de ejecutarlo. Si falta alguna, el script se detiene. El login ya no muestra credenciales de prueba.
 
 ## Notas para el frontend
 

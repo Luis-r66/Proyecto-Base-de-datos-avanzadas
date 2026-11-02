@@ -13,9 +13,10 @@ Coleccion Postman: postman_collection.json
 - Prestador pendiente: andres.gomez@uniautonoma.edu.co
   Roles: Solicitante + Prestador. Perfil activo sin portafolio (pendiente de verificar).
 
-Las contraseñas no se publican. En produccion se rotaron y se entregan por
-separado; en una base nueva sembrada con `npm run db:seed` se usan las
-credenciales definidas en `src/scripts/seedDemo.ts`.
+Las contraseñas no se publican. En producción se rotaron y se entregan por
+separado. El seed **no crea usuarios ni contraseñas**: registra estas cuentas
+desde `/registro` o `POST /api/auth/register` antes de ejecutar
+`npm run db:seed`; si falta alguna, el seed se detiene y la indica.
 
 Nota: para demostrar el registro en vivo usar un email NUEVO cada vez
 (por ejemplo demo@uniautonoma.edu.co). Repetir un email existente devuelve 409,

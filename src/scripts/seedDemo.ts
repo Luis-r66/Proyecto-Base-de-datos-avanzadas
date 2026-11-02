@@ -16,23 +16,20 @@ import { toggleFavorito } from "../services/favorito.service";
 import { iniciar, acordar, aEnProgreso, completar, cancelar } from "../services/negociacion.service";
 import { sendMessage } from "../services/mensaje.service";
 import { calificar, reportar } from "../services/calificacion.service";
-import bcrypt from "bcryptjs";
 import { env } from "../config/env";
-import { INSTITUCION_ACTUAL } from "../config/institucion";
 import { Types } from "mongoose";
 
 const DOMINIO = (env.INSTITUTIONAL_EMAIL_DOMAINS || "uniautonoma.edu.co").split(",")[0].trim();
 
-async function ensureUser(nombre: string, email: string, password: string, tipo: string[], extra: any = {}) {
-  let u = await Usuario.findOne({ email });
-  if (u) { console.log(`  ${email} (ya existe)`); return u; }
-  u = await Usuario.create({
-    nombre, email, password_hash: await bcrypt.hash(password, env.BCRYPT_ROUNDS),
-    tipo_usuario: tipo, estado_cuenta: "activo",
-    calificacion_promedio: 0, total_calificaciones: 0, habilidades: [], educacion: [], ...extra,
-  });
-  console.log(`  ${email} creado`);
-  return u;
+async function requireUser(email: string) {
+  const usuario = await Usuario.findOne({ email });
+  if (!usuario) {
+    throw new Error(
+      `No existe la cuenta ${email}. Regístrala desde /registro y vuelve a ejecutar el seed.`
+    );
+  }
+  console.log(`  ${email} (cuenta existente)`);
+  return usuario;
 }
 
 async function ensureCat(nombre: string, carrera: string, padreId?: string) {
@@ -95,30 +92,10 @@ async function main() {
   const metodologia: any = await ensureCat("Metodología de la Investigación", "Todas", pTransversal._id.toString());
   const redaccion: any = await ensureCat("Redacción de Trabajos Académicos", "Todas", pTransversal._id.toString());
 
-  // --- Cuentas ---
-  const santiago = await ensureUser(
-    "Santiago Morales",
-    `santiago.morales@${DOMINIO}`,
-    "Santiago123",
-    ["Solicitante"],
-    { carrera: "Ingeniería de Software y Computación", semestre: 6, institucion: INSTITUCION_ACTUAL, habilidades: ["Python", "JavaScript"], biografia: "Estudiante de ingeniería, apoyo en programación e inglés." }
-  );
-
-  const luis = await ensureUser(
-    "Luis Riascos",
-    `luis.riascos@${DOMINIO}`,
-    "Luis1234",
-    ["Solicitante", "Admin"],
-    { carrera: "Ingeniería de Software y Computación", semestre: 7, institucion: INSTITUCION_ACTUAL, biografia: "Estudiante y administrador de la plataforma." }
-  );
-
-  const andres = await ensureUser(
-    "Andrés Gómez",
-    `andres.gomez@${DOMINIO}`,
-    "Andres1234",
-    ["Solicitante"],
-    { carrera: "Ingeniería Ambiental y de Saneamiento", semestre: 4, institucion: INSTITUCION_ACTUAL }
-  );
+  // --- Cuentas previamente registradas desde la aplicación ---
+  const santiago = await requireUser(`santiago.morales@${DOMINIO}`);
+  const luis = await requireUser(`luis.riascos@${DOMINIO}`);
+  const andres = await requireUser(`andres.gomez@${DOMINIO}`);
 
   // --- Perfil prestador de Santiago (Activo) ---
   let perfilSantiago: any = await PerfilPrestador.findOne({ usuario_id: santiago._id });
@@ -127,7 +104,7 @@ async function main() {
       categorias_ids: [prog._id.toString(), ingles._id.toString(), bases._id.toString(), calculo1._id.toString()],
       tipos_actividad: ["Tutorías", "Trabajos escritos"],
       descripcion: "Ayudo con programación, cálculo e inglés académico.",
-      tarifa_referencia: { monto: 150, moneda: "COP", unidad: "hora" },
+      tarifa_referencia: { monto: 30000, moneda: "COP", unidad: "hora" },
       metodos_pago_aceptados: ["Transferencia", "Efectivo"],
     });
     perfilSantiago = await PerfilPrestador.findById(r._id);
@@ -159,7 +136,7 @@ async function main() {
     const r: any = await crearPerfil(andres._id, {
       categorias_ids: [prog._id.toString(), estadistica._id.toString(), metodologia._id.toString()],
       descripcion: "Apoyo en fundamentos de programación.",
-      tarifa_referencia: { monto: 100, moneda: "COP", unidad: "hora" },
+      tarifa_referencia: { monto: 25000, moneda: "COP", unidad: "hora" },
     });
     perfilAndres = await PerfilPrestador.findById(r._id);
     console.log("  Perfil de Andrés creado (sin portafolio -> pendiente)");
@@ -181,18 +158,18 @@ async function main() {
   if (!neg1) {
     const c: any = await iniciar(luis._id, {
       prestador_id: perfilSantiago._id.toString(), categoria_id: prog._id.toString(),
-      descripcion_trabajo: "Ayuda con proyecto final de Python (demo).", precio_propuesto: 500, forma_pago: "Transferencia",
+      descripcion_trabajo: "Ayuda con proyecto final de Python.", precio_propuesto: 50000, forma_pago: "Transferencia",
     });
     const id = new Types.ObjectId(c._id);
-    await sendMessage(luis._id, id, { contenido: "Hola, ¿me ayudas con mi proyecto final? (demo)" });
+    await sendMessage(luis._id, id, { contenido: "Hola, ¿me ayudas con mi proyecto final?" });
     const pred = await MensajePredeterminado.findOne({ tipo_usuario: "Prestador" });
     if (pred) await sendMessage(santiago._id, id, { mensaje_predeterminado_id: pred._id.toString() });
-    await acordar(perfilSantiago._id, id, { precio_acordado: 450, forma_pago: "Transferencia" });
+    await acordar(perfilSantiago._id, id, { precio_acordado: 45000, forma_pago: "Transferencia" });
     await aEnProgreso(id, santiago._id);
-    await sendMessage(santiago._id, id, { contenido: "Avance listo para revisión (demo)." });
+    await sendMessage(santiago._id, id, { contenido: "Avance listo para revisión." });
     await completar(id, luis._id);
-    await calificar(luis._id, { negociacion_id: id.toString(), puntaje: 5, comentario: "Excelente trabajo, muy claro (demo)." });
-    await calificar(santiago._id, { negociacion_id: id.toString(), puntaje: 5, comentario: "Puntual con la información (demo)." });
+    await calificar(luis._id, { negociacion_id: id.toString(), puntaje: 5, comentario: "Excelente trabajo, muy claro." });
+    await calificar(santiago._id, { negociacion_id: id.toString(), puntaje: 5, comentario: "Puntual con la información." });
     console.log(`  Negociación COMPLETADA (${c.codigo_seguimiento})`);
     neg1 = await Negociacion.findById(id);
   } else console.log(`  Negociación completada (ya existe ${neg1.codigo_seguimiento})`);
@@ -202,21 +179,21 @@ async function main() {
   if (!neg2) {
     const c: any = await iniciar(luis._id, {
       prestador_id: perfilSantiago._id.toString(), categoria_id: ingles._id.toString(),
-      descripcion_trabajo: "Tutoría de inglés académico (demo).", precio_propuesto: 300, forma_pago: "Transferencia",
+      descripcion_trabajo: "Tutoría de inglés académico.", precio_propuesto: 30000, forma_pago: "Transferencia",
     });
     await cancelar(new Types.ObjectId(c._id), luis._id);
     console.log(`  Negociación CANCELADA (${c.codigo_seguimiento})`);
     neg2 = await Negociacion.findById(c._id);
   } else console.log(`  Negociación cancelada (ya existe ${neg2.codigo_seguimiento})`);
 
-  // --- Negociación 3: ACTIVA en Propuesta (para demo en vivo) ---
+  // --- Negociación 3: ACTIVA en Propuesta ---
   let neg3: any = await Negociacion.findOne({ solicitante_id: luis._id, prestador_id: perfilSantiago._id, descripcion_trabajo: /cálculo integral/ });
   if (!neg3) {
     const c: any = await iniciar(luis._id, {
       prestador_id: perfilSantiago._id.toString(), categoria_id: prog._id.toString(),
-      descripcion_trabajo: "Necesito apoyo con cálculo integral (demo activa).", precio_propuesto: 400, forma_pago: "Transferencia",
+      descripcion_trabajo: "Necesito apoyo con cálculo integral.", precio_propuesto: 40000, forma_pago: "Transferencia",
     });
-    await sendMessage(luis._id, new Types.ObjectId(c._id), { contenido: "¿Tienes disponibilidad esta semana? (demo)" });
+    await sendMessage(luis._id, new Types.ObjectId(c._id), { contenido: "¿Tienes disponibilidad esta semana?" });
     console.log(`  Negociación ACTIVA (${c.codigo_seguimiento})`);
     neg3 = await Negociacion.findById(c._id);
   } else console.log(`  Negociación activa (ya existe ${neg3.codigo_seguimiento})`);
@@ -225,7 +202,7 @@ async function main() {
   if (!(await Reporte.findOne({ negociacion_id: neg1._id }))) {
     await reportar(luis._id, {
       reportado_id: santiago._id.toString(), negociacion_id: (neg1._id as Types.ObjectId).toString(),
-      motivo: "Reporte de prueba para la demo (sin validez real).", categoria_reporte: "otro",
+      motivo: "Solicité una corrección adicional y no obtuve respuesta.", categoria_reporte: "otro",
     });
     console.log("  Reporte creado (Abierto)");
   } else console.log("  Reporte (ya existe)");
@@ -240,11 +217,11 @@ async function main() {
   }
   console.log(`  Santiago verificado: ${santiagoFinal?.verificado}`);
   console.log(`  Andrés verificado (pendiente esperado false): ${andresFinal?.verificado}`);
-  console.log("\nCredenciales demo:");
-  console.log(`  Prestador: Santiago -> santiago.morales@${DOMINIO} / Santiago123`);
-  console.log(`  Admin + Solicitante: Luis -> luis.riascos@${DOMINIO} / Luis1234`);
-  console.log(`  Pendiente de verificar: Andrés -> andres.gomez@${DOMINIO} / Andres1234`);
-  console.log("Seed listo.");
+  console.log("\nCuentas requeridas (registradas previamente):");
+  console.log(`  Prestador: santiago.morales@${DOMINIO}`);
+  console.log(`  Admin + Solicitante: luis.riascos@${DOMINIO}`);
+  console.log(`  Pendiente de verificar: andres.gomez@${DOMINIO}`);
+  console.log("Seed listo. No se crearon usuarios.");
   process.exit(0);
 }
 

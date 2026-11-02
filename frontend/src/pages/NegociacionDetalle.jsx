@@ -7,6 +7,7 @@ import ChatNegociacion from "../components/ChatNegociacion";
 import ChatConversacion from "../components/ChatConversacion";
 import CalificarNegociacion from "../components/CalificarNegociacion";
 import ReportarNegociacion from "../components/ReportarNegociacion";
+import { MONTO_MINIMO_COP, MONTO_MAXIMO_COP, formatearCOP } from "../utils/moneda";
 import {
   obtenerNegociacion,
   marcarNegociando,
@@ -77,8 +78,8 @@ export default function NegociacionDetalle() {
 
   function acordar(evento) {
     evento.preventDefault();
-    if (precioAcordado === "" || Number(precioAcordado) < 0) {
-      setAccionError("Ingresa un precio acordado válido.");
+    if (precioAcordado === "" || !Number.isInteger(Number(precioAcordado)) || Number(precioAcordado) < MONTO_MINIMO_COP || Number(precioAcordado) > MONTO_MAXIMO_COP) {
+      setAccionError(`Ingresa un precio entero entre ${formatearCOP(MONTO_MINIMO_COP)} y ${formatearCOP(MONTO_MAXIMO_COP)}.`);
       return;
     }
     if (!formaPagoAcordada.trim()) {
@@ -174,7 +175,7 @@ export default function NegociacionDetalle() {
           </dd>
 
           <dt>{neg.precio_acordado != null ? "Precio acordado (COP)" : "Precio propuesto (COP)"}</dt>
-          <dd>{precio != null ? `$${precio} COP` : "Sin definir"}</dd>
+          <dd>{precio != null ? formatearCOP(precio) : "Sin definir"}</dd>
 
           <dt>Forma de pago</dt>
           <dd>{neg.forma_pago || "Sin definir"}</dd>
@@ -246,12 +247,17 @@ export default function NegociacionDetalle() {
                 <input
                   id="nprecio"
                   type="number"
-                  min="0"
-                  step="0.01"
+                  min={MONTO_MINIMO_COP}
+                  max={MONTO_MAXIMO_COP}
+                  step="500"
                   value={precioAcordado}
                   onChange={(e) => setPrecioAcordado(e.target.value)}
+                  placeholder="30000"
                   required
                 />
+                <small className="muted">
+                  Entre {formatearCOP(MONTO_MINIMO_COP)} y {formatearCOP(MONTO_MAXIMO_COP)}.
+                </small>
               </div>
               <div className="field">
                 <label htmlFor="npago">Forma de pago</label>

@@ -21,7 +21,7 @@ npm install
 cp .env.example .env   # completa los valores reales
 npm run build
 npm run db:setup       # colecciones, indices, $jsonSchema y catalogo (idempotente)
-npm run db:seed        # datos demo (idempotente, opcional)
+npm run db:seed        # contenido de prueba (requiere cuentas ya registradas)
 npm run dev            # http://localhost:3001
 ```
 
@@ -63,7 +63,7 @@ y `VERIFY_MIN_RATINGS` calificaciones con promedio mayor o igual a
 puede forzar o revocar la verificación (`verificado_override`); con `null`
 vuelve a las reglas automáticas.
 
-## Cuentas demo (`npm run db:seed`)
+## Cuentas de prueba (`npm run db:seed`)
 
 | Rol | Email | Estado |
 |-----|-------|--------|
@@ -71,11 +71,10 @@ vuelve a las reglas automáticas.
 | Solicitante + Admin | `luis.riascos@uniautonoma.edu.co` | Panel admin + flujo como solicitante |
 | Prestador pendiente | `andres.gomez@uniautonoma.edu.co` | Perfil activo sin portafolio ni negociaciones (para `/admin/verificacion`) |
 
-Las contraseñas no se listan en la documentacion. En el despliegue de produccion
-se rotaron y se entregan por separado; si siembras una base nueva con
-`npm run db:seed`, el script `src/scripts/seedDemo.ts` define las credenciales
-iniciales del seed.
-
+El seed **no crea usuarios ni contraseñas**. Antes de ejecutarlo, registra estas
+cuentas desde `/registro` o `POST /api/auth/register`; si falta alguna, el script
+se detiene con un mensaje indicando cuál debes registrar. Las contraseñas no se
+publican: en producción se rotaron y se entregan por separado.
 
 El seed deja 3 negociaciones entre Luis y Santiago: una **Completada** (con
 mensajes y calificaciones mutuas), una **Cancelada** y una **Propuesta activa**
@@ -127,7 +126,7 @@ src/
 | `npm run build` | Compila TypeScript a `dist/` |
 | `npm start` | Ejecuta `dist/app.js` |
 | `npm run db:setup` | Crea colecciones, indices, validaciones y catalogo |
-| `npm run db:seed` | Carga datos de demostracion |
+| `npm run db:seed` | Carga contenido de prueba sobre cuentas ya registradas |
 
 ## Frontend
 

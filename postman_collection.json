@@ -128,7 +128,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"santiago.morales@uniautonoma.edu.co\",\n  \"password\": \"Santiago123\"\n}"
+              "raw": "{\n  \"email\": \"santiago.morales@uniautonoma.edu.co\",\n  \"password\": \"{{prestador_password}}\"\n}"
             },
             "auth": {
               "type": "noauth"
@@ -169,7 +169,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"luis.riascos@uniautonoma.edu.co\",\n  \"password\": \"Luis1234\"\n}"
+              "raw": "{\n  \"email\": \"luis.riascos@uniautonoma.edu.co\",\n  \"password\": \"{{admin_password}}\"\n}"
             },
             "auth": {
               "type": "noauth"
@@ -385,7 +385,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categorias_ids\": [\n    \"{{cat_id}}\"\n  ],\n  \"tipos_actividad\": [\n    \"Tutorias\"\n  ],\n  \"descripcion\": \"Perfil de demostracion\",\n  \"tarifa_referencia\": {\n    \"monto\": 150,\n    \"moneda\": \"COP\",\n    \"unidad\": \"hora\"\n  },\n  \"metodos_pago_aceptados\": [\n    \"Transferencia\"\n  ]\n}"
+              "raw": "{\n  \"categorias_ids\": [\n    \"{{cat_id}}\"\n  ],\n  \"tipos_actividad\": [\n    \"Tutorias\"\n  ],\n  \"descripcion\": \"Perfil de demostracion\",\n  \"tarifa_referencia\": {\n    \"monto\": 30000,\n    \"moneda\": \"COP\",\n    \"unidad\": \"hora\"\n  },\n  \"metodos_pago_aceptados\": [\n    \"Transferencia\"\n  ]\n}"
             }
           },
           "event": [
@@ -747,7 +747,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"prestador_id\": \"{{perfil_id}}\",\n  \"categoria_id\": \"{{cat_id}}\",\n  \"descripcion_trabajo\": \"Necesito apoyo con calculo\",\n  \"precio_propuesto\": 500,\n  \"forma_pago\": \"Transferencia\"\n}"
+              "raw": "{\n  \"prestador_id\": \"{{perfil_id}}\",\n  \"categoria_id\": \"{{cat_id}}\",\n  \"descripcion_trabajo\": \"Necesito apoyo con calculo\",\n  \"precio_propuesto\": 50000,\n  \"forma_pago\": \"Transferencia\"\n}"
             }
           },
           "event": [
@@ -871,7 +871,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"precio_acordado\": 450,\n  \"forma_pago\": \"Transferencia\"\n}"
+              "raw": "{\n  \"precio_acordado\": 45000,\n  \"forma_pago\": \"Transferencia\"\n}"
             },
             "auth": {
               "type": "bearer",

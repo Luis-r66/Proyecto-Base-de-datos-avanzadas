@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Avatar from "./Avatar";
 import Estrellas from "./Estrellas";
 import VerificadoBadge from "./VerificadoBadge";
+import { formatearCOP } from "../utils/moneda";
 
 export default function TarjetaPrestador({ perfil }) {
   const usuario = perfil.usuario || {};
@@ -26,7 +27,7 @@ export default function TarjetaPrestador({ perfil }) {
 
       {perfil.tarifa_referencia && (
         <p className="row__sub">
-          Tarifa: ${perfil.tarifa_referencia.monto} {perfil.tarifa_referencia.moneda} /{" "}
+          Tarifa: {formatearCOP(perfil.tarifa_referencia.monto)} /{" "}
           {perfil.tarifa_referencia.unidad}
         </p>
       )}

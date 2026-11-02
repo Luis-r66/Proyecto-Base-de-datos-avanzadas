@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MONTO_MINIMO_COP, MONTO_MAXIMO_COP, formatearCOP } from "../utils/moneda";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -80,8 +81,8 @@ export default function PerfilPrestadorForm({
       setErrorLocal("Selecciona al menos una categoría.");
       return;
     }
-    if (monto !== "" && Number(monto) < 0) {
-      setErrorLocal("La tarifa no puede ser negativa.");
+    if (monto !== "" && (!Number.isInteger(Number(monto)) || Number(monto) < MONTO_MINIMO_COP || Number(monto) > MONTO_MAXIMO_COP)) {
+      setErrorLocal(`La tarifa debe ser un entero entre ${formatearCOP(MONTO_MINIMO_COP)} y ${formatearCOP(MONTO_MAXIMO_COP)}.`);
       return;
     }
     for (const fila of disponibilidad) {
@@ -193,12 +194,17 @@ export default function PerfilPrestadorForm({
           <input
             id="pmonto"
             type="number"
-            min="0"
-            step="0.01"
+            min={MONTO_MINIMO_COP}
+            max={MONTO_MAXIMO_COP}
+            step="500"
             value={monto}
             onChange={(e) => setMonto(e.target.value)}
-            placeholder="150"
+            placeholder="30000"
           />
+          <small className="muted">
+            Opcional. Entre {formatearCOP(MONTO_MINIMO_COP)} y {formatearCOP(MONTO_MAXIMO_COP)}.
+          </small>
+          {monto !== "" && <small className="muted">Tarifa: {formatearCOP(monto)}</small>}
         </div>
         <div className="field">
           <label htmlFor="punidad">Unidad</label>

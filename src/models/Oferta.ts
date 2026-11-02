@@ -1,4 +1,5 @@
 import { Schema, model, models, Document, Types } from "mongoose";
+import { MONTO_MINIMO_COP, MONTO_MAXIMO_COP } from "../config/moneda";
 
 export type EstadoOferta =
   | "pendiente"
@@ -33,7 +34,7 @@ const ofertaSchema = new Schema<IOferta>(
     receptor_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
     categoria_id: { type: Schema.Types.ObjectId, ref: "Categoria", required: true },
     descripcion: { type: String, required: true, trim: true, maxlength: 5000 },
-    monto: { type: Number, required: true, min: 0 },
+    monto: { type: Number, required: true, min: MONTO_MINIMO_COP, max: MONTO_MAXIMO_COP, validate: Number.isInteger },
     moneda: { type: String, enum: ["COP"], default: "COP" },
     forma_pago: { type: String, required: true, trim: true, maxlength: 200 },
     plazo_entrega: { type: String, trim: true, maxlength: 200 },

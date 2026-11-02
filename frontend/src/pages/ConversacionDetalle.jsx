@@ -4,6 +4,7 @@ import Avatar from "../components/Avatar";
 import VerificadoBadge from "../components/VerificadoBadge";
 import ChatConversacion from "../components/ChatConversacion";
 import OfertaForm from "../components/OfertaForm";
+import { formatearCOP } from "../utils/moneda";
 import {
   obtenerConversacion,
   listarOfertasConversacion,
@@ -177,7 +178,7 @@ export default function ConversacionDetalle() {
                         <span className={`estado estado--${oferta.estado}`}>
                           {ESTADOS[oferta.estado] || oferta.estado}
                         </span>
-                        <strong>${oferta.monto} COP</strong>
+                        <strong>{formatearCOP(oferta.monto)}</strong>
                       </div>
                       <p className="row__sub">
                         {categoria} · {oferta.forma_pago}

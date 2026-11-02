@@ -4,6 +4,7 @@ import EstadoBadge from "../components/EstadoBadge";
 import { negociacionPorCodigo } from "../api/negociaciones";
 import { getErrorMessage } from "../utils/errores";
 import { formatearFechaHora } from "../utils/fechas";
+import { formatearCOP } from "../utils/moneda";
 import "../styles/cards.css";
 import "../styles/forms.css";
 
@@ -145,9 +146,9 @@ export default function Track() {
             <dt>Precio (COP)</dt>
             <dd>
               {neg.precio_acordado != null
-                ? `$${neg.precio_acordado} COP (acordado)`
+                ? `${formatearCOP(neg.precio_acordado)} (acordado)`
                 : neg.precio_propuesto != null
-                ? `$${neg.precio_propuesto} COP (propuesto)`
+                ? `${formatearCOP(neg.precio_propuesto)} (propuesto)`
                 : "Sin definir"}
             </dd>
             <dt>Forma de pago</dt>

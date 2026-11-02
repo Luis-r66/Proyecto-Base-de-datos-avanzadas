@@ -32,7 +32,7 @@ VITE_API_URL=http://localhost:3001/api
 | Prestador | `santiago.morales@uniautonoma.edu.co` |
 | Prestador pendiente | `andres.gomez@uniautonoma.edu.co` |
 
-> Las contraseñas no se publican. En produccion se rotaron y se entregan por separado; en una base nueva sembrada con `npm run db:seed` se usan las definidas en `src/scripts/seedDemo.ts`. El bloque de credenciales ya no se muestra en `/login`.
+> Las contraseñas no se publican. En producción se rotaron y se entregan por separado. El seed **no crea usuarios**: registra estas cuentas desde `/registro` antes de ejecutar `npm run db:seed`; si falta alguna, el script se detiene. El bloque de credenciales ya no se muestra en `/login`.
 
 ## Diseño
 
