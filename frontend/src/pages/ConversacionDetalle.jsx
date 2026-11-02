@@ -248,7 +248,8 @@ export default function ConversacionDetalle() {
 
             {activas.length > 0 && (
               <p className="hint">
-                Para aceptar una oferta debes cerrar cualquier negociación activa con esta persona.
+                Si ya existe un contrato activo con esta persona, ciérralo antes de aceptar una
+                nueva oferta.
               </p>
             )}
 
