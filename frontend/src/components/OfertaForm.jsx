@@ -110,7 +110,7 @@ export default function OfertaForm({
                 <option value="Otro">Otro</option>
               </select>
               {formaPago === "Otro" && (
-                <input value={otroPago} onChange={(evento) => setOtroPago(evento.target.value)} placeholder="?Cu?l medio de pago?" required />
+                <input value={otroPago} onChange={(evento) => setOtroPago(evento.target.value)} placeholder="¿Cuál medio de pago?" required />
               )}
             </>
           ) : (

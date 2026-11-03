@@ -138,13 +138,13 @@ export default function ServicioDetalle() {
 
 
           <section className="gig-section">
-            <h2>Rese?as del servicio</h2>
+            <h2>Reseñas del servicio</h2>
             {servicio.resenas?.length > 0 ? (
               <>
                 <div className="gig-review-summary">
                   <strong>{servicio.calificacion_promedio_servicio?.toFixed(1)}</strong>
                   <Estrellas valor={servicio.calificacion_promedio_servicio} total={servicio.total_calificaciones_servicio} />
-                  <span className="muted">{servicio.total_calificaciones_servicio} rese?a(s)</span>
+                  <span className="muted">{servicio.total_calificaciones_servicio} reseña(s)</span>
                 </div>
                 <div className="offer-list">
                   {servicio.resenas.map((r) => (
@@ -159,7 +159,7 @@ export default function ServicioDetalle() {
                 </div>
               </>
             ) : (
-              <p className="muted">A?n no hay rese?as de este servicio. S? el primero en contratarlo.</p>
+              <p className="muted">Aún no hay reseñas de este servicio. Sé el primero en contratarlo.</p>
             )}
           </section>
           <section className="gig-section">

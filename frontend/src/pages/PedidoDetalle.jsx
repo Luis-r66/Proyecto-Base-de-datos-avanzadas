@@ -150,14 +150,14 @@ export default function PedidoDetalle() {
                 </div>
                 <div className="field">
                   <label htmlFor="comentario">Comentario</label>
-                  <textarea id="comentario" rows={3} value={comentario} onChange={(e) => setComentario(e.target.value)} placeholder="?C?mo fue la experiencia?" maxLength={1000} />
+                  <textarea id="comentario" rows={3} value={comentario} onChange={(e) => setComentario(e.target.value)} placeholder="¿Cómo fue la experiencia?" maxLength={1000} />
                 </div>
-                <button type="submit" className="btn btn--primary" disabled={accionando}>Enviar rese?a</button>
+                <button type="submit" className="btn btn--primary" disabled={accionando}>Enviar reseña</button>
               </form>
             )}
             {pedido.mi_resena && (
               <div className="pedido-review">
-                <h2>Tu rese?a</h2>
+                <h2>Tu reseña</h2>
                 <p><strong>{pedido.mi_resena.puntaje} / 5</strong> ? {pedido.mi_resena.comentario || "Sin comentario"}</p>
               </div>
             )}
