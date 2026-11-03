@@ -38,7 +38,7 @@ export default function AdminDashboard() {
               <strong>{stats.usuarios}</strong>
             </Link>
             <Link to="/admin/verificacion?tab=pendientes" className="admin-stat">
-              <span>Verificaciones pendientes</span>
+              <span>Usuarios sin verificar</span>
               <strong>{stats.pendientes}</strong>
             </Link>
             <Link to="/admin/servicios" className="admin-stat">
