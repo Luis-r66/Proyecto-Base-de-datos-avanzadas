@@ -1,9 +1,8 @@
 ﻿import { Router } from "express";
 import { searchHandler, destacadosHandler } from "../controllers/busqueda.controller";
-import { authenticate } from "../middleware/auth";
+import { optionalAuthenticate } from "../middleware/auth";
 
 const router = Router();
 router.get("/destacados", destacadosHandler);
-router.use(authenticate);
-router.get("/prestadores", searchHandler);
+router.get("/prestadores", optionalAuthenticate, searchHandler);
 export default router;

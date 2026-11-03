@@ -21,6 +21,8 @@ import reportesRoutes from "./routes/reportes.routes";
 import adminRoutes from "./routes/admin.routes";
 import conversacionRoutes from "./routes/conversacion.routes";
 import ofertaRoutes from "./routes/oferta.routes";
+import servicioRoutes from "./routes/servicio.routes";
+import pedidoRoutes from "./routes/pedido.routes";
 import { setSocketServer } from "./config/socket";
 import { setupSocket } from "./socket";
 
@@ -51,6 +53,8 @@ app.use("/api/reportes", reportesRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/conversaciones", conversacionRoutes);
 app.use("/api/ofertas", ofertaRoutes);
+app.use("/api/servicios", servicioRoutes);
+app.use("/api/pedidos", pedidoRoutes);
 app.use("/api", calificacionRoutes);
 app.use("/api", favoritoRoutes);
 

@@ -48,6 +48,54 @@ npm run dev            # http://localhost:3001
 | `VERIFY_MIN_RATINGS` | Mínimo de calificaciones recibidas (1) |
 | `VERIFY_MIN_RATING` | Promedio mínimo de calificación (4) |
 
+## Marketplace de servicios
+
+El frontend usa una capa tipo Fiverr para descubrir servicios academicos y una capa tipo LinkedIn-portafolio para el perfil estudiantil.
+
+- Cada prestador publica **servicios** con portada, categorias, etiquetas y hasta 3 paquetes (Basico, Estandar, Premium).
+- Cada paquete define precio, dias de entrega, revisiones e incluye.
+- El cliente puede comprar al precio publicado o enviar una **oferta** con precio y medio de pago.
+- El receptor puede aceptar, rechazar o contraofertar. La aceptacion crea un **pedido**.
+- El medio de pago se acuerda entre las partes: Nequi, Daviplata, transferencia, efectivo u otro. TutorLink no procesa dinero.
+- El pedido avanza por `Acordado -> En_progreso -> Entregado -> Completado`, con opcion de revision.
+- El perfil publico muestra servicios, proyectos del portafolio, resenas, habilidades, educacion, disponibilidad y logros.
+- El flujo anterior de `Negociacion` se conserva para acuerdos personalizados.
+
+Rutas principales del frontend:
+
+```text
+/                       Home tipo marketplace
+/buscar                 Busqueda de servicios
+/servicio/:id           Detalle del servicio y paquetes
+/confirmar/:id/:paquete Confirmar acuerdo y medio de pago
+/pedidos                Compras y ventas
+/pedidos/:id            Detalle y timeline del pedido
+/mis-servicios          Servicios publicados por el prestador
+/mi-perfil              Perfil estudiantil tipo portfolio
+/prestador/:id          Perfil publico
+```
+
+Endpoints nuevos:
+
+```text
+GET    /api/servicios
+GET    /api/servicios/destacados
+GET    /api/servicios/:id
+GET    /api/servicios/mios
+POST   /api/servicios
+PATCH  /api/servicios/:id
+DELETE /api/servicios/:id
+POST   /api/pedidos
+GET    /api/pedidos
+GET    /api/pedidos/ventas
+GET    /api/pedidos/:id
+PATCH  /api/pedidos/:id/iniciar
+PATCH  /api/pedidos/:id/entregar
+PATCH  /api/pedidos/:id/revision
+PATCH  /api/pedidos/:id/completar
+PATCH  /api/pedidos/:id/cancelar
+```
+
 ## Verificacion institucional (automatica)
 
 La insignia se calcula sola al registrarse, crear/editar perfil, publicar o

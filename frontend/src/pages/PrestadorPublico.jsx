@@ -3,25 +3,25 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import Estrellas from "../components/Estrellas";
 import VerificadoBadge from "../components/VerificadoBadge";
+import TarjetaServicio from "../components/TarjetaServicio";
 import { crearConversacion } from "../api/conversaciones";
 import { obtenerPerfilPublico, obtenerPortafolioPublico } from "../api/perfiles";
+import { listarServiciosDePrestador } from "../api/servicios";
 import { calificacionesDePrestador } from "../api/calificaciones";
 import { listarFavoritos, toggleFavorito, quitarFavorito } from "../api/favoritos";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 import { formatearFecha } from "../utils/fechas";
-import { formatearCOP } from "../utils/moneda";
-import "../styles/cards.css";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-const VACIO = { data: [], pagination: { page: 1, totalPages: 1, total: 0 } };
 
 export default function PrestadorPublico() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { usuario: sesion } = useAuth();
   const [perfil, setPerfil] = useState(null);
-  const [portafolio, setPortafolio] = useState(VACIO);
+  const [portafolio, setPortafolio] = useState([]);
+  const [servicios, setServicios] = useState([]);
   const [calificaciones, setCalificaciones] = useState(null);
   const [esFavorito, setEsFavorito] = useState(false);
   const [favCargando, setFavCargando] = useState(false);
@@ -37,10 +37,12 @@ export default function PrestadorPublico() {
       obtenerPerfilPublico(id),
       obtenerPortafolioPublico(id, { page: 1, limit: 6 }),
     ])
-      .then(([p, port]) => {
+      .then(async ([p, port]) => {
         if (!activo) return;
         setPerfil(p);
-        setPortafolio(port);
+        setPortafolio(port.data || []);
+        const gigs = await listarServiciosDePrestador(p.usuario._id).catch(() => ({ data: [] }));
+        if (activo) setServicios(gigs.data || []);
       })
       .catch((err) => {
         if (activo) setError(getErrorMessage(err));
@@ -125,198 +127,186 @@ export default function PrestadorPublico() {
     }
   }
 
-  if (cargando) {
-    return (
-      <main className="container">
-        <p className="muted">Cargando perfil...</p>
-      </main>
-    );
-  }
-
+  if (cargando) return <main className="profile-shell"><p className="muted">Cargando perfil...</p></main>;
   if (error || !perfil) {
     return (
-      <main className="container">
+      <main className="profile-shell">
         <p className="empty">{error || "Perfil no encontrado."}</p>
-        <p className="hint">
-          <Link to="/buscar" className="btn btn--ghost btn--sm">
-            Volver a buscar
-          </Link>
-        </p>
+        <Link to="/buscar" className="btn btn--ghost">Volver a explorar</Link>
       </main>
     );
   }
 
   const u = perfil.usuario || {};
   const esPropio = sesion && String(u._id) === String(sesion.id);
+  const headline = perfil.descripcion || `Estudiante de ${u.carrera} · Semestre ${u.semestre}`;
 
   return (
-    <main className="container">
-      <section className="card perfil-head">
-        <div className="perfil-head__top">
-          <Avatar nombre={u.nombre} url={u.foto_perfil_url} size={84} />
-          <div>
-            <h1 className="page-title">
-              {u.nombre} <VerificadoBadge verificado={u.verificado} />
-            </h1>
-            <p className="muted">
-              {[u.carrera, u.semestre ? `Semestre ${u.semestre}` : "", u.institucion]
-                .filter(Boolean)
-                .join(" · ") || "Prestador de TutorLink"}
-            </p>
-            <Estrellas valor={u.calificacion_promedio} total={u.total_calificaciones} />
+    <main className="profile-shell">
+      <section className="profile-cover">
+        <div className="profile-cover__banner" />
+        <div className="profile-cover__body">
+          <div className="profile-cover__avatar">
+            <Avatar nombre={u.nombre} url={u.foto_perfil_url} size={108} />
           </div>
-        </div>
-
-        {perfil.descripcion && <p>{perfil.descripcion}</p>}
-
-        <div className="chips">
-          {(perfil.categorias || []).map((c) => (
-            <span key={c._id} className="chip">
-              {c.nombre}
-            </span>
-          ))}
-        </div>
-
-        <dl className="datos">
-          {perfil.tarifa_referencia?.monto != null && (
-            <>
-              <dt>Tarifa de referencia</dt>
-              <dd>
-                {formatearCOP(perfil.tarifa_referencia.monto)} /{" "}
-                {perfil.tarifa_referencia.unidad}
-              </dd>
-            </>
-          )}
-          {perfil.metodos_pago_aceptados?.length > 0 && (
-            <>
-              <dt>Métodos de pago</dt>
-              <dd>{perfil.metodos_pago_aceptados.join(", ")}</dd>
-            </>
-          )}
-          {perfil.disponibilidad?.length > 0 && (
-            <>
-              <dt>Disponibilidad</dt>
-              <dd>
-                {perfil.disponibilidad
-                  .map((d) => `${DIAS[d.dia] || "Día"} ${d.hora_inicio}-${d.hora_fin}`)
-                  .join(" · ")}
-              </dd>
-            </>
-          )}
-        </dl>
-
-        <div className="acciones">
-          {!sesion ? (
-            <Link to="/login" className="btn btn--primary">
-              Inicia sesión para solicitar apoyo
-            </Link>
-          ) : esPropio ? (
-            <>
-              <span className="muted">Este es tu perfil de prestador.</span>
-              <Link to="/convertirme-prestador" className="btn btn--ghost btn--sm">
-                Editar mi perfil
-              </Link>
-            </>
-          ) : (
-            <button
-              type="button"
-              className={esFavorito ? "btn btn--ghost" : "btn btn--primary"}
-              onClick={alternarFavorito}
-              disabled={favCargando}
-            >
-              {favCargando
-                ? "Guardando..."
-                : esFavorito
-                ? "Quitar de favoritos"
-                : "Guardar en favoritos"}
-            </button>
-          )}
-        </div>
-
-        {favError && (
-          <p className="alert alert--error" role="alert">
-            {favError}
-          </p>
-        )}
-      </section>
-
-      {sesion && !esPropio && (
-        <section className="section">
-          <div className="card card--flat">
-            <h2 className="section__title">¿Necesitas apoyo?</h2>
-            <p className="muted">
-              Conversa con {u.nombre}, envía una oferta con precio y forma de pago, y acuerden
-              las condiciones dentro del chat.
-            </p>
-            {chatError && (
-              <p className="alert alert--error" role="alert">
-                {chatError}
-              </p>
-            )}
-            <div className="form__actions">
-              <button
-                type="button"
-                className="btn btn--primary"
-                disabled={creandoChat}
-                onClick={abrirChat}
-              >
-                {creandoChat ? "Abriendo chat..." : `Chatear con ${u.nombre}`}
-              </button>
+          <div className="profile-cover__identity">
+            <div>
+              <h1>{u.nombre} <VerificadoBadge verificado={u.verificado} /></h1>
+              <p className="profile-headline">{headline.length > 180 ? `${headline.slice(0, 178)}…` : headline}</p>
+              <div className="profile-subline">
+                <span>{u.carrera}</span>
+                <span>{u.institucion}</span>
+                <span>Semestre {u.semestre}</span>
+                {servicios.length > 0 && <span>{servicios.length} servicio(s) publicado(s)</span>}
+              </div>
+            </div>
+            <div className="profile-cover__actions">
+              {!sesion ? (
+                <Link to="/login" className="btn btn--primary">Inicia sesión para contactar</Link>
+              ) : esPropio ? (
+                <Link to="/mi-perfil" className="btn btn--ghost">Editar mi perfil</Link>
+              ) : (
+                <button type="button" className="btn btn--primary" disabled={creandoChat} onClick={abrirChat}>
+                  {creandoChat ? "Abriendo chat..." : `Contactar a ${u.nombre?.split(" ")[0] || "estudiante"}`}
+                </button>
+              )}
+              {!esPropio && sesion && (
+                <button type="button" className="btn btn--ghost" onClick={alternarFavorito} disabled={favCargando}>
+                  {esFavorito ? "Quitar de favoritos" : "Guardar"}
+                </button>
+              )}
             </div>
           </div>
-        </section>
-      )}
-
-      <section className="section">
-        <h2 className="section__title">Portafolio</h2>
-        {portafolio.data.length === 0 ? (
-          <p className="empty">Este prestador aún no ha publicado trabajos.</p>
-        ) : (
-          <div className="grid-cards">
-            {portafolio.data.map((trabajo) => (
-              <article key={trabajo._id} className="prestador-card">
-                <h3 className="prestador-card__name">{trabajo.titulo}</h3>
-                <p className="row__sub">
-                  {trabajo.categoria_id?.nombre || "Sin categoría"} ·{" "}
-                  {formatearFecha(trabajo.fecha_realizado)}
-                </p>
-                <p className="prestador-card__desc">{trabajo.descripcion}</p>
-                <Link className="btn btn--ghost btn--sm" to={`/portafolio/${trabajo._id}`}>
-                  Ver trabajo
-                </Link>
-              </article>
-            ))}
+          <div className="profile-stats">
+            <div><strong>{u.calificacion_promedio ? Number(u.calificacion_promedio).toFixed(1) : "—"}</strong><span>Calificación</span></div>
+            <div><strong>{u.total_calificaciones || 0}</strong><span>Reseñas</span></div>
+            <div><strong>{servicios.length}</strong><span>Servicios</span></div>
+            <div><strong>{portafolio.length}</strong><span>Proyectos</span></div>
           </div>
-        )}
+        </div>
       </section>
 
-      <section className="section">
-        <h2 className="section__title">Calificaciones</h2>
-        {!sesion ? (
-          <p className="empty">
-            <Link to="/login">Inicia sesión</Link> para ver las calificaciones de este prestador.
-          </p>
-        ) : calificaciones && calificaciones.data.length > 0 ? (
-          <ul className="rows">
-            {calificaciones.data.map((c) => (
-              <li key={c._id} className="row">
-                <div className="row__main">
-                  <div>
-                    <p className="row__title">
-                      {c.calificador_id?.nombre || "Estudiante"}{" "}
-                      <Estrellas valor={c.puntaje} compacto />
-                    </p>
-                    <p className="row__sub">{c.comentario || "Sin comentario"}</p>
-                  </div>
-                  <span className="row__sub">{formatearFecha(c.fecha)}</span>
+      {chatError && <p className="alert alert--error">{chatError}</p>}
+      {favError && <p className="alert alert--error">{favError}</p>}
+
+      <div className="profile-layout">
+        <div className="profile-main">
+          <section className="profile-card">
+            <h2>Acerca de</h2>
+            <p>{u.biografia || perfil.descripcion || "Este estudiante todavía no ha escrito su presentación."}</p>
+            {u.habilidades?.length > 0 && (
+              <>
+                <h2 style={{ marginTop: 20 }}>Habilidades</h2>
+                <div className="profile-chip-list">
+                  {u.habilidades.map((h) => <span key={h}>{h}</span>)}
                 </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="empty">Aún no tiene calificaciones.</p>
-        )}
-      </section>
+              </>
+            )}
+          </section>
+
+          <section className="profile-card">
+            <div className="home-section__head" style={{ marginBottom: 12 }}>
+              <h2 style={{ margin: 0 }}>Servicios</h2>
+              <Link to={`/buscar?termino=${encodeURIComponent(u.nombre || "")}`} className="muted">Buscar similares</Link>
+            </div>
+            {servicios.length === 0 ? (
+              <p className="muted">Este estudiante aún no tiene servicios publicados.</p>
+            ) : (
+              <div className="gig-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+                {servicios.map((s) => (
+                  <TarjetaServicio key={s._id} servicio={{ ...s, prestador: { ...u, _id: perfil._id } }} />
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="profile-card">
+            <div className="home-section__head" style={{ marginBottom: 12 }}>
+              <h2 style={{ margin: 0 }}>Proyectos destacados</h2>
+            </div>
+            {portafolio.length === 0 ? (
+              <p className="muted">Aún no hay proyectos en el portafolio.</p>
+            ) : (
+              <div className="profile-feature-grid">
+                {portafolio.map((t) => (
+                  <Link key={t._id} to={`/portafolio/${t._id}`} className="profile-feature">
+                    {t.imagenes_urls?.[0] ? <img src={t.imagenes_urls[0]} alt="" /> : <div style={{ height: 120, background: "linear-gradient(135deg,#e9fbf2,#dceefb)" }} />}
+                    <div>
+                      <strong>{t.titulo}</strong>
+                      <span>{t.categoria_id?.nombre || "Proyecto"} · {formatearFecha(t.fecha_realizado)}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="profile-card">
+            <h2>Educación</h2>
+            <p><strong>{u.institucion}</strong></p>
+            <p className="muted">{u.carrera} · Semestre {u.semestre}</p>
+          </section>
+
+          <section className="profile-card">
+            <h2>Reseñas</h2>
+            {!sesion ? (
+              <p className="muted"><Link to="/login">Inicia sesión</Link> para ver las reseñas de este estudiante.</p>
+            ) : calificaciones?.data?.length > 0 ? (
+              <div className="offer-list">
+                {calificaciones.data.map((c) => (
+                  <article key={c._id} className="offer-card">
+                    <div className="offer-card__top">
+                      <strong>{c.calificador_id?.nombre || "Estudiante"}</strong>
+                      <Estrellas valor={c.puntaje} />
+                    </div>
+                    <p className="muted">{c.comentario || "Sin comentario"}</p>
+                    <span className="muted">{formatearFecha(c.fecha)}</span>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="muted">Aún no tiene reseñas.</p>
+            )}
+          </section>
+        </div>
+
+        <aside className="profile-side">
+          <section className="profile-card">
+            <h2>Datos rápidos</h2>
+            <p><strong>Verificación</strong><br />{u.verificado ? "Estudiante verificado" : "Pendiente de verificación"}</p>
+            <p style={{ marginTop: 12 }}><strong>Calificación</strong><br /><Estrellas valor={u.calificacion_promedio} total={u.total_calificaciones} /></p>
+            <p style={{ marginTop: 12 }}><strong>Categorías</strong></p>
+            <div className="profile-chip-list">
+              {(perfil.categorias || []).map((c) => <span key={c._id}>{c.nombre}</span>)}
+            </div>
+          </section>
+
+          <section className="profile-card">
+            <h2>Disponibilidad</h2>
+            {perfil.disponibilidad?.length ? (
+              <p>{perfil.disponibilidad.map((d) => `${DIAS[d.dia]} ${d.hora_inicio}-${d.hora_fin}`).join(" · ")}</p>
+            ) : <p className="muted">Sin horarios registrados.</p>}
+            {perfil.metodos_pago_aceptados?.length > 0 && (
+              <>
+                <h2 style={{ marginTop: 18 }}>Pagos aceptados</h2>
+                <div className="profile-chip-list">
+                  {perfil.metodos_pago_aceptados.map((m) => <span key={m}>{m}</span>)}
+                </div>
+              </>
+            )}
+          </section>
+
+          <section className="profile-card">
+            <h2>Contacto</h2>
+            <p className="muted">La conversación y el acuerdo se hacen dentro de TutorLink.</p>
+            {sesion && !esPropio && (
+              <button type="button" className="btn btn--primary btn--block" style={{ marginTop: 10 }} onClick={abrirChat} disabled={creandoChat}>
+                Enviar mensaje
+              </button>
+            )}
+          </section>
+        </aside>
+      </div>
     </main>
   );
 }

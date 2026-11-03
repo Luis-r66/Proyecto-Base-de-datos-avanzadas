@@ -3,6 +3,12 @@ import { AuthProvider } from "./context/AuthContext";
 import AppShell from "./components/AppShell";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
+import ServicioDetalle from "./pages/ServicioDetalle";
+import MisServicios from "./pages/MisServicios";
+import FormServicio from "./pages/FormServicio";
+import ConfirmarPedido from "./pages/ConfirmarPedido";
+import Pedidos from "./pages/Pedidos";
+import PedidoDetalle from "./pages/PedidoDetalle";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import MiPerfil from "./pages/MiPerfil";
@@ -25,6 +31,7 @@ import AdminVerificacion from "./pages/AdminVerificacion";
 import AdminReportes from "./pages/AdminReportes";
 import AdminCategorias from "./pages/AdminCategorias";
 import "./styles/global.css";
+import "./styles/theme.css";
 
 export default function App() {
   return (
@@ -39,6 +46,8 @@ export default function App() {
             <Route path="/portafolio/:id" element={<PortafolioDetalle />} />
             <Route path="/track" element={<Track />} />
             <Route path="/track/:codigo" element={<Track />} />
+            <Route path="/servicio/:id" element={<ServicioDetalle />} />
+            <Route path="/confirmar/:servicioId/:paquete" element={<ProtectedRoute><ConfirmarPedido /></ProtectedRoute>} />
             <Route
               path="/mi-perfil"
               element={
@@ -47,14 +56,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-          <Route
-            path="/buscar"
-            element={
-              <ProtectedRoute>
-                <Buscar />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/buscar" element={<Buscar />} />
           <Route
             path="/convertirme-prestador"
             element={

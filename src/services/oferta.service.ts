@@ -4,6 +4,8 @@ import { Oferta } from "../models/Oferta";
 import { Negociacion } from "../models/Negociacion";
 import { Notificacion } from "../models/Notificacion";
 import { Categoria } from "../models/Categoria";
+import { Servicio } from "../models/Servicio";
+import { crearPedidoDesdeOferta } from "./pedido.service";
 import { AppError } from "../middleware/errorHandler";
 import { withTransaction } from "../config/db";
 import { ACTIVE_NEGOTIATION_STATES } from "../config/indexes";
@@ -38,15 +40,36 @@ export async function crearOferta(
     throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoría no encontrada");
   }
 
+  let precioPublicado = data.precio_publicado;
+  if (data.servicio_id) {
+    const servicio: any = await Servicio.findById(data.servicio_id);
+    if (!servicio || servicio.estado !== "Activo") {
+      throw new AppError(404, "SERVICIO_NOT_FOUND", "Servicio no encontrado");
+    }
+    if (String(servicio.prestador_id) !== String(conv.prestador_id)) {
+      throw new AppError(400, "SERVICIO_INVALIDO", "El servicio no pertenece a este prestador");
+    }
+    if (!data.paquete_codigo) {
+      throw new AppError(400, "PAQUETE_REQUERIDO", "Selecciona un paquete del servicio");
+    }
+    const paquete = servicio.paquetes.find((p: any) => p.codigo === data.paquete_codigo);
+    if (!paquete) throw new AppError(404, "PAQUETE_NOT_FOUND", "Paquete no encontrado");
+    precioPublicado = paquete.precio;
+  }
+
   const oferta = await Oferta.create({
     conversacion_id: conv._id,
     emisor_id: userId,
     receptor_id: otro,
     categoria_id: data.categoria_id,
+    servicio_id: data.servicio_id,
+    paquete_codigo: data.paquete_codigo,
+    precio_publicado: precioPublicado,
     descripcion: data.descripcion,
     monto: data.monto,
     moneda: "COP",
     forma_pago: data.forma_pago,
+    metodo_pago_detalle: data.metodo_pago_detalle,
     plazo_entrega: data.plazo_entrega,
     estado: "pendiente",
   });
@@ -89,6 +112,29 @@ export async function aceptarOferta(userId: Types.ObjectId, ofertaId: Types.Obje
 
   const conv: any = await Conversacion.findById(oferta.conversacion_id);
   if (!conv) throw new AppError(404, "CONVERSACION_NOT_FOUND", "Conversación no encontrada");
+
+  if (oferta.servicio_id) {
+    const pedido = await crearPedidoDesdeOferta(oferta, conv);
+    oferta.estado = "aceptada";
+    oferta.fecha_respuesta = new Date();
+    oferta.pedido_id = (pedido as any)._id;
+    await oferta.save();
+
+    await Oferta.updateMany(
+      { conversacion_id: conv._id, _id: { $ne: oferta._id }, estado: "pendiente" },
+      { $set: { estado: "rechazada", fecha_respuesta: new Date() } }
+    );
+    await actualizarActividad(conv._id, `Pedido ${(pedido as any).codigo_seguimiento}`);
+    emitirAUsuario(oferta.emisor_id, "oferta:actualizada", { conversacion_id: conv._id });
+    emitirAConversacion(conv._id, "oferta:actualizada", {
+      conversacion_id: conv._id,
+      pedido_id: (pedido as any)._id,
+    });
+    return {
+      oferta: await Oferta.findById(oferta._id).lean(),
+      pedido,
+    };
+  }
 
   const activa = await Negociacion.findOne({
     solicitante_id: conv.solicitante_id,
@@ -246,10 +292,14 @@ export async function contraofertar(
     emisor_id: userId,
     receptor_id: original.emisor_id,
     categoria_id: data.categoria_id,
+    servicio_id: original.servicio_id,
+    paquete_codigo: original.paquete_codigo,
+    precio_publicado: original.precio_publicado,
     descripcion: data.descripcion,
     monto: data.monto,
     moneda: "COP",
     forma_pago: data.forma_pago,
+    metodo_pago_detalle: data.metodo_pago_detalle,
     plazo_entrega: data.plazo_entrega,
     estado: "pendiente",
     oferta_padre_id: original._id,

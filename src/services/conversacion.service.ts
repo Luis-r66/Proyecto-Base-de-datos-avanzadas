@@ -52,6 +52,7 @@ async function resumen(conv: any, userId: Types.ObjectId) {
           categorias: conv.prestador_id.categorias_ids || [],
           descripcion: conv.prestador_id.descripcion,
           tarifa_referencia: conv.prestador_id.tarifa_referencia,
+          metodos_pago_aceptados: conv.prestador_id.metodos_pago_aceptados,
         }
       : null,
     rol_usuario: esSolicitante ? "Solicitante" : "Prestador",

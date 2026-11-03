@@ -16,6 +16,7 @@ const TIPOS = {
   negociacion: "Negociación",
   calificacion: "Calificación",
   oferta: "Oferta",
+  pedido: "Pedido",
 };
 
 function destino(notificacion) {
@@ -23,6 +24,7 @@ function destino(notificacion) {
     return `/mensajes/${notificacion.conversacion_id}`;
   }
   if (notificacion.tipo === "negociacion") return `/negociaciones/${notificacion.referencia_id}`;
+  if (notificacion.tipo === "pedido") return `/pedidos/${notificacion.referencia_id}`;
   return "/negociaciones";
 }
 

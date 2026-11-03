@@ -3,15 +3,15 @@ import { HomeIcon, SearchIcon, ChatIcon, BriefcaseIcon, UserIcon } from "./Icons
 
 const ITEMS = [
   { to: "/", label: "Inicio", Icono: HomeIcon, end: true },
-  { to: "/buscar", label: "Buscar", Icono: SearchIcon },
+  { to: "/buscar", label: "Explorar", Icono: SearchIcon },
+  { to: "/pedidos", label: "Pedidos", Icono: BriefcaseIcon },
   { to: "/mensajes", label: "Mensajes", Icono: ChatIcon },
-  { to: "/negociaciones", label: "Negocios", Icono: BriefcaseIcon },
   { to: "/mi-perfil", label: "Perfil", Icono: UserIcon },
 ];
 
 export default function MobileNav() {
   return (
-    <nav className="mobile-nav" aria-label="Navegación principal móvil">
+    <nav className="mobile-nav" aria-label="Navegación móvil">
       {ITEMS.map(({ to, label, Icono, end }) => (
         <NavLink
           key={to}
@@ -19,7 +19,7 @@ export default function MobileNav() {
           end={end}
           className={({ isActive }) => `mobile-nav__link ${isActive ? "active" : ""}`}
         >
-          <Icono size={22} />
+          <Icono size={21} />
           <span>{label}</span>
         </NavLink>
       ))}

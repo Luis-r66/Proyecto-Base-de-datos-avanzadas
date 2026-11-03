@@ -4,6 +4,7 @@ import { Usuario } from "../models/Usuario";
 import { Categoria } from "../models/Categoria";
 import { MensajePredeterminado } from "../models/MensajePredeterminado";
 import { PerfilPrestador } from "../models/PerfilPrestador";
+import { Servicio } from "../models/Servicio";
 import { TrabajoPortafolio } from "../models/TrabajoPortafolio";
 import { Busqueda } from "../models/Busqueda";
 import { Favorito } from "../models/Favorito";
@@ -142,6 +143,94 @@ async function main() {
     console.log("  Perfil de Andrés creado (sin portafolio -> pendiente)");
   } else console.log("  Perfil de Andrés (ya existe)");
 
+
+  // --- Servicios publicados ---
+  async function ensureServicio(prestadorId: any, categoriaId: any, data: any) {
+    const existente = await Servicio.findOne({ prestador_id: prestadorId, titulo: data.titulo });
+    if (existente) {
+      console.log("  Servicio \"" + data.titulo + "\" (ya existe)");
+      return existente;
+    }
+    const servicio = await Servicio.create({
+      prestador_id: prestadorId,
+      categoria_id: categoriaId,
+      ...data,
+      estado: "Activo",
+      fecha_creacion: new Date(),
+      fecha_actualizacion: new Date(),
+    });
+    console.log("  Servicio \"" + data.titulo + "\" creado");
+    return servicio;
+  }
+
+  await ensureServicio(perfilSantiago._id, prog._id, {
+    titulo: "Asesoría de Python y fundamentos de programación",
+    descripcion: "Te acompaño desde cero en lógica, variables, ciclos, funciones y proyectos de Python. Revisamos tus talleres, preparamos parciales y dejamos tu código funcionando y explicado.",
+    etiquetas: ["Python", "Programación", "Parciales", "Talleres"],
+    imagen_portada_url: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?auto=format&fit=crop&w=1200&q=80",
+    galeria_urls: ["https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80"],
+    paquetes: [
+      { codigo: "basico", nombre: "Básico", descripcion: "Una sesión de refuerzo y revisión de dudas.", precio: 30000, dias_entrega: 3, revisiones: 1, incluye: ["Sesión de 1 hora", "Resumen de temas", "Revisión de un taller"] },
+      { codigo: "estandar", nombre: "Estándar", descripcion: "Acompañamiento para un taller o parcial.", precio: 45000, dias_entrega: 2, revisiones: 2, incluye: ["Dos sesiones de 1 hora", "Ejercicios guiados", "Revisión de código"] },
+      { codigo: "premium", nombre: "Premium", descripcion: "Preparación completa y proyecto de refuerzo.", precio: 70000, dias_entrega: 1, revisiones: 3, incluye: ["Tres sesiones", "Proyecto guiado", "Material de estudio", "Revisión final"] },
+    ],
+    faqs: [
+      { pregunta: "¿Puedo pedir ayuda con un tema específico?", respuesta: "Sí. Cuéntame el tema y ajustamos el paquete a lo que necesitas." },
+      { pregunta: "¿Las clases son virtuales?", respuesta: "Sí, coordinamos videollamada o trabajo guiado por chat." },
+    ],
+  });
+
+  await ensureServicio(perfilSantiago._id, calculo1._id, {
+    titulo: "Preparación de Cálculo I y II paso a paso",
+    descripcion: "Refuerza límites, derivadas, integrales y aplicaciones con ejercicios guiados. Preparamos tu parcial o recuperación con un plan de estudio claro.",
+    etiquetas: ["Cálculo", "Derivadas", "Integrales", "Parciales"],
+    imagen_portada_url: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=1200&q=80",
+    galeria_urls: [],
+    paquetes: [
+      { codigo: "basico", nombre: "Básico", descripcion: "Refuerzo de un tema puntual.", precio: 30000, dias_entrega: 3, revisiones: 1, incluye: ["Sesión de 1 hora", "Ejercicios resueltos"] },
+      { codigo: "estandar", nombre: "Estándar", descripcion: "Preparación para un parcial.", precio: 50000, dias_entrega: 2, revisiones: 2, incluye: ["Dos sesiones", "Simulacro de parcial", "Retroalimentación"] },
+    ],
+    faqs: [],
+  });
+
+  await ensureServicio(perfilSantiago._id, ingles._id, {
+    titulo: "Inglés académico para exposiciones y escritura",
+    descripcion: "Mejora tu pronunciación, estructura tus exposiciones y revisa tus ensayos académicos. Trabajamos con tus propios textos y presentaciones.",
+    etiquetas: ["Inglés", "Speaking", "Writing", "Exposiciones"],
+    imagen_portada_url: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80",
+    galeria_urls: [],
+    paquetes: [
+      { codigo: "basico", nombre: "Básico", descripcion: "Revisión de un texto corto.", precio: 25000, dias_entrega: 3, revisiones: 1, incluye: ["Revisión de 500 palabras", "Comentarios de mejora"] },
+      { codigo: "estandar", nombre: "Estándar", descripcion: "Práctica de exposición.", precio: 40000, dias_entrega: 2, revisiones: 2, incluye: ["Sesión de práctica", "Corrección de pronunciación", "Guion ajustado"] },
+    ],
+    faqs: [],
+  });
+
+  await ensureServicio(perfilAndres._id, estadistica._id, {
+    titulo: "Apoyo en estadística y análisis de datos",
+    descripcion: "Te ayudo a entender probabilidad, estadística descriptiva y análisis de datos con ejercicios aplicados. Incluye orientación para interpretar tus resultados.",
+    etiquetas: ["Estadística", "Datos", "Probabilidad", "Excel"],
+    imagen_portada_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+    galeria_urls: [],
+    paquetes: [
+      { codigo: "basico", nombre: "Básico", descripcion: "Sesión de refuerzo y ejercicios.", precio: 25000, dias_entrega: 3, revisiones: 1, incluye: ["Sesión de 1 hora", "Guía de ejercicios"] },
+      { codigo: "estandar", nombre: "Estándar", descripcion: "Apoyo para un trabajo o parcial.", precio: 45000, dias_entrega: 2, revisiones: 2, incluye: ["Dos sesiones", "Revisión de resultados"] },
+    ],
+    faqs: [],
+  });
+
+  await ensureServicio(perfilAndres._id, prog._id, {
+    titulo: "Fundamentos de programación desde cero",
+    descripcion: "Aprende lógica de programación con ejemplos sencillos y acompañamiento paso a paso. Ideal si estás empezando y necesitas perderle el miedo al código.",
+    etiquetas: ["Programación", "Lógica", "Principiantes"],
+    imagen_portada_url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80",
+    galeria_urls: [],
+    paquetes: [
+      { codigo: "basico", nombre: "Básico", descripcion: "Introducción y primeros ejercicios.", precio: 20000, dias_entrega: 3, revisiones: 1, incluye: ["Sesión de 1 hora", "Ejercicios básicos"] },
+    ],
+    faqs: [],
+  });
+
   // --- Búsqueda y favorito de Luis ---
   if (!(await Busqueda.findOne({ usuario_id: luis._id, termino_busqueda: "python" }))) {
     await searchPrestadores(luis._id, { categoria_id: prog._id.toString(), page: 1, limit: 10, sort: "rating", termino: "python" });
@@ -212,7 +301,7 @@ async function main() {
   const andresFinal = await Usuario.findById(andres._id);
 
   console.log("\n=== RESUMEN ===");
-  for (const n of ["usuarios","perfiles_prestador","trabajos_portafolio","categorias","negociaciones","mensajes","mensajes_predeterminados","busquedas","calificaciones","favoritos","notificaciones","reportes"]) {
+  for (const n of ["usuarios","perfiles_prestador","trabajos_portafolio","categorias","servicios","negociaciones","pedidos","mensajes","mensajes_predeterminados","busquedas","calificaciones","favoritos","notificaciones","reportes"]) {
     console.log(`  ${n}: ${await db.collection(n).countDocuments()}`);
   }
   console.log(`  Santiago verificado: ${santiagoFinal?.verificado}`);

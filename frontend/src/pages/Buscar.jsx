@@ -1,76 +1,56 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import TarjetaPrestador from "../components/TarjetaPrestador";
+import TarjetaServicio from "../components/TarjetaServicio";
 import { listarCategorias } from "../api/categorias";
-import { buscarPrestadores } from "../api/busquedas";
+import { listarServicios } from "../api/servicios";
 import { getErrorMessage } from "../utils/errores";
-import "../styles/forms.css";
-import "../styles/cards.css";
+import { MONTO_MAXIMO_COP } from "../utils/moneda";
 
 const VACIO = { data: [], pagination: { page: 1, totalPages: 1, total: 0 } };
 
 export default function Buscar() {
   const [params] = useSearchParams();
   const [categorias, setCategorias] = useState([]);
-  const [categoriaId, setCategoriaId] = useState("");
-  const [termino, setTermino] = useState(params.get("termino") || "");
-  const [sort, setSort] = useState("rating");
+  const [filtros, setFiltros] = useState({
+    categoria_id: params.get("cat") || "",
+    termino: params.get("termino") || "",
+    precio_max: "",
+    dias_max: "",
+    calificacion_min: "",
+    sort: "recomendado",
+  });
   const [resultado, setResultado] = useState(VACIO);
   const [pagina, setPagina] = useState(1);
-  const [cargandoCategorias, setCargandoCategorias] = useState(true);
+  const [cargando, setCargando] = useState(true);
   const [buscando, setBuscando] = useState(false);
   const [error, setError] = useState("");
-  const [buscado, setBuscado] = useState(false);
 
-  const padres = categorias
-    .filter((categoria) => !categoria.categoria_padre_id)
-    .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-  const hijasDe = (padreId) =>
-    categorias
-      .filter((categoria) => categoria.categoria_padre_id === padreId)
-      .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-  const idsCategorias = new Set(categorias.map((categoria) => categoria._id));
-  const huerfanas = categorias.filter(
-    (categoria) =>
-      categoria.categoria_padre_id && !idsCategorias.has(categoria.categoria_padre_id)
-  );
+  const padres = categorias.filter((c) => !c.categoria_padre_id);
+  const hijasDe = (padreId) => categorias.filter((c) => c.categoria_padre_id === padreId);
 
   useEffect(() => {
-    let activo = true;
     listarCategorias({ page: 1, limit: 50 })
-      .then((datos) => {
-        if (!activo) return;
-        setCategorias(datos.data);
-        const solicitada = params.get("cat");
-        const valida = datos.data.some((c) => c._id === solicitada);
-        setCategoriaId(valida ? solicitada : datos.data[0]?._id || "");
-      })
-      .catch((err) => {
-        if (activo) setError(getErrorMessage(err));
-      })
-      .finally(() => {
-        if (activo) setCargandoCategorias(false);
-      });
-    return () => {
-      activo = false;
-    };
+      .then((datos) => setCategorias(datos.data || []))
+      .catch((err) => setError(getErrorMessage(err)));
   }, []);
 
   useEffect(() => {
-    if (categoriaId) buscar(1);
-  }, [categoriaId]);
+    buscar(1);
+  }, []);
 
-  async function buscar(numeroPagina = 1, opciones = {}) {
-    if (!categoriaId) return;
+  async function buscar(numeroPagina = 1) {
     setBuscando(true);
     setError("");
     try {
-      const datos = await buscarPrestadores({
-        categoria_id: categoriaId,
+      const datos = await listarServicios({
         page: numeroPagina,
-        limit: 9,
-        sort: opciones.sort ?? sort,
-        ...(termino.trim() ? { termino: termino.trim() } : {}),
+        limit: 12,
+        sort: filtros.sort,
+        ...(filtros.categoria_id ? { categoria_id: filtros.categoria_id } : {}),
+        ...(filtros.termino.trim() ? { termino: filtros.termino.trim() } : {}),
+        ...(filtros.precio_max ? { precio_max: Number(filtros.precio_max) } : {}),
+        ...(filtros.dias_max ? { dias_max: Number(filtros.dias_max) } : {}),
+        ...(filtros.calificacion_min ? { calificacion_min: Number(filtros.calificacion_min) } : {}),
       });
       setResultado(datos);
       setPagina(datos.pagination.page);
@@ -79,7 +59,7 @@ export default function Buscar() {
       setResultado(VACIO);
     } finally {
       setBuscando(false);
-      setBuscado(true);
+      setCargando(false);
     }
   }
 
@@ -88,135 +68,135 @@ export default function Buscar() {
     buscar(1);
   }
 
+  function cambiar(campo, valor) {
+    setFiltros((actual) => ({ ...actual, [campo]: valor }));
+  }
+
+  const categoriaActual = categorias.find((c) => c._id === filtros.categoria_id);
+  const titulo = categoriaActual?.nombre || (filtros.termino ? `Resultados para “${filtros.termino}”` : "Todos los servicios");
+
   return (
-    <main className="container">
-      <h1 className="page-title">Buscar prestadores</h1>
-      <p className="muted">Elige una categoría y encuentra estudiantes que ofrecen apoyo.</p>
+    <main className="search-page">
+      <aside className="search-filters">
+        <h2>Filtros</h2>
+        <form onSubmit={enviar}>
+          <div className="field">
+            <label htmlFor="scategoria">Categoría</label>
+            <select id="scategoria" value={filtros.categoria_id} onChange={(e) => cambiar("categoria_id", e.target.value)}>
+              <option value="">Todas</option>
+              {padres.map((padre) => {
+                const hijas = hijasDe(padre._id);
+                if (hijas.length === 0) return <option key={padre._id} value={padre._id}>{padre.nombre}</option>;
+                return (
+                  <optgroup key={padre._id} label={padre.nombre}>
+                    <option value={padre._id}>{padre.nombre} (todas)</option>
+                    {hijas.map((hija) => (
+                      <option key={hija._id} value={hija._id}>{hija.nombre}</option>
+                    ))}
+                  </optgroup>
+                );
+              })}
+            </select>
+          </div>
 
-      <section className="card card--flat">
-        {cargandoCategorias ? (
-          <p className="muted">Cargando categorías...</p>
-        ) : categorias.length === 0 ? (
-          <p className="empty">No hay categorías disponibles todavia.</p>
+          <div className="field">
+            <label htmlFor="stermino">Buscar</label>
+            <input
+              id="stermino"
+              value={filtros.termino}
+              onChange={(e) => cambiar("termino", e.target.value)}
+              placeholder="Ej. Python, cálculo, inglés"
+              maxLength={100}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="sprecio">Presupuesto máximo</label>
+            <input
+              id="sprecio"
+              type="number"
+              min="10000"
+              max={MONTO_MAXIMO_COP}
+              step="5000"
+              value={filtros.precio_max}
+              onChange={(e) => cambiar("precio_max", e.target.value)}
+              placeholder="Ej. 50000"
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="sdias">Entrega máxima</label>
+            <select id="sdias" value={filtros.dias_max} onChange={(e) => cambiar("dias_max", e.target.value)}>
+              <option value="">Cualquier plazo</option>
+              <option value="1">1 día</option>
+              <option value="3">3 días</option>
+              <option value="5">5 días</option>
+              <option value="7">7 días</option>
+            </select>
+          </div>
+
+          <div className="field">
+            <label htmlFor="srating">Calificación mínima</label>
+            <select id="srating" value={filtros.calificacion_min} onChange={(e) => cambiar("calificacion_min", e.target.value)}>
+              <option value="">Cualquiera</option>
+              <option value="4">4 estrellas o más</option>
+              <option value="4.5">4.5 estrellas o más</option>
+            </select>
+          </div>
+
+          <div className="field">
+            <label htmlFor="ssort">Ordenar por</label>
+            <select id="ssort" value={filtros.sort} onChange={(e) => cambiar("sort", e.target.value)}>
+              <option value="recomendado">Recomendados</option>
+              <option value="rating">Mejor calificados</option>
+              <option value="precio_asc">Menor precio</option>
+              <option value="precio_desc">Mayor precio</option>
+              <option value="reciente">Más recientes</option>
+            </select>
+          </div>
+
+          <button type="submit" className="btn btn--primary btn--block" disabled={buscando}>
+            {buscando ? "Buscando..." : "Aplicar filtros"}
+          </button>
+        </form>
+      </aside>
+
+      <section className="search-results">
+        <div className="search-results__head">
+          <div>
+            <h1>{titulo}</h1>
+            <p>{resultado.pagination.total} servicio(s) encontrados</p>
+          </div>
+        </div>
+
+        {error && <p className="alert alert--error" role="alert">{error}</p>}
+
+        {cargando || buscando ? (
+          <div className="gig-grid">
+            {[1, 2, 3, 4, 5, 6].map((n) => <div key={n} className="gig-card gig-card--skeleton" aria-hidden="true" />)}
+          </div>
+        ) : resultado.data.length === 0 ? (
+          <p className="empty">No encontramos servicios con esos filtros. Prueba con otra categoría o amplía tu presupuesto.</p>
         ) : (
-          <form className="form" onSubmit={enviar}>
-            <div className="grid-3">
-              <div className="field">
-                <label htmlFor="bcategoria">Categoría</label>
-                <select
-                  id="bcategoria"
-                  value={categoriaId}
-                  onChange={(e) => setCategoriaId(e.target.value)}
-                >
-                  {padres.map((padre) => {
-                    const hijas = hijasDe(padre._id);
-                    if (hijas.length === 0) {
-                      return (
-                        <option key={padre._id} value={padre._id}>
-                          {padre.nombre}
-                        </option>
-                      );
-                    }
-                    return (
-                      <optgroup key={padre._id} label={padre.nombre}>
-                        <option value={padre._id}>{padre.nombre} (todas)</option>
-                        {hijas.map((categoria) => (
-                          <option key={categoria._id} value={categoria._id}>
-                            {categoria.nombre}
-                          </option>
-                        ))}
-                      </optgroup>
-                    );
-                  })}
-                  {huerfanas.map((categoria) => (
-                    <option key={categoria._id} value={categoria._id}>
-                      {categoria.nombre}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="field">
-                <label htmlFor="btermino">Descripción (opcional)</label>
-                <input
-                  id="btermino"
-                  value={termino}
-                  onChange={(e) => setTermino(e.target.value)}
-                  placeholder="cálculo, tesis, excel..."
-                  maxLength={100}
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="bsort">Ordenar por</label>
-                <select
-                  id="bsort"
-                  value={sort}
-                  onChange={(e) => {
-                    setSort(e.target.value);
-                    buscar(1, { sort: e.target.value });
-                  }}
-                >
-                  <option value="rating">Mejor calificados</option>
-                  <option value="reciente">Más recientes</option>
-                </select>
-              </div>
-            </div>
-            <div className="form__actions">
-              <button type="submit" className="btn btn--primary" disabled={buscando || !categoriaId}>
-                {buscando ? "Buscando..." : "Buscar"}
-              </button>
-            </div>
-          </form>
-        )}
-      </section>
-
-      {error && (
-        <p className="alert alert--error" role="alert">
-          {error}
-        </p>
-      )}
-
-      {buscando ? (
-        <p className="muted">Buscando prestadores...</p>
-      ) : buscado && resultado.data.length === 0 ? (
-        <p className="empty">
-          No encontramos prestadores para esta categoría. Prueba con otra o vuelve más tarde.
-        </p>
-      ) : (
-        <>
-          <p className="muted result-count">
-            {resultado.pagination.total} prestador(es) encontrados
-          </p>
-          <div className="grid-cards">
-            {resultado.data.map((perfil) => (
-              <TarjetaPrestador key={perfil._id} perfil={perfil} />
+          <div className="gig-grid">
+            {resultado.data.map((servicio) => (
+              <TarjetaServicio key={servicio._id} servicio={servicio} />
             ))}
           </div>
-        </>
-      )}
+        )}
 
-      {resultado.pagination.totalPages > 1 && (
-        <div className="pagination">
-          <button
-            type="button"
-            className="btn btn--sm"
-            disabled={pagina <= 1 || buscando}
-            onClick={() => buscar(pagina - 1)}
-          >
-            Anterior
-          </button>
-          <span className="muted">
-            Página {pagina} de {resultado.pagination.totalPages}
-          </span>
-          <button
-            type="button"
-            className="btn btn--sm"
-            disabled={pagina >= resultado.pagination.totalPages || buscando}
-            onClick={() => buscar(pagina + 1)}
-          >
-            Siguiente
-          </button>
-        </div>
-      )}
+        {resultado.pagination.totalPages > 1 && (
+          <div className="pagination">
+            <button type="button" className="btn btn--sm" disabled={pagina <= 1 || buscando} onClick={() => buscar(pagina - 1)}>
+              Anterior
+            </button>
+            <span className="muted">Página {pagina} de {resultado.pagination.totalPages}</span>
+            <button type="button" className="btn btn--sm" disabled={pagina >= resultado.pagination.totalPages || buscando} onClick={() => buscar(pagina + 1)}>
+              Siguiente
+            </button>
+          </div>
+        )}
+      </section>
     </main>
   );
 }

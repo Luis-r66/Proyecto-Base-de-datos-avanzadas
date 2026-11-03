@@ -34,3 +34,15 @@ export function requireRole(...roles: string[]) {
     next();
   };
 }
+
+export function optionalAuthenticate(req: Request, _res: Response, next: NextFunction) {
+  const h = req.headers.authorization;
+  if (!h || !h.startsWith("Bearer ")) return next();
+  try {
+    const p = verifyAccessToken(h.slice(7));
+    req.user = { sub: new Types.ObjectId(p.sub), email: p.email, tipo_usuario: p.tipo_usuario };
+  } catch {
+    // La b?squeda p?blica sigue funcionando sin sesi?n.
+  }
+  next();
+}

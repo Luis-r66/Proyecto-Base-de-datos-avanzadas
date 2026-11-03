@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import SiteHeader from "./SiteHeader";
 import MobileNav from "./MobileNav";
 
 const RUTAS_AUTH = ["/login", "/registro"];
@@ -24,7 +23,7 @@ export default function AppShell({ children }) {
     return (
       <div className="auth-shell">
         <Link to="/" className="auth-shell__brand">
-          <span className="brand-mark">TL</span>
+          <span className="site-brand__mark">TL</span>
           TutorLink
         </Link>
         {children}
@@ -32,38 +31,25 @@ export default function AppShell({ children }) {
     );
   }
 
-  if (!usuario) {
-    return (
-      <div className="guest-shell">
-        <header className="guest-topbar">
-          <div className="guest-topbar__inner">
-            <Link to="/" className="guest-topbar__brand">
-              <span className="brand-mark">TL</span>
-              TutorLink
-            </Link>
-            <nav className="guest-topbar__nav" aria-label="Navegación de visitante">
-              <Link to="/login" className="btn btn--ghost btn--sm">
-                Iniciar sesión
-              </Link>
-              <Link to="/registro" className="btn btn--primary btn--sm">
-                Crear cuenta
-              </Link>
-            </nav>
-          </div>
-        </header>
-        <div className="app-content">{children}</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="app-shell">
-      <Sidebar />
-      <div className="app-body">
-        <Topbar />
-        <div className="app-content">{children}</div>
-      </div>
-      <MobileNav />
+    <div className="app-shell app-shell--market">
+      <SiteHeader />
+      <div className="app-content">{children}</div>
+      <footer className="site-footer">
+        <div className="site-footer__inner">
+          <Link to="/" className="site-brand">
+            <span className="site-brand__mark">TL</span>
+            <span className="site-brand__text">TutorLink</span>
+          </Link>
+          <p>Apoyo académico entre estudiantes de la Uniautónoma del Cauca.</p>
+          <nav>
+            <Link to="/buscar">Explorar</Link>
+            <Link to="/track">Seguimiento</Link>
+            <Link to="/registro">Crear cuenta</Link>
+          </nav>
+        </div>
+      </footer>
+      {usuario && <MobileNav />}
     </div>
   );
 }

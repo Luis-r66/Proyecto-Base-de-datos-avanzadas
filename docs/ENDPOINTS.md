@@ -168,6 +168,39 @@ Propuesta --negociar--> Negociando --acordar--> Acordado --en-progreso--> En_pro
 
 Reglas: precio y forma de pago obligatorios; monto entero entre `10000` y `10000000` COP; una negociación activa por par; aceptar una oferta rechaza las demás ofertas pendientes de la conversación.
 
+
+
+## Servicios (marketplace)
+
+| Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
+|--------|------|-----|----------------|-----------|
+| GET | `/api/servicios` | Publico | `?categoria_id&termino&precio_min&precio_max&dias_max&calificacion_min&sort&page&limit` | `{data, pagination}` |
+| GET | `/api/servicios/destacados` | Publico | `?limit` | `{data}` |
+| GET | `/api/servicios/:id` | Publico | - | servicio con prestador, categoria y paquetes |
+| GET | `/api/servicios/mios` | Prestador | - | `{data}` |
+| POST | `/api/servicios` | Prestador | `{categoria_id,titulo,descripcion,imagen_portada_url,paquetes[],etiquetas?,faqs?,estado?}` | 201 servicio |
+| PATCH | `/api/servicios/:id` | Due?o | Campos parciales | 200 servicio |
+| DELETE | `/api/servicios/:id` | Due?o | - | 200 `{eliminado:true}` |
+
+Cada paquete: `{codigo:"basico"|"estandar"|"premium", nombre, precio, dias_entrega, revisiones, incluye[]}`. El paquete basico es obligatorio y los precios estan entre 10000 y 10000000 COP.
+
+## Pedidos y ofertas de servicio
+
+| Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
+|--------|------|-----|----------------|-----------|
+| POST | `/api/pedidos` | Autenticado | `{servicio_id,paquete_codigo,metodo_pago,metodo_pago_detalle?}` | 201 pedido `Acordado` |
+| GET | `/api/pedidos` | Autenticado | - | compras del usuario |
+| GET | `/api/pedidos/ventas` | Autenticado | - | ventas del usuario |
+| GET | `/api/pedidos/:id` | Participante | - | pedido |
+| PATCH | `/api/pedidos/:id/iniciar` | Prestador | - | `En_progreso` |
+| PATCH | `/api/pedidos/:id/entregar` | Prestador | `{nota_entrega?}` | `Entregado` |
+| PATCH | `/api/pedidos/:id/revision` | Comprador | `{nota?}` | `Revision` |
+| PATCH | `/api/pedidos/:id/completar` | Comprador | - | `Completado` |
+| PATCH | `/api/pedidos/:id/cancelar` | Participante | - | `Cancelado` (solo desde `Acordado`) |
+
+Las ofertas de servicio usan `POST /api/conversaciones/:id/ofertas` con `servicio_id`, `paquete_codigo` y `precio_publicado` opcionales. Al aceptar una oferta con servicio se crea un pedido; sin servicio se mantiene la negociacion personalizada.
+
+
 ## Mensajes y notificaciones
 
 | Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |

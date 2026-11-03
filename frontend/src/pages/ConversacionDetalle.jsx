@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import VerificadoBadge from "../components/VerificadoBadge";
 import ChatConversacion from "../components/ChatConversacion";
@@ -28,6 +28,7 @@ const ESTADOS = {
 
 export default function ConversacionDetalle() {
   const { id } = useParams();
+  const [params] = useSearchParams();
   const { usuario } = useAuth();
   const navigate = useNavigate();
   const [conv, setConv] = useState(null);
@@ -74,7 +75,16 @@ export default function ConversacionDetalle() {
         await contraofertar(contraDe._id, payload);
         setContraDe(null);
       } else {
-        await crearOferta(id, payload);
+        const servicioId = params.get("servicio");
+        const payloadServicio = servicioId
+          ? {
+              ...payload,
+              servicio_id: servicioId,
+              paquete_codigo: params.get("paquete") || "basico",
+              precio_publicado: params.get("precio") ? Number(params.get("precio")) : undefined,
+            }
+          : payload;
+        await crearOferta(id, payloadServicio);
       }
       setErrorOferta("");
       await cargarOfertas();
@@ -91,7 +101,9 @@ export default function ConversacionDetalle() {
     try {
       const resultado = await accion(oferta._id);
       await cargarOfertas();
-      if (resultado?.negociacion?._id) {
+      if (resultado?.pedido?._id) {
+        navigate(`/pedidos/${resultado.pedido._id}`);
+      } else if (resultado?.negociacion?._id) {
         navigate(`/negociaciones/${resultado.negociacion._id}`);
       }
     } catch (err) {
@@ -125,6 +137,16 @@ export default function ConversacionDetalle() {
   const otro = conv.otra_parte || {};
   const categorias = conv.prestador?.categorias || [];
   const activas = ofertas.filter((oferta) => oferta.estado === "pendiente");
+  const servicioTitulo = params.get("titulo");
+  const precioServicio = params.get("precio");
+  const ofertaInicial = servicioTitulo
+    ? {
+        categoria_id: params.get("categoria") || categorias[0]?._id || "",
+        descripcion: `Servicio: ${servicioTitulo}. Paquete ${params.get("paquete") || "b?sico"}.`,
+        monto: precioServicio ? Number(precioServicio) : undefined,
+        forma_pago: conv.prestador?.metodos_pago_aceptados?.[0] || "",
+      }
+    : null;
 
   return (
     <main className="container chat-page">
@@ -234,11 +256,13 @@ export default function ConversacionDetalle() {
                       )}
 
                       {oferta.estado === "aceptada" && oferta.negociacion_id && (
-                        <Link
-                          to={`/negociaciones/${oferta.negociacion_id}`}
-                          className="btn btn--ghost btn--sm"
-                        >
+                        <Link to={`/negociaciones/${oferta.negociacion_id}`} className="btn btn--ghost btn--sm">
                           Ver contrato
+                        </Link>
+                      )}
+                      {oferta.estado === "aceptada" && oferta.pedido_id && (
+                        <Link to={`/pedidos/${oferta.pedido_id}`} className="btn btn--ghost btn--sm">
+                          Ver pedido
                         </Link>
                       )}
                     </article>
@@ -258,9 +282,10 @@ export default function ConversacionDetalle() {
               {contraDe ? "Contraoferta" : "Nueva oferta"}
             </h2>
             <OfertaForm
-              key={contraDe?._id || "nueva"}
+              key={contraDe?._id || (ofertaInicial ? "servicio" : "nueva")}
               categorias={categorias}
-              initial={contraDe}
+              metodosPago={conv.prestador?.metodos_pago_aceptados || []}
+              initial={contraDe || ofertaInicial}
               onSubmit={enviarOferta}
               saving={guardando}
               error={errorOferta}

@@ -15,14 +15,19 @@ export interface IOferta extends Document {
   emisor_id: Types.ObjectId;
   receptor_id: Types.ObjectId;
   categoria_id: Types.ObjectId;
+  servicio_id?: Types.ObjectId;
+  paquete_codigo?: "basico" | "estandar" | "premium";
+  precio_publicado?: number;
   descripcion: string;
   monto: number;
   moneda: string;
   forma_pago: string;
+  metodo_pago_detalle?: string;
   plazo_entrega?: string;
   estado: EstadoOferta;
   oferta_padre_id?: Types.ObjectId;
   negociacion_id?: Types.ObjectId;
+  pedido_id?: Types.ObjectId;
   fecha_creacion: Date;
   fecha_respuesta?: Date;
 }
@@ -33,10 +38,14 @@ const ofertaSchema = new Schema<IOferta>(
     emisor_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
     receptor_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
     categoria_id: { type: Schema.Types.ObjectId, ref: "Categoria", required: true },
+    servicio_id: { type: Schema.Types.ObjectId, ref: "Servicio" },
+    paquete_codigo: { type: String, enum: ["basico", "estandar", "premium"] },
+    precio_publicado: { type: Number, min: MONTO_MINIMO_COP, max: MONTO_MAXIMO_COP },
     descripcion: { type: String, required: true, trim: true, maxlength: 5000 },
     monto: { type: Number, required: true, min: MONTO_MINIMO_COP, max: MONTO_MAXIMO_COP, validate: Number.isInteger },
     moneda: { type: String, enum: ["COP"], default: "COP" },
     forma_pago: { type: String, required: true, trim: true, maxlength: 200 },
+    metodo_pago_detalle: { type: String, trim: true, maxlength: 300 },
     plazo_entrega: { type: String, trim: true, maxlength: 200 },
     estado: {
       type: String,
@@ -46,6 +55,7 @@ const ofertaSchema = new Schema<IOferta>(
     },
     oferta_padre_id: { type: Schema.Types.ObjectId, ref: "Oferta" },
     negociacion_id: { type: Schema.Types.ObjectId, ref: "Negociacion" },
+    pedido_id: { type: Schema.Types.ObjectId, ref: "Pedido" },
     fecha_creacion: { type: Date, default: Date.now },
     fecha_respuesta: { type: Date },
   },

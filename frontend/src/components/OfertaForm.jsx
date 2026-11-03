@@ -3,6 +3,7 @@ import { MONTO_MINIMO_COP, MONTO_MAXIMO_COP, formatearCOP } from "../utils/moned
 
 export default function OfertaForm({
   categorias = [],
+  metodosPago = [],
   initial = null,
   onSubmit,
   saving = false,
@@ -14,12 +15,15 @@ export default function OfertaForm({
   );
   const [descripcion, setDescripcion] = useState(initial?.descripcion || "");
   const [monto, setMonto] = useState(initial?.monto != null ? String(initial.monto) : "");
-  const [formaPago, setFormaPago] = useState(initial?.forma_pago || "");
+  const opcionesPago = [...new Set([...(metodosPago || []), initial?.forma_pago].filter(Boolean))];
+  const [formaPago, setFormaPago] = useState(initial?.forma_pago || opcionesPago[0] || "");
+  const [otroPago, setOtroPago] = useState("");
   const [plazo, setPlazo] = useState(initial?.plazo_entrega || "");
   const [errorLocal, setErrorLocal] = useState("");
 
   const mensaje = errorLocal || error;
-  const completo = categoriaId && descripcion.trim() && monto !== "" && formaPago.trim();
+  const metodoFinal = formaPago === "Otro" ? otroPago.trim() : formaPago.trim();
+  const completo = categoriaId && descripcion.trim() && monto !== "" && metodoFinal;
 
   function enviar(evento) {
     evento.preventDefault();
@@ -36,7 +40,7 @@ export default function OfertaForm({
       categoria_id: categoriaId,
       descripcion: descripcion.trim(),
       monto: Number(monto),
-      forma_pago: formaPago.trim(),
+      forma_pago: metodoFinal,
       plazo_entrega: plazo.trim() || undefined,
     });
   }
@@ -98,14 +102,26 @@ export default function OfertaForm({
           {monto !== "" && <small className="muted">Total: {formatearCOP(monto)}</small>}
         </div>
         <div className="field">
-          <label htmlFor="ofpago">Forma de pago</label>
-          <input
-            id="ofpago"
-            value={formaPago}
-            onChange={(evento) => setFormaPago(evento.target.value)}
-            placeholder="Transferencia"
-            required
-          />
+          <label htmlFor="ofpago">Medio de pago</label>
+          {opcionesPago.length > 0 ? (
+            <>
+              <select id="ofpago" value={formaPago} onChange={(evento) => setFormaPago(evento.target.value)} required>
+                {opcionesPago.map((m) => <option key={m} value={m}>{m}</option>)}
+                <option value="Otro">Otro</option>
+              </select>
+              {formaPago === "Otro" && (
+                <input value={otroPago} onChange={(evento) => setOtroPago(evento.target.value)} placeholder="?Cu?l medio de pago?" required />
+              )}
+            </>
+          ) : (
+            <input
+              id="ofpago"
+              value={formaPago}
+              onChange={(evento) => setFormaPago(evento.target.value)}
+              placeholder="Transferencia, Nequi, efectivo..."
+              required
+            />
+          )}
         </div>
       </div>
 

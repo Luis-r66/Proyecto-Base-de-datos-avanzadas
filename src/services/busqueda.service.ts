@@ -23,7 +23,7 @@ async function idsConDescendientes(categoriaId: string): Promise<Types.ObjectId[
   return Array.from(encontrados).map((id) => new Types.ObjectId(id));
 }
 
-export async function searchPrestadores(userId: Types.ObjectId, data: SearchInput) {
+export async function searchPrestadores(userId: Types.ObjectId | null, data: SearchInput) {
   if (!(await Categoria.findById(data.categoria_id))) {
     throw new AppError(404, "CATEGORIA_NOT_FOUND", "Categoría no encontrada");
   }
@@ -60,11 +60,13 @@ export async function searchPrestadores(userId: Types.ObjectId, data: SearchInpu
     PerfilPrestador.aggregate(pipeline),
     PerfilPrestador.countDocuments({ estado: "Activo", categorias_ids: { $in: idsCategoria } }),
   ]);
-  await Busqueda.create({
-    usuario_id: userId, termino_busqueda: data.termino || "",
-    categoria_id: new Types.ObjectId(data.categoria_id),
-    fecha_busqueda: new Date(), resultados_cantidad: total,
-  });
+  if (userId) {
+    await Busqueda.create({
+      usuario_id: userId, termino_busqueda: data.termino || "",
+      categoria_id: new Types.ObjectId(data.categoria_id),
+      fecha_busqueda: new Date(), resultados_cantidad: total,
+    });
+  }
   return { data: results, pagination: { page: data.page, limit: data.limit, total, totalPages: Math.ceil(total / data.limit) } };
 }
 
