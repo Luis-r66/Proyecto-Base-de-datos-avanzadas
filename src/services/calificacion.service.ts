@@ -1,5 +1,6 @@
 ﻿import { Types } from "mongoose";
 import { Calificacion } from "../models/Calificacion";
+import { ResenaPedido } from "../models/ResenaPedido";
 import { Negociacion } from "../models/Negociacion";
 import { Usuario } from "../models/Usuario";
 import { Reporte } from "../models/Reporte";

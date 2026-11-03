@@ -137,15 +137,11 @@ uno existente responde 409.
 - Extension opcional: servicios, paquetes, pedidos, resenas, cuenta editable y favoritos de servicios.
 - Fuera de alcance: feed social, conexiones, pagos reales, subida de archivos y app movil nativa.
 
-Detalle completo y matriz de trazabilidad en `docs/ALCANCE.md`.
 
 ## Documentacion de la API
 
-- `docs/ENDPOINTS.md`: tabla exacta (metodo, ruta, rol, cuerpo, respuesta).
 - `postman_collection.json`: coleccion lista para importar en Postman.
-- `frontend/PENDIENTES_BACKEND.md`: estado de endpoints para el frontend.
-- `historias-usuarios.md`: historias H001-H017 y guion de sustentacion.
-- `docs/ALCANCE.md`: alcance, trazabilidad, no objetivos y guion de demo.
+- `frontend/README.md`: instalacion y variables del frontend.
 
 ## Estructura
 
@@ -154,8 +150,8 @@ src/
 ├── app.ts                  # Express, CORS, rutas, puerto
 ├── config/                 # env (Zod), db (conexion + transacciones), indexes
 ├── middleware/             # auth JWT, validate (body/query/params), errorHandler
-├── models/                 # 11 modelos Mongoose
-├── routes/                 # 10 routers (auth, categorias, perfiles, portafolio,
+├── models/                 # modelos Mongoose
+├── routes/                 # routers (auth, categorias, perfiles, portafolio,
 │                           # negociaciones, mensajes, calificaciones, favoritos,
 │                           # busquedas, reportes, admin)
 ├── controllers/            # Adaptadores HTTP -> servicios
