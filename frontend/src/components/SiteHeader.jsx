@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { listarNotificaciones } from "../api/mensajes";
+import { crearSocket } from "../api/socket";
 import AvatarMenu from "./AvatarMenu";
 import { BellIcon, SearchIcon } from "./Icons";
 
@@ -32,6 +33,22 @@ export default function SiteHeader() {
       clearInterval(intervalo);
       window.removeEventListener("tl:notificaciones", cargar);
     };
+  }, [usuario]);
+
+  useEffect(() => {
+    if (!usuario) return;
+    const socket = crearSocket();
+    const cargar = () => {
+      listarNotificaciones({ page: 1, limit: 1 })
+        .then((datos) => setNoLeidas(datos.no_leidas || 0))
+        .catch(() => {});
+    };
+    socket.on("mensaje:nuevo", cargar);
+    socket.on("oferta:nueva", cargar);
+    socket.on("oferta:actualizada", cargar);
+    socket.on("pedido:nuevo", cargar);
+    socket.on("pedido:actualizado", cargar);
+    return () => socket.disconnect();
   }, [usuario]);
 
   function buscar(evento) {

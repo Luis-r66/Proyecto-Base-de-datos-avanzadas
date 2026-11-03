@@ -67,6 +67,9 @@ export default function AvatarMenu() {
           <Link to="/pedidos" className="avatar-menu__item" role="menuitem" onClick={() => setAbierto(false)}>
             Pedidos
           </Link>
+          <Link to="/negociaciones" className="avatar-menu__item" role="menuitem" onClick={() => setAbierto(false)}>
+            Acuerdos personalizados
+          </Link>
           <Link to="/favoritos" className="avatar-menu__item" role="menuitem" onClick={() => setAbierto(false)}>
             Favoritos
           </Link>

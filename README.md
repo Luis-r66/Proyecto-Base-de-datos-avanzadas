@@ -145,6 +145,7 @@ Detalle completo y matriz de trazabilidad en `docs/ALCANCE.md`.
 - `postman_collection.json`: coleccion lista para importar en Postman.
 - `frontend/PENDIENTES_BACKEND.md`: estado de endpoints para el frontend.
 - `historias-usuarios.md`: historias H001-H017 y guion de sustentacion.
+- `docs/ALCANCE.md`: alcance, trazabilidad, no objetivos y guion de demo.
 
 ## Estructura
 
@@ -168,7 +169,7 @@ src/
 - `ObjectId` en todas las referencias; codigos `NEG-AAAA-NNNN` con contador atomico.
 - `password_hash` con bcrypt (una sola vez, en el servicio).
 - Fechas nativas `Date`; `bsonType: "number"` en campos numericos.
-- 32 indices (unicos, compuestos, de texto y un unico parcial de negociacion activa).
+- 34 indices (unicos, compuestos, de texto y un unico parcial de negociacion activa).
 - `$jsonSchema` en `usuarios` y `negociaciones`.
 - Transacciones en: acordar (cupo maximo 5), calificar (recalculo de promedio),
   enviar mensaje (mensaje + notificacion) y crear perfil (perfil + rol).

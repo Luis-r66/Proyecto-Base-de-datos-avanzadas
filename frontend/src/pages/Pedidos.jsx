@@ -35,7 +35,10 @@ export default function Pedidos() {
           <h1 className="page-title">Pedidos</h1>
           <p className="muted">Sigue tus compras y los servicios que has vendido.</p>
         </div>
-        <Link to="/buscar" className="btn btn--primary">Explorar servicios</Link>
+        <div className="profile-actions">
+          <Link to="/negociaciones" className="btn btn--ghost">Acuerdos personalizados</Link>
+          <Link to="/buscar" className="btn btn--primary">Explorar servicios</Link>
+        </div>
       </div>
 
       <div className="tabs">

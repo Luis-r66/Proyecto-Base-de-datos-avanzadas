@@ -76,7 +76,7 @@ export default function Cuenta() {
     try {
       await cambiarPassword(seguridad);
       setSeguridad({ password_actual: "", password_nueva: "", confirmar_password: "" });
-      setAvisoPassword("Contrase?a actualizada. Las dem?s sesiones quedaron cerradas.");
+      setAvisoPassword("Contraseña actualizada. Las demás sesiones quedaron cerradas.");
     } catch (err) {
       setErrorPassword(getErrorMessage(err));
     } finally {
@@ -158,19 +158,19 @@ export default function Cuenta() {
         <div>
           <span className="eyebrow">Seguridad</span>
           <h2>Cambiar contraseña</h2>
-          <p className="muted">Al cambiarla se cierran las dem?s sesiones. La sesión actual seguir? activa.</p>
+          <p className="muted">Al cambiarla se cierran las demás sesiones. La sesión actual seguirá activa.</p>
         </div>
         <form className="form" onSubmit={cambiarClave}>
           {errorPassword && <p className="alert alert--error">{errorPassword}</p>}
           {avisoPassword && <p className="alert alert--ok">{avisoPassword}</p>}
           <div className="field">
-            <label htmlFor="pactual">Contrase?a actual</label>
+            <label htmlFor="pactual">Contraseña actual</label>
             <input id="pactual" type="password" autoComplete="current-password" value={seguridad.password_actual} onChange={(e) => cambiarSeguridad("password_actual", e.target.value)} required />
           </div>
           <div className="grid-2">
             <div className="field">
               <label htmlFor="pnueva">Nueva contraseña</label>
-              <input id="pnueva" type="password" autoComplete="new-password" value={seguridad.password_nueva} onChange={(e) => cambiarSeguridad("password_nueva", e.target.value)} placeholder="Mínimo 8, may?scula, min?scula y n?mero" required />
+              <input id="pnueva" type="password" autoComplete="new-password" value={seguridad.password_nueva} onChange={(e) => cambiarSeguridad("password_nueva", e.target.value)} placeholder="Mínimo 8, mayúscula, minúscula y número" required />
             </div>
             <div className="field">
               <label htmlFor="pconf">Confirmar nueva contraseña</label>

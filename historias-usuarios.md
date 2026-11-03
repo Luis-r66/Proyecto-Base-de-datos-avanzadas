@@ -24,16 +24,39 @@ lo cual tambien evidencia la validacion de email unico.
 
 ## Datos sembrados (npm run db:seed, idempotente)
 
-- 2 categorias: Fundamentos de Programacion / Ingenieria,
-  Ingles Academico / Humanidades.
-- 1 perfil prestador de Santiago (Activo) + 2 trabajos de portafolio.
-- 1 perfil de Andres sin portafolio (pendiente de verificacion).
-- 1 busqueda, 1 favorito, 1 reporte (Abierto).
-- Negociacion con ciclo completo (Propuesta, Acordado, En_progreso,
-  Completado) con mensajes y calificaciones mutuas.
-- Negociacion activa en Propuesta (sirve para demostrar acordar y
-  completar en vivo).
-- 14 mensajes predeterminados y notificaciones generadas por el flujo.
+- 33 categorías: 9 padres y 24 subcategorías.
+- 2 perfiles de prestador: Santiago (verificado) y Andrés (pendiente).
+- 5 servicios publicados: 3 de Santiago y 2 de Andrés, con paquetes y portadas por URL.
+- 2 trabajos de portafolio de Santiago.
+- 3 negociaciones clásicas: una completada, una cancelada y una activa.
+- 1 búsqueda, 1 favorito, 1 reporte abierto y notificaciones.
+- 14 mensajes predeterminados.
+- El seed no crea usuarios ni contraseñas.
+
+## Extensión de producto (opcional, no requisito)
+
+Además del núcleo H001-H017:
+
+- Servicios con paquetes Básico/Estándar/Premium.
+- Pedidos con timeline, entrega, revisión y cancelación.
+- Ofertas y contraofertas aplicadas a servicios.
+- Reseñas por servicio.
+- Perfil estudiantil tipo portafolio.
+- Cuenta editable: titular, portada, foto, biografía y habilidades.
+- Favoritos de servicios.
+- Moderación de servicios desde el admin.
+- Notificaciones enriquecidas y cambio de contrasena con cierre de otras sesiones.
+
+## Fuera de alcance
+
+- Feed social, publicaciones, likes, comentarios, seguidores o conexiones.
+- Pagos reales, pasarela o escrow.
+- Subida de archivos; las portadas usan URL.
+- Aplicación móvil nativa.
+- Firma digital, videollamadas o entrega de archivos.
+- Cambio de correo institucional.
+
+El detalle completo está en `docs/ALCANCE.md`.
 
 ## Las 10 funcionalidades
 

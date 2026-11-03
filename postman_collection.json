@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "TutorLink API",
-    "description": "Backend TutorLink - apoyo academico entre estudiantes. Puerto 3001. Los login usan credenciales del seed local; en produccion las contraseñas fueron rotadas.",
+    "description": "Backend TutorLink - apoyo académico entre estudiantes. Incluye núcleo H001-H017 y extensión de marketplace. Las cuentas deben existir previamente; define las contraseñas en las variables de la colección.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -47,6 +47,16 @@
     },
     {
       "key": "trabajo_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "servicio_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pedido_id",
       "value": "",
       "type": "string"
     }
@@ -1577,6 +1587,694 @@
             "auth": {
               "type": "noauth"
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Marketplace",
+      "item": [
+        {
+          "name": "Listar servicios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/servicios?limit=12",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicios?limit=12"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Servicios destacados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/servicios/destacados?limit=8",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicios",
+                "destacados?limit=8"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Detalle de servicio",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/servicios/{{servicio_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicios",
+                "{{servicio_id}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Mis servicios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/servicios/mios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicios",
+                "mios"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Crear servicio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria_id\": \"{{cat_id}}\",\n  \"titulo\": \"Asesoría de Python para principiantes\",\n  \"descripcion\": \"Acompañamiento paso a paso para fundamentos de programación y talleres de Python.\",\n  \"etiquetas\": [\n    \"Python\",\n    \"Programación\"\n  ],\n  \"imagen_portada_url\": \"https://images.unsplash.com/photo-1526379095098-d400fd0bf935?auto=format&fit=crop&w=1200&q=80\",\n  \"galeria_urls\": [],\n  \"paquetes\": [\n    {\n      \"codigo\": \"basico\",\n      \"nombre\": \"Básico\",\n      \"precio\": 30000,\n      \"dias_entrega\": 3,\n      \"revisiones\": 1,\n      \"incluye\": [\n        \"Sesión de 1 hora\"\n      ]\n    },\n    {\n      \"codigo\": \"estandar\",\n      \"nombre\": \"Estándar\",\n      \"precio\": 45000,\n      \"dias_entrega\": 2,\n      \"revisiones\": 2,\n      \"incluye\": [\n        \"Dos sesiones\",\n        \"Revisión de código\"\n      ]\n    }\n  ],\n  \"faqs\": [\n    {\n      \"pregunta\": \"¿Es virtual?\",\n      \"respuesta\": \"Sí, coordinamos por videollamada.\"\n    }\n  ],\n  \"estado\": \"Activo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicios"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Crear pedido directo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"servicio_id\": \"{{servicio_id}}\",\n  \"paquete_codigo\": \"basico\",\n  \"metodo_pago\": \"Nequi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Mis compras",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Mis ventas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos/ventas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "ventas"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Detalle de pedido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedido_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedido_id}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Iniciar pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedido_id}}/iniciar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedido_id}}",
+                "iniciar"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Entregar pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nota_entrega\": \"Entrego el material y la grabación de la sesión.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedido_id}}/entregar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedido_id}}",
+                "entregar"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Solicitar revisión",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nota\": \"Falta ampliar el ejercicio 3.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedido_id}}/revision",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedido_id}}",
+                "revision"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Completar pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedido_id}}/completar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedido_id}}",
+                "completar"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Cancelar pedido",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedido_id}}/cancelar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedido_id}}",
+                "cancelar"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Calificar pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"puntaje\": 5,\n  \"comentario\": \"Excelente acompañamiento.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pedidos/{{pedido_id}}/calificar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pedidos",
+                "{{pedido_id}}",
+                "calificar"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Favoritos de servicios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/favoritos/servicios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "favoritos",
+                "servicios"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "IDs de favoritos de servicios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/favoritos/servicios/ids",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "favoritos",
+                "servicios",
+                "ids"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Guardar favorito de servicio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"servicio_id\": \"{{servicio_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/favoritos/servicios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "favoritos",
+                "servicios"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Quitar favorito de servicio",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/favoritos/servicios/{{servicio_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "favoritos",
+                "servicios",
+                "{{servicio_id}}"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cuenta y seguridad",
+      "item": [
+        {
+          "name": "Actualizar presentación",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titular\": \"Estudiante de Ingeniería · Apoyo en Python y cálculo\",\n  \"biografia\": \"Acompaño a otros estudiantes en programación y cálculo.\",\n  \"banner_url\": \"https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80\",\n  \"habilidades\": [\n    \"Python\",\n    \"Cálculo\",\n    \"Inglés\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Cambiar contraseña",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password_actual\": \"PasswordActual123\",\n  \"password_nueva\": \"PasswordNueva123\",\n  \"confirmar_password\": \"PasswordNueva123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "password"
+              ]
+            },
+            "description": "Invalida las demás sesiones y devuelve tokens nuevos."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin ampliado",
+      "item": [
+        {
+          "name": "Resumen admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/resumen",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "resumen"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Servicios admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/servicios?limit=12",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "servicios?limit=12"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Pausar servicio",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"Pausado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/servicios/{{servicio_id}}/estado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "servicios",
+                "{{servicio_id}}",
+                "estado"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Activar servicio",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"Activo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/servicios/{{servicio_id}}/estado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "servicios",
+                "{{servicio_id}}",
+                "estado"
+              ]
+            },
+            "description": ""
           }
         }
       ]
