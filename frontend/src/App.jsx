@@ -49,6 +49,46 @@ export default function App() {
             <Route path="/servicio/:id" element={<ServicioDetalle />} />
             <Route path="/confirmar/:servicioId/:paquete" element={<ProtectedRoute><ConfirmarPedido /></ProtectedRoute>} />
             <Route
+              path="/pedidos"
+              element={
+                <ProtectedRoute>
+                  <Pedidos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pedidos/:id"
+              element={
+                <ProtectedRoute>
+                  <PedidoDetalle />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mis-servicios"
+              element={
+                <ProtectedRoute>
+                  <MisServicios />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mis-servicios/crear"
+              element={
+                <ProtectedRoute>
+                  <FormServicio modo="crear" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mis-servicios/:id/editar"
+              element={
+                <ProtectedRoute>
+                  <FormServicio modo="editar" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/mi-perfil"
               element={
                 <ProtectedRoute>
