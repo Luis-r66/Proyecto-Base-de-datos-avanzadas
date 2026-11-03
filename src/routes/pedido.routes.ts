@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/auth";
 import {
+  calificarHandler,
   cancelarHandler,
   completarHandler,
   crearHandler,
@@ -23,5 +24,6 @@ router.patch("/:id/entregar", entregarHandler);
 router.patch("/:id/revision", revisionHandler);
 router.patch("/:id/completar", completarHandler);
 router.patch("/:id/cancelar", cancelarHandler);
+router.post("/:id/calificar", calificarHandler);
 
 export default router;

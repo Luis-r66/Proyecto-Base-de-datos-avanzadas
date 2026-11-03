@@ -214,7 +214,7 @@ export default function PrestadorPublico() {
             ) : (
               <div className="gig-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
                 {servicios.map((s) => (
-                  <TarjetaServicio key={s._id} servicio={{ ...s, prestador: { ...u, _id: perfil._id } }} />
+                  <TarjetaServicio key={s._id} servicio={{ ...s, categoria: s.categoria_id, prestador: { ...u, _id: perfil._id } }} />
                 ))}
               </div>
             )}

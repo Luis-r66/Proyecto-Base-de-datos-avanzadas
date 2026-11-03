@@ -17,3 +17,8 @@ export const revisionPedidoSchema = z.object({
 });
 
 export type CrearPedidoInput = z.infer<typeof crearPedidoSchema>;
+
+export const calificarPedidoSchema = z.object({
+  puntaje: z.number().int().min(1).max(5),
+  comentario: z.string().trim().max(1000).optional(),
+});

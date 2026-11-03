@@ -2,6 +2,7 @@ import { FilterQuery, PipelineStage, Types } from "mongoose";
 import { Servicio } from "../models/Servicio";
 import { PerfilPrestador } from "../models/PerfilPrestador";
 import { Categoria } from "../models/Categoria";
+import { ResenaPedido } from "../models/ResenaPedido";
 import { AppError } from "../middleware/errorHandler";
 import {
   ActualizarServicioInput,
@@ -111,12 +112,23 @@ export async function obtenerServicio(id: Types.ObjectId) {
     throw new AppError(404, "SERVICIO_NOT_FOUND", "Servicio no encontrado");
   }
   Servicio.updateOne({ _id: id }, { $inc: { visitas: 1 } }).catch(() => {});
+  const resenas = await ResenaPedido.find({ servicio_id: id })
+    .sort({ fecha: -1 })
+    .limit(10)
+    .populate("calificador_id", "nombre foto_perfil_url")
+    .lean();
+  const stats = resenas.length
+    ? { promedio: Math.round((resenas.reduce((s, r) => s + r.puntaje, 0) / resenas.length) * 10) / 10, total: resenas.length }
+    : { promedio: 0, total: 0 };
   return {
     ...servicio,
     prestador: servicio.prestador_id,
     prestador_id: servicio.prestador_id?._id,
     categoria: servicio.categoria_id,
     categoria_id: servicio.categoria_id?._id,
+    resenas,
+    calificacion_promedio_servicio: stats.promedio,
+    total_calificaciones_servicio: stats.total,
   };
 }
 

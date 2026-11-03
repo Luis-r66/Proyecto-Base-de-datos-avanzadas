@@ -197,6 +197,7 @@ Cada paquete: `{codigo:"basico"|"estandar"|"premium", nombre, precio, dias_entre
 | PATCH | `/api/pedidos/:id/revision` | Comprador | `{nota?}` | `Revision` |
 | PATCH | `/api/pedidos/:id/completar` | Comprador | - | `Completado` |
 | PATCH | `/api/pedidos/:id/cancelar` | Participante | - | `Cancelado` (solo desde `Acordado`) |
+| POST | `/api/pedidos/:id/calificar` | Comprador | `{puntaje:1-5,comentario?}` | 201 resena del servicio |
 
 Las ofertas de servicio usan `POST /api/conversaciones/:id/ofertas` con `servicio_id`, `paquete_codigo` y `precio_publicado` opcionales. Al aceptar una oferta con servicio se crea un pedido; sin servicio se mantiene la negociacion personalizada.
 

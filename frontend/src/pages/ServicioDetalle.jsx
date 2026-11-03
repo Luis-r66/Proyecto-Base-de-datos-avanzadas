@@ -136,6 +136,32 @@ export default function ServicioDetalle() {
             )}
           </section>
 
+
+          <section className="gig-section">
+            <h2>Rese?as del servicio</h2>
+            {servicio.resenas?.length > 0 ? (
+              <>
+                <div className="gig-review-summary">
+                  <strong>{servicio.calificacion_promedio_servicio?.toFixed(1)}</strong>
+                  <Estrellas valor={servicio.calificacion_promedio_servicio} total={servicio.total_calificaciones_servicio} />
+                  <span className="muted">{servicio.total_calificaciones_servicio} rese?a(s)</span>
+                </div>
+                <div className="offer-list">
+                  {servicio.resenas.map((r) => (
+                    <article key={r._id} className="offer-card">
+                      <div className="offer-card__top">
+                        <strong>{r.calificador_id?.nombre || "Estudiante"}</strong>
+                        <Estrellas valor={r.puntaje} />
+                      </div>
+                      <p>{r.comentario || "Sin comentario"}</p>
+                    </article>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="muted">A?n no hay rese?as de este servicio. S? el primero en contratarlo.</p>
+            )}
+          </section>
           <section className="gig-section">
             <h2>Lo que incluye</h2>
             <ul className="gig-package__features">

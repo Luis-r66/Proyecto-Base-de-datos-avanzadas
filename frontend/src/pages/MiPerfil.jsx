@@ -149,7 +149,7 @@ export default function MiPerfil() {
                 <p className="muted">Aún no has publicado servicios. <Link to="/mis-servicios/crear">Publica el primero</Link>.</p>
               ) : (
                 <div className="gig-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
-                  {servicios.slice(0, 4).map((s) => <TarjetaServicio key={s._id} servicio={{ ...s, prestador: { ...datos, _id: perfil?._id } }} />)}
+                  {servicios.slice(0, 4).map((s) => <TarjetaServicio key={s._id} servicio={{ ...s, categoria: s.categoria_id, prestador: { ...datos, _id: perfil?._id } }} />)}
                 </div>
               )}
             </section>

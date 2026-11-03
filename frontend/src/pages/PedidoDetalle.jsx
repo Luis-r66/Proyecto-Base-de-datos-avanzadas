@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import VerificadoBadge from "../components/VerificadoBadge";
 import {
+  calificarPedido,
   cancelarPedido,
   completarPedido,
   entregarPedido,
@@ -30,6 +31,8 @@ export default function PedidoDetalle() {
   const { usuario } = useAuth();
   const [pedido, setPedido] = useState(null);
   const [nota, setNota] = useState("");
+  const [puntaje, setPuntaje] = useState(5);
+  const [comentario, setComentario] = useState("");
   const [cargando, setCargando] = useState(true);
   const [accionando, setAccionando] = useState(false);
   const [error, setError] = useState("");
@@ -50,6 +53,20 @@ export default function PedidoDetalle() {
   const esVendedor = String(pedido.prestador_usuario_id?._id) === String(usuario?.id);
   const esComprador = String(pedido.comprador_id?._id) === String(usuario?.id);
   const otro = esVendedor ? pedido.comprador_id : pedido.prestador_usuario_id;
+
+  async function calificar(evento) {
+    evento.preventDefault();
+    setAccionando(true);
+    setError("");
+    try {
+      const resena = await calificarPedido(pedido._id, { puntaje, comentario });
+      setPedido((actual) => ({ ...actual, mi_resena: resena }));
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setAccionando(false);
+    }
+  }
 
   async function ejecutar(accion) {
     setAccionando(true);
@@ -117,6 +134,33 @@ export default function PedidoDetalle() {
               </div>
             )}
 
+
+            {esComprador && pedido.estado === "Completado" && !pedido.mi_resena && (
+              <form className="pedido-review" onSubmit={calificar}>
+                <h2>Califica este servicio</h2>
+                <div className="field">
+                  <label htmlFor="puntaje">Puntaje</label>
+                  <select id="puntaje" value={puntaje} onChange={(e) => setPuntaje(Number(e.target.value))}>
+                    <option value="5">5 estrellas</option>
+                    <option value="4">4 estrellas</option>
+                    <option value="3">3 estrellas</option>
+                    <option value="2">2 estrellas</option>
+                    <option value="1">1 estrella</option>
+                  </select>
+                </div>
+                <div className="field">
+                  <label htmlFor="comentario">Comentario</label>
+                  <textarea id="comentario" rows={3} value={comentario} onChange={(e) => setComentario(e.target.value)} placeholder="?C?mo fue la experiencia?" maxLength={1000} />
+                </div>
+                <button type="submit" className="btn btn--primary" disabled={accionando}>Enviar rese?a</button>
+              </form>
+            )}
+            {pedido.mi_resena && (
+              <div className="pedido-review">
+                <h2>Tu rese?a</h2>
+                <p><strong>{pedido.mi_resena.puntaje} / 5</strong> ? {pedido.mi_resena.comentario || "Sin comentario"}</p>
+              </div>
+            )}
             <div className="pedido-acciones">
               {esVendedor && pedido.estado === "Acordado" && (
                 <button type="button" className="btn btn--primary" disabled={accionando} onClick={() => ejecutar(() => iniciarPedido(pedido._id))}>

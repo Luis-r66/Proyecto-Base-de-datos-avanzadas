@@ -63,6 +63,10 @@ export const indexDefinitions: Record<string, IndexDef[]> = {
     { key: { comprador_id: 1, fecha_creacion: -1 }, name: "idx_pedidos_comprador" },
     { key: { prestador_usuario_id: 1, estado: 1 }, name: "idx_pedidos_prestador_estado" },
   ],
+  resenas_pedido: [
+    { key: { pedido_id: 1, calificador_id: 1 }, unique: true, name: "idx_resenas_pedido_unique" },
+    { key: { servicio_id: 1, fecha: -1 }, name: "idx_resenas_servicio" },
+  ],
   busquedas: [
     { key: { usuario_id: 1 }, name: "idx_busquedas_usuario" },
   ],

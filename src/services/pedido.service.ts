@@ -1,5 +1,8 @@
 import { Types } from "mongoose";
 import { Pedido } from "../models/Pedido";
+import { ResenaPedido } from "../models/ResenaPedido";
+import { Calificacion } from "../models/Calificacion";
+import { Usuario } from "../models/Usuario";
 import { Servicio } from "../models/Servicio";
 import { PerfilPrestador } from "../models/PerfilPrestador";
 import { Notificacion } from "../models/Notificacion";
@@ -142,7 +145,8 @@ export async function obtenerPedido(id: Types.ObjectId, usuarioId: Types.ObjectI
   ) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de este pedido");
   }
-  return pedido;
+  const mi_resena = await ResenaPedido.findOne({ pedido_id: id, calificador_id: usuarioId }).lean();
+  return { ...pedido, mi_resena };
 }
 
 async function pedidoParticipante(id: Types.ObjectId, usuarioId: Types.ObjectId) {
@@ -207,6 +211,51 @@ export async function cancelarPedido(id: Types.ObjectId, usuarioId: Types.Object
   }
   pedido.estado = "Cancelado";
   return await guardar(pedido);
+}
+
+export async function calificarPedido(
+  pedidoId: Types.ObjectId,
+  usuarioId: Types.ObjectId,
+  data: { puntaje: number; comentario?: string }
+) {
+  const pedido: any = await Pedido.findById(pedidoId);
+  if (!pedido) throw new AppError(404, "PEDIDO_NOT_FOUND", "Pedido no encontrado");
+  if (String(pedido.comprador_id) !== usuarioId.toString()) {
+    throw new AppError(403, "FORBIDDEN", "Solo el comprador puede calificar el pedido");
+  }
+  if (pedido.estado !== "Completado") {
+    throw new AppError(409, "INVALID_STATE", "Solo se califican pedidos completados");
+  }
+  if (await ResenaPedido.findOne({ pedido_id: pedidoId, calificador_id: usuarioId })) {
+    throw new AppError(409, "ALREADY_RATED", "Ya calificaste este pedido");
+  }
+  const resena = await ResenaPedido.create({
+    pedido_id: pedidoId,
+    servicio_id: pedido.servicio_id,
+    calificador_id: usuarioId,
+    calificado_id: pedido.prestador_usuario_id,
+    puntaje: data.puntaje,
+    comentario: data.comentario,
+  });
+  const [negStats, pedStats] = await Promise.all([
+    Calificacion.aggregate([{ $match: { calificado_id: pedido.prestador_usuario_id } }, { $group: { _id: null, promedio: { $avg: "$puntaje" }, total: { $sum: 1 } } }]),
+    ResenaPedido.aggregate([{ $match: { calificado_id: pedido.prestador_usuario_id } }, { $group: { _id: null, promedio: { $avg: "$puntaje" }, total: { $sum: 1 } } }]),
+  ]);
+  const total = (negStats[0]?.total || 0) + (pedStats[0]?.total || 0);
+  const suma = (negStats[0]?.promedio || 0) * (negStats[0]?.total || 0) + (pedStats[0]?.promedio || 0) * (pedStats[0]?.total || 0);
+  if (total > 0) {
+    await Usuario.findByIdAndUpdate(pedido.prestador_usuario_id, {
+      calificacion_promedio: Math.round((suma / total) * 10) / 10,
+      total_calificaciones: total,
+    });
+  }
+  await Notificacion.create({
+    usuario_id: pedido.prestador_usuario_id,
+    tipo: "calificacion",
+    referencia_id: resena._id,
+    leido: false,
+  });
+  return resena;
 }
 
 export async function ofertasPedidoPendientes(usuarioId: Types.ObjectId) {

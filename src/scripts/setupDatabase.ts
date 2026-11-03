@@ -15,6 +15,7 @@ import "../models/Notificacion";
 import "../models/Reporte";
 import "../models/Servicio";
 import "../models/Pedido";
+import "../models/ResenaPedido";
 import { MensajePredeterminado } from "../models/MensajePredeterminado";
 
 const USUARIOS_VALIDATION = {
@@ -75,7 +76,7 @@ const COLLECTIONS = [
   "usuarios", "perfiles_prestador", "trabajos_portafolio", "categorias",
   "negociaciones", "mensajes", "mensajes_predeterminados", "busquedas",
   "calificaciones", "favoritos", "notificaciones", "reportes",
-  "conversaciones", "ofertas", "servicios", "pedidos",
+  "conversaciones", "ofertas", "servicios", "pedidos", "resenas_pedido",
 ];
 
 const MENSAJES = [

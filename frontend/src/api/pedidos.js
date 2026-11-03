@@ -26,3 +26,6 @@ export const completarPedido = (id) =>
 
 export const cancelarPedido = (id) =>
   client.patch(`/pedidos/${id}/cancelar`).then((r) => r.data);
+
+export const calificarPedido = (id, payload) =>
+  client.post(`/pedidos/${id}/calificar`, payload).then((r) => r.data);

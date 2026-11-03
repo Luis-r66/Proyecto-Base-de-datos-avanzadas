@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import {
+  calificarPedido,
   cancelarPedido,
   completarPedido,
   crearPedidoDirecto,
@@ -11,7 +12,7 @@ import {
   obtenerPedido,
   pedirRevision,
 } from "../services/pedido.service";
-import { crearPedidoSchema, entregarPedidoSchema, revisionPedidoSchema } from "../utils/pedido.validation";
+import { calificarPedidoSchema, crearPedidoSchema, entregarPedidoSchema, revisionPedidoSchema } from "../utils/pedido.validation";
 
 const id = (req: Request) => new Types.ObjectId(req.params.id);
 
@@ -52,4 +53,9 @@ export async function completarHandler(req: Request, res: Response) {
 
 export async function cancelarHandler(req: Request, res: Response) {
   res.json(await cancelarPedido(id(req), req.user!.sub));
+}
+
+export async function calificarHandler(req: Request, res: Response) {
+  const data = calificarPedidoSchema.parse(req.body);
+  res.status(201).json(await calificarPedido(id(req), req.user!.sub, data));
 }
