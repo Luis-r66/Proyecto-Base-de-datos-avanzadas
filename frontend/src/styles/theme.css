@@ -1605,3 +1605,6 @@ table {
 .pedido-review { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
 .pedido-review h2 { margin: 0 0 12px; font-size: 19px; }
 .pedido-review .field { margin-bottom: 12px; }
+
+.mis-servicio .profile-actions .btn--primary { background: var(--primary); border-color: var(--primary); }
+.mis-servicio .profile-actions .btn--primary:hover { background: var(--primary-strong); border-color: var(--primary-strong); }
