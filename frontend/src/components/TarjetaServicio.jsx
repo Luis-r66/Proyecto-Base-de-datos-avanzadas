@@ -1,8 +1,11 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Avatar from "./Avatar";
 import Estrellas from "./Estrellas";
 import VerificadoBadge from "./VerificadoBadge";
 import { formatearCOP } from "../utils/moneda";
+import { useAuth } from "../context/AuthContext";
+import { toggleFavoritoServicio } from "../api/favoritos";
 
 const NIVELES = {
   nuevo: "Nuevo",
@@ -20,7 +23,21 @@ export function nivelPrestador(prestador = {}) {
   return NIVELES.nuevo;
 }
 
-export default function TarjetaServicio({ servicio }) {
+export default function TarjetaServicio({ servicio, esFavorito = false }) {
+  const { usuario } = useAuth();
+  const navigate = useNavigate();
+  const [favorito, setFavorito] = useState(Boolean(esFavorito));
+  useEffect(() => setFavorito(Boolean(esFavorito)), [esFavorito]);
+  async function alternarFavorito(evento) {
+    evento.preventDefault();
+    evento.stopPropagation();
+    if (!usuario) return navigate("/login");
+    try {
+      const r = await toggleFavoritoServicio(servicio._id);
+      setFavorito(Boolean(r.added));
+    } catch {}
+  }
+
   const prestador = servicio.prestador || {};
   const precio = servicio.precio_desde ?? servicio.paquetes?.[0]?.precio;
   const dias = servicio.dias_desde ?? servicio.paquetes?.[0]?.dias_entrega;
@@ -28,6 +45,9 @@ export default function TarjetaServicio({ servicio }) {
 
   return (
     <article className="gig-card">
+      <button type="button" className={`gig-card__heart ${favorito ? "active" : ""}`} onClick={alternarFavorito} aria-label={favorito ? "Quitar de favoritos" : "Guardar en favoritos"}>
+        {favorito ? "?" : "?"}
+      </button>
       <Link to={`/servicio/${servicio._id}`} className="gig-card__media">
         {servicio.imagen_portada_url ? (
           <img src={servicio.imagen_portada_url} alt="" loading="lazy" />

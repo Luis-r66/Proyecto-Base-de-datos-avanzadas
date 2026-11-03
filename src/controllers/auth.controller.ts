@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { registerUser, loginUser, refreshTokens, getMe } from "../services/auth.service";
-import { registerSchema, loginSchema, refreshSchema } from "../utils/auth.validation";
+import { registerUser, loginUser, refreshTokens, getMe, updateMe } from "../services/auth.service";
+import { registerSchema, loginSchema, refreshSchema, updateMeSchema } from "../utils/auth.validation";
 
 export async function register(req: Request, res: Response) {
   const data = registerSchema.parse(req.body);
@@ -23,4 +23,9 @@ export async function refresh(req: Request, res: Response) {
 export async function me(req: Request, res: Response) {
   if (!req.user) return res.status(401).json({ error: "UNAUTHORIZED", message: "No autenticado" });
   res.json(await getMe(req.user.sub));
+}
+
+export async function updateMeHandler(req: Request, res: Response) {
+  const data = updateMeSchema.parse(req.body);
+  res.json(await updateMe(req.user!.sub, data));
 }

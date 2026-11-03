@@ -10,11 +10,13 @@ import { listarServiciosDePrestador } from "../api/servicios";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 import { formatearFecha } from "../utils/fechas";
+import { useFavoritosServicioIds } from "../hooks/useFavoritosServicioIds";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
 export default function MiPerfil() {
   const { isAdmin, isPrestador } = useAuth();
+  const favoritosServicio = useFavoritosServicioIds();
   const [datos, setDatos] = useState(null);
   const [perfil, setPerfil] = useState(null);
   const [servicios, setServicios] = useState([]);
@@ -75,7 +77,7 @@ export default function MiPerfil() {
   return (
     <main className="profile-shell">
       <section className="profile-cover">
-        <div className="profile-cover__banner" />
+        <div className="profile-cover__banner" style={datos.banner_url ? { backgroundImage: `url(${datos.banner_url})` } : undefined} />
         <div className="profile-cover__body">
           <div className="profile-cover__avatar">
             <Avatar nombre={datos.nombre} url={datos.foto_perfil_url} size={108} />
@@ -94,6 +96,7 @@ export default function MiPerfil() {
             <div className="profile-cover__actions">
               {perfil && <Link to="/mis-servicios" className="btn btn--primary">Mis servicios</Link>}
               {perfil && <Link to="/mi-portafolio" className="btn btn--ghost">Mi portafolio</Link>}
+              <Link to="/cuenta" className="btn btn--ghost">Editar presentaci?n</Link>
               <Link to="/convertirme-prestador" className="btn btn--ghost">
                 {isPrestador ? "Editar perfil de prestador" : "Quiero vender"}
               </Link>
@@ -149,7 +152,7 @@ export default function MiPerfil() {
                 <p className="muted">Aún no has publicado servicios. <Link to="/mis-servicios/crear">Publica el primero</Link>.</p>
               ) : (
                 <div className="gig-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
-                  {servicios.slice(0, 4).map((s) => <TarjetaServicio key={s._id} servicio={{ ...s, categoria: s.categoria_id, prestador: { ...datos, _id: perfil?._id } }} />)}
+                  {servicios.slice(0, 4).map((s) => <TarjetaServicio key={s._id} servicio={{ ...s, categoria: s.categoria_id, prestador: { ...datos, _id: perfil?._id } }} esFavorito={favoritosServicio.has(s._id)} />)}
                 </div>
               )}
             </section>

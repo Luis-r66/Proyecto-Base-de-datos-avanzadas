@@ -14,7 +14,7 @@ import {
 } from "../utils/perfil.validation";
 
 const USUARIO_PUBLIC_FIELDS =
-  "nombre foto_perfil_url carrera semestre institucion verificado calificacion_promedio total_calificaciones biografia habilidades";
+  "nombre foto_perfil_url carrera semestre institucion verificado calificacion_promedio total_calificaciones biografia habilidades titular banner_url";
 
 export async function createPerfil(usuarioId: Types.ObjectId, data: CreatePerfilInput) {
   const user = await Usuario.findById(usuarioId);

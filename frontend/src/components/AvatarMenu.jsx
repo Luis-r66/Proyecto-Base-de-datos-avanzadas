@@ -61,6 +61,9 @@ export default function AvatarMenu() {
           <Link to="/mi-perfil" className="avatar-menu__item" role="menuitem" onClick={() => setAbierto(false)}>
             Mi perfil
           </Link>
+          <Link to="/cuenta" className="avatar-menu__item" role="menuitem" onClick={() => setAbierto(false)}>
+            Mi cuenta
+          </Link>
           <Link to="/pedidos" className="avatar-menu__item" role="menuitem" onClick={() => setAbierto(false)}>
             Pedidos
           </Link>

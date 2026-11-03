@@ -1608,3 +1608,29 @@ table {
 
 .mis-servicio .profile-actions .btn--primary { background: var(--primary); border-color: var(--primary); }
 .mis-servicio .profile-actions .btn--primary:hover { background: var(--primary-strong); border-color: var(--primary-strong); }
+
+.cuenta-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
+.cuenta-form { padding: 24px; }
+.cuenta-preview { overflow: hidden; }
+.cuenta-preview__banner { height: 100px; background: linear-gradient(120deg, rgba(10,102,194,.82), rgba(29,191,115,.62)), url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80") center/cover; }
+.cuenta-preview__body { padding: 0 20px 22px; }
+.cuenta-preview__body .avatar { margin-top: -38px; border: 3px solid #fff; }
+.cuenta-preview h2 { margin: 10px 0 2px; }
+.cuenta-preview p { margin: 8px 0; color: var(--muted); font-size: 13.5px; }
+@media (max-width: 900px) { .cuenta-grid { grid-template-columns: 1fr; } }
+
+.gig-card { position: relative; }
+.gig-card__heart { position: absolute; z-index: 2; top: 8px; right: 8px; display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgba(255,255,255,.94); color: #404145; font-size: 18px; line-height: 1; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.16); }
+.gig-card__heart:hover, .gig-card__heart.active { color: #f74040; }
+
+.favorito-servicio { display: grid; gap: 8px; }
+.favorito-servicio > .btn { justify-self: start; }
+
+.chat__box { background: #fafafa; box-shadow: none; max-height: 520px; }
+.msg { border-radius: 8px; box-shadow: none; max-width: 72%; }
+.msg--propio { background: var(--primary); }
+.msg--otro { background: #ffffff; }
+.msg__meta { font-size: 10.5px; }
+.offer-card { background: #ffffff; }
+.chat-page__side > .card { padding: 18px; }
+.chat-page__chat { padding: 14px; }

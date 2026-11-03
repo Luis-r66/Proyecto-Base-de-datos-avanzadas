@@ -12,6 +12,7 @@ import { listarFavoritos, toggleFavorito, quitarFavorito } from "../api/favorito
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 import { formatearFecha } from "../utils/fechas";
+import { useFavoritosServicioIds } from "../hooks/useFavoritosServicioIds";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -19,6 +20,7 @@ export default function PrestadorPublico() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { usuario: sesion } = useAuth();
+  const favoritosServicio = useFavoritosServicioIds();
   const [perfil, setPerfil] = useState(null);
   const [portafolio, setPortafolio] = useState([]);
   const [servicios, setServicios] = useState([]);
@@ -144,7 +146,7 @@ export default function PrestadorPublico() {
   return (
     <main className="profile-shell">
       <section className="profile-cover">
-        <div className="profile-cover__banner" />
+        <div className="profile-cover__banner" style={u.banner_url ? { backgroundImage: `url(${u.banner_url})` } : undefined} />
         <div className="profile-cover__body">
           <div className="profile-cover__avatar">
             <Avatar nombre={u.nombre} url={u.foto_perfil_url} size={108} />
@@ -214,7 +216,7 @@ export default function PrestadorPublico() {
             ) : (
               <div className="gig-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
                 {servicios.map((s) => (
-                  <TarjetaServicio key={s._id} servicio={{ ...s, categoria: s.categoria_id, prestador: { ...u, _id: perfil._id } }} />
+                  <TarjetaServicio key={s._id} servicio={{ ...s, categoria: s.categoria_id, prestador: { ...u, _id: perfil._id } }} esFavorito={favoritosServicio.has(s._id)} />
                 ))}
               </div>
             )}

@@ -7,9 +7,11 @@ import { serviciosDestacados } from "../api/servicios";
 import { obtenerDestacados } from "../api/busquedas";
 import { getErrorMessage } from "../utils/errores";
 import { SearchIcon } from "../components/Icons";
+import { useFavoritosServicioIds } from "../hooks/useFavoritosServicioIds";
 
 export default function Home() {
   const navigate = useNavigate();
+  const favoritos = useFavoritosServicioIds();
   const [categorias, setCategorias] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [prestadores, setPrestadores] = useState([]);
@@ -120,7 +122,7 @@ export default function Home() {
         ) : servicios.length > 0 ? (
           <div className="gig-grid">
             {servicios.map((servicio) => (
-              <TarjetaServicio key={servicio._id} servicio={servicio} />
+              <TarjetaServicio key={servicio._id} servicio={servicio} esFavorito={favoritos.has(servicio._id)} />
             ))}
           </div>
         ) : (

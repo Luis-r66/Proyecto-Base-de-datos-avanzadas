@@ -53,3 +53,13 @@ export const refreshSchema = z.object({
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+
+export const updateMeSchema = z.object({
+  nombre: z.string().trim().min(2).max(100).optional(),
+  titular: z.string().trim().max(220).optional(),
+  biografia: z.string().trim().max(1000).optional(),
+  banner_url: z.union([z.string().trim().url("URL de portada inv?lida").max(1000), z.literal("")]).optional(),
+  foto_perfil_url: z.union([z.string().trim().url("URL de foto inv?lida").max(1000), z.literal("")]).optional(),
+  habilidades: z.array(z.string().trim().min(1).max(40)).max(30).optional(),
+});
+export type UpdateMeInput = z.infer<typeof updateMeSchema>;

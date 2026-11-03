@@ -305,3 +305,12 @@ Se reevalúa al registrarse, crear/editar perfil, crear/eliminar trabajos, compl
 - Usa `_id` como `key` en listas y para construir rutas (`/prestador/:id`, `/negociaciones/:id`).
 - La insignia de verificado se muestra si `verificado === true`.
 - El icono de favorito puede consultar `GET /api/favoritos` y comparar `prestador_id`.
+
+## Favoritos de servicios
+
+| Metodo | Ruta | Rol | Cuerpo / Query | Respuesta |
+|--------|------|-----|----------------|-----------|
+| GET | `/api/favoritos/servicios` | Autenticado | `?page&limit` | `{data,pagination}` |
+| GET | `/api/favoritos/servicios/ids` | Autenticado | - | `{data:[servicio_id]}` |
+| POST | `/api/favoritos/servicios` | Autenticado | `{servicio_id}` | 201 o `{message}` |
+| DELETE | `/api/favoritos/servicios/:servicioId` | Autenticado | - | `{removed:true}` |

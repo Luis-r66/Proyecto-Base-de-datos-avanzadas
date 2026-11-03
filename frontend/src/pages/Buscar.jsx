@@ -5,11 +5,13 @@ import { listarCategorias } from "../api/categorias";
 import { listarServicios } from "../api/servicios";
 import { getErrorMessage } from "../utils/errores";
 import { MONTO_MAXIMO_COP } from "../utils/moneda";
+import { useFavoritosServicioIds } from "../hooks/useFavoritosServicioIds";
 
 const VACIO = { data: [], pagination: { page: 1, totalPages: 1, total: 0 } };
 
 export default function Buscar() {
   const [params] = useSearchParams();
+  const favoritos = useFavoritosServicioIds();
   const [categorias, setCategorias] = useState([]);
   const [filtros, setFiltros] = useState({
     categoria_id: params.get("cat") || "",
@@ -180,7 +182,7 @@ export default function Buscar() {
         ) : (
           <div className="gig-grid">
             {resultado.data.map((servicio) => (
-              <TarjetaServicio key={servicio._id} servicio={servicio} />
+              <TarjetaServicio key={servicio._id} servicio={servicio} esFavorito={favoritos.has(servicio._id)} />
             ))}
           </div>
         )}

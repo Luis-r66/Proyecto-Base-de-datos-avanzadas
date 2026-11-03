@@ -5,3 +5,5 @@ export const registro = (data) => client.post("/auth/register", data).then((r) =
 export const me = () => client.get("/auth/me").then((r) => r.data);
 export const refresh = (refreshToken) =>
   client.post("/auth/refresh", { refreshToken }).then((r) => r.data);
+
+export const actualizarMe = (data) => client.patch("/auth/me", data).then((r) => r.data);

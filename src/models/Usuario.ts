@@ -21,6 +21,8 @@ export interface IUsuario extends Document {
   institucion?: string;
   tipo_usuario: TipoUsuario[];
   biografia?: string;
+  titular?: string;
+  banner_url?: string;
   habilidades: string[];
   educacion: IEducacion[];
   calificacion_promedio: number;
@@ -52,6 +54,8 @@ const usuarioSchema = new Schema<IUsuario>(
     institucion: { type: String, required: true, trim: true, maxlength: 100, default: INSTITUCION_ACTUAL },
     tipo_usuario: { type: [String], enum: ["Solicitante", "Prestador", "Admin"], default: ["Solicitante"], required: true },
     biografia: { type: String, maxlength: 1000 },
+    titular: { type: String, trim: true, maxlength: 220 },
+    banner_url: { type: String, trim: true, maxlength: 1000 },
     habilidades: [{ type: String, trim: true }],
     educacion: { type: [educacionSchema], default: [] },
     calificacion_promedio: { type: Number, default: 0, min: 0, max: 5 },

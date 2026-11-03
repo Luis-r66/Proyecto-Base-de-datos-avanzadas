@@ -12,6 +12,7 @@ import PedidoDetalle from "./pages/PedidoDetalle";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import MiPerfil from "./pages/MiPerfil";
+import Cuenta from "./pages/Cuenta";
 import Buscar from "./pages/Buscar";
 import ConvertirmePrestador from "./pages/ConvertirmePrestador";
 import MiPortafolio from "./pages/MiPortafolio";
@@ -85,6 +86,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <FormServicio modo="editar" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cuenta"
+              element={
+                <ProtectedRoute>
+                  <Cuenta />
                 </ProtectedRoute>
               }
             />

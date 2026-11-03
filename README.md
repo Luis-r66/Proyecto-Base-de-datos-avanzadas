@@ -72,6 +72,7 @@ Rutas principales del frontend:
 /pedidos/:id            Detalle y timeline del pedido
 /mis-servicios          Servicios publicados por el prestador
 /mi-perfil              Perfil estudiantil tipo portfolio
+/cuenta                 Editar presentaci?n, foto, portada y habilidades
 /prestador/:id          Perfil publico
 ```
 

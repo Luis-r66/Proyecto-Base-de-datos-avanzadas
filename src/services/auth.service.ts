@@ -82,9 +82,23 @@ export async function getMe(userId: Types.ObjectId) {
     foto_perfil_url: user.foto_perfil_url,
     carrera: user.carrera, semestre: user.semestre, institucion: user.institucion,
     biografia: user.biografia, habilidades: user.habilidades,
+    titular: user.titular, banner_url: user.banner_url,
     tipo_usuario: user.tipo_usuario, calificacion_promedio: user.calificacion_promedio,
     total_calificaciones: user.total_calificaciones, verificado: user.verificado,
     verificado_override: user.verificado_override,
     estado_cuenta: user.estado_cuenta, fecha_registro: user.fecha_registro,
   };
+}
+
+export async function updateMe(userId: Types.ObjectId, data: { nombre?: string; titular?: string; biografia?: string; banner_url?: string; foto_perfil_url?: string; habilidades?: string[] }) {
+  const user = await Usuario.findById(userId);
+  if (!user) throw new AppError(404, "USER_NOT_FOUND", "Usuario no encontrado");
+  if (data.nombre !== undefined) user.nombre = data.nombre;
+  if (data.titular !== undefined) user.titular = data.titular;
+  if (data.biografia !== undefined) user.biografia = data.biografia;
+  if (data.banner_url !== undefined) user.banner_url = data.banner_url;
+  if (data.foto_perfil_url !== undefined) user.foto_perfil_url = data.foto_perfil_url;
+  if (data.habilidades !== undefined) user.habilidades = data.habilidades;
+  await user.save();
+  return getMe(userId);
 }

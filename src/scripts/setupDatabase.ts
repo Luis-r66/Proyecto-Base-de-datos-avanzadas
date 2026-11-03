@@ -16,6 +16,7 @@ import "../models/Reporte";
 import "../models/Servicio";
 import "../models/Pedido";
 import "../models/ResenaPedido";
+import "../models/FavoritoServicio";
 import { MensajePredeterminado } from "../models/MensajePredeterminado";
 
 const USUARIOS_VALIDATION = {
@@ -36,6 +37,8 @@ const USUARIOS_VALIDATION = {
         minItems: 1,
       },
       biografia: { bsonType: "string", maxLength: 1000 },
+      titular: { bsonType: "string", maxLength: 220 },
+      banner_url: { bsonType: "string", maxLength: 1000 },
       habilidades: { bsonType: "array", items: { bsonType: "string" } },
       educacion: { bsonType: "array" },
       calificacion_promedio: { bsonType: "number", minimum: 0, maximum: 5 },
@@ -76,7 +79,7 @@ const COLLECTIONS = [
   "usuarios", "perfiles_prestador", "trabajos_portafolio", "categorias",
   "negociaciones", "mensajes", "mensajes_predeterminados", "busquedas",
   "calificaciones", "favoritos", "notificaciones", "reportes",
-  "conversaciones", "ofertas", "servicios", "pedidos", "resenas_pedido",
+  "conversaciones", "ofertas", "servicios", "pedidos", "resenas_pedido", "favoritos_servicio",
 ];
 
 const MENSAJES = [
