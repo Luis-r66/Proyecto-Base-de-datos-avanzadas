@@ -87,6 +87,10 @@ export async function iniciar(solicitanteId: Types.ObjectId, data: IniciarInput)
   await Notificacion.create({
     usuario_id: prestadorUserId,
     tipo: "negociacion",
+    titulo: "Nueva solicitud de acuerdo",
+    texto: `${data.descripcion_trabajo.slice(0, 90)} ? ${data.precio_propuesto} COP`,
+    url: `/negociaciones/${neg._id}`,
+    actor_id: solicitanteId,
     referencia_id: neg._id,
     conversacion_id: conversacion._id,
     leido: false,
@@ -117,7 +121,7 @@ export async function acordar(perfilId: Types.ObjectId, negId: Types.ObjectId, d
     neg.fecha_acuerdo = new Date();
     await neg.save({ session: s });
     await Notificacion.create(
-      [{ usuario_id: neg.solicitante_id, tipo: "negociacion", referencia_id: neg._id, leido: false }],
+      [{ usuario_id: neg.solicitante_id, tipo: "negociacion", titulo: "Acuerdo aceptado", texto: `El prestador acept? por ${data.precio_acordado} COP`, url: `/negociaciones/${neg._id}`, actor_id: perfilId, referencia_id: neg._id, leido: false }],
       { session: s }
     );
     return neg;

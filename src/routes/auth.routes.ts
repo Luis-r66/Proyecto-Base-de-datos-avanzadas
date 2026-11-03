@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login, refresh, me, updateMeHandler } from "../controllers/auth.controller";
+import { register, login, refresh, me, updateMeHandler, changePasswordHandler } from "../controllers/auth.controller";
 import { authenticate } from "../middleware/auth";
 import { validateBody } from "../middleware/validateBody";
 import { registerSchema, loginSchema, refreshSchema } from "../utils/auth.validation";
@@ -10,4 +10,5 @@ router.post("/login", validateBody(loginSchema), login);
 router.post("/refresh", validateBody(refreshSchema), refresh);
 router.get("/me", authenticate, me);
 router.patch("/me", authenticate, updateMeHandler);
+router.patch("/password", authenticate, changePasswordHandler);
 export default router;

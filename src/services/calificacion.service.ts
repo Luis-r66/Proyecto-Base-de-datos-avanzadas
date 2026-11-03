@@ -55,7 +55,7 @@ export async function calificar(calificadorId: Types.ObjectId, data: CalificarIn
       }, { session: s });
     }
     await Notificacion.create([{
-      usuario_id: calificadoId, tipo: "calificacion", referencia_id: doc[0]._id, leido: false,
+      usuario_id: calificadoId, tipo: "calificacion", titulo: "Nueva rese?a", texto: `${data.puntaje} de 5 estrellas`, url: "/mi-perfil", actor_id: calificadorId, referencia_id: doc[0]._id, leido: false,
     }], { session: s });
     return doc[0];
   });

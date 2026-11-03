@@ -81,6 +81,10 @@ async function crearPedidoBase(data: {
   await Notificacion.create({
     usuario_id: prestadorUsuarioId,
     tipo: "pedido",
+    titulo: "Nuevo pedido",
+    texto: `${servicio.titulo} ? ${data.precioFinal} COP`,
+    url: `/pedidos/${pedido._id}`,
+    actor_id: compradorId,
     referencia_id: pedido._id,
     conversacion_id: conversacion._id,
     leido: false,
@@ -158,9 +162,22 @@ async function pedidoParticipante(id: Types.ObjectId, usuarioId: Types.ObjectId)
   return { pedido, esComprador, esPrestador };
 }
 
-async function guardar(pedido: any) {
+async function guardar(pedido: any, notificacion?: { usuario_id: any; titulo: string; texto: string; actor_id: any }) {
   pedido.fecha_actualizacion = new Date();
   await pedido.save();
+  if (notificacion) {
+    await Notificacion.create({
+      usuario_id: notificacion.usuario_id,
+      tipo: "pedido",
+      titulo: notificacion.titulo,
+      texto: notificacion.texto,
+      url: `/pedidos/${pedido._id}`,
+      actor_id: notificacion.actor_id,
+      referencia_id: pedido._id,
+      conversacion_id: pedido.conversacion_id,
+      leido: false,
+    });
+  }
   emitirAUsuario(pedido.comprador_id, "pedido:actualizado", { pedido_id: pedido._id });
   emitirAUsuario(pedido.prestador_usuario_id, "pedido:actualizado", { pedido_id: pedido._id });
   return await Pedido.findById(pedido._id).populate(POPULATE).lean();
@@ -171,7 +188,7 @@ export async function iniciarPedido(id: Types.ObjectId, usuarioId: Types.ObjectI
   if (!esPrestador) throw new AppError(403, "FORBIDDEN", "Solo el prestador puede iniciar el pedido");
   if (pedido.estado !== "Acordado") throw new AppError(409, "INVALID_STATE", "El pedido no está acordado");
   pedido.estado = "En_progreso";
-  return await guardar(pedido);
+  return await guardar(pedido, { usuario_id: pedido.comprador_id, titulo: "El pedido comenzó", texto: "El prestador inició el trabajo.", actor_id: usuarioId });
 }
 
 export async function entregarPedido(id: Types.ObjectId, usuarioId: Types.ObjectId, nota?: string) {
@@ -183,7 +200,7 @@ export async function entregarPedido(id: Types.ObjectId, usuarioId: Types.Object
   pedido.estado = "Entregado";
   pedido.nota_entrega = nota;
   pedido.fecha_entrega = new Date();
-  return await guardar(pedido);
+  return await guardar(pedido, { usuario_id: pedido.comprador_id, titulo: "Pedido entregado", texto: "Revisa la entrega y acepta o solicita cambios.", actor_id: usuarioId });
 }
 
 export async function pedirRevision(id: Types.ObjectId, usuarioId: Types.ObjectId, nota?: string) {
@@ -192,7 +209,7 @@ export async function pedirRevision(id: Types.ObjectId, usuarioId: Types.ObjectI
   if (pedido.estado !== "Entregado") throw new AppError(409, "INVALID_STATE", "El pedido no está entregado");
   pedido.estado = "Revision";
   pedido.nota_entrega = nota || "Solicitud de revisión del comprador";
-  return await guardar(pedido);
+  return await guardar(pedido, { usuario_id: pedido.prestador_usuario_id, titulo: "Cambios solicitados", texto: nota || "El comprador pidió una revisión.", actor_id: usuarioId });
 }
 
 export async function completarPedido(id: Types.ObjectId, usuarioId: Types.ObjectId) {
@@ -201,7 +218,7 @@ export async function completarPedido(id: Types.ObjectId, usuarioId: Types.Objec
   if (pedido.estado !== "Entregado") throw new AppError(409, "INVALID_STATE", "El pedido no está entregado");
   pedido.estado = "Completado";
   pedido.fecha_completado = new Date();
-  return await guardar(pedido);
+  return await guardar(pedido, { usuario_id: pedido.prestador_usuario_id, titulo: "Pedido completado", texto: "El comprador aceptó la entrega.", actor_id: usuarioId });
 }
 
 export async function cancelarPedido(id: Types.ObjectId, usuarioId: Types.ObjectId) {
@@ -210,7 +227,8 @@ export async function cancelarPedido(id: Types.ObjectId, usuarioId: Types.Object
     throw new AppError(409, "INVALID_STATE", "Solo se puede cancelar antes de iniciar el trabajo");
   }
   pedido.estado = "Cancelado";
-  return await guardar(pedido);
+  const otro = String(pedido.comprador_id) === usuarioId.toString() ? pedido.prestador_usuario_id : pedido.comprador_id;
+  return await guardar(pedido, { usuario_id: otro, titulo: "Pedido cancelado", texto: "El pedido fue cancelado.", actor_id: usuarioId });
 }
 
 export async function calificarPedido(
@@ -252,6 +270,10 @@ export async function calificarPedido(
   await Notificacion.create({
     usuario_id: pedido.prestador_usuario_id,
     tipo: "calificacion",
+    titulo: "Nueva reseña",
+    texto: `${data.puntaje} de 5 estrellas`,
+    url: `/pedidos/${pedidoId}`,
+    actor_id: usuarioId,
     referencia_id: resena._id,
     leido: false,
   });

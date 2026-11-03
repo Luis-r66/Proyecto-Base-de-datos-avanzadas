@@ -21,6 +21,7 @@ import { formatearFechaHora } from "../utils/fechas";
 import "../styles/cards.css";
 
 const ACTIVOS = ["Propuesta", "Negociando", "Acordado", "En_progreso"];
+const PASOS = ["Propuesta", "Negociando", "Acordado", "En_progreso", "Completado"];
 
 export default function NegociacionDetalle() {
   const { id } = useParams();
@@ -158,6 +159,18 @@ export default function NegociacionDetalle() {
           {accionOk}
         </p>
       )}
+
+      <div className="pedido-timeline">
+        {PASOS.map((paso, i) => {
+          const actual = PASOS.indexOf(neg.estado);
+          return (
+            <div key={paso} className={`pedido-timeline__step ${i <= actual ? "active" : ""}`}>
+              <span>{i + 1}</span>
+              <p>{paso.replace("_", " ")}</p>
+            </div>
+          );
+        })}
+      </div>
 
       <section className="card card--flat">
         <dl className="detail-grid">

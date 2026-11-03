@@ -7,3 +7,5 @@ export const refresh = (refreshToken) =>
   client.post("/auth/refresh", { refreshToken }).then((r) => r.data);
 
 export const actualizarMe = (data) => client.patch("/auth/me", data).then((r) => r.data);
+
+export const cambiarPassword = (data) => client.patch("/auth/password", data).then((r) => r.data);

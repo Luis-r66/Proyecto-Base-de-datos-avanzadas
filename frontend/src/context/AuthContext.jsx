@@ -55,6 +55,13 @@ export function AuthProvider({ children }) {
     return authApi.registro(payload);
   }
 
+  async function cambiarPassword(datos) {
+    const data = await authApi.cambiarPassword(datos);
+    localStorage.setItem(TOKEN_KEY, data.accessToken);
+    localStorage.setItem(REFRESH_KEY, data.refreshToken);
+    return data;
+  }
+
   async function recargarUsuario() {
     const u = await authApi.me();
     localStorage.setItem(USER_KEY, JSON.stringify(u));
@@ -74,6 +81,7 @@ export function AuthProvider({ children }) {
     login,
     registrar,
     recargarUsuario,
+    cambiarPassword,
     logout,
     isAuthenticated: Boolean(usuario),
     isAdmin: tipoUsuario.includes("Admin"),

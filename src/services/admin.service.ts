@@ -3,6 +3,9 @@ import { Usuario } from "../models/Usuario";
 import { AppError } from "../middleware/errorHandler";
 import { Types } from "mongoose";
 import { evaluarVerificacion, inspeccionarVerificacion } from "./verificacion.service";
+import { Servicio } from "../models/Servicio";
+import { Pedido } from "../models/Pedido";
+import { Reporte } from "../models/Reporte";
 
 /**
  * Lista perfiles de prestador Activos filtrados por el estado de verificacion
@@ -96,4 +99,42 @@ export async function verificarUsuario(
     verificado_override: actualizado!.verificado_override,
     estado_verificacion: estado,
   };
+}
+
+export async function getResumenAdmin() {
+  const [usuarios, prestadores, servicios, pedidosActivos, pedidosCompletados, reportesAbiertos, pendientes] = await Promise.all([
+    Usuario.countDocuments({ estado_cuenta: "activo" }),
+    PerfilPrestador.countDocuments({ estado: "Activo" }),
+    Servicio.countDocuments({ estado: "Activo" }),
+    Pedido.countDocuments({ estado: { $in: ["Acordado", "En_progreso", "Entregado", "Revision"] } }),
+    Pedido.countDocuments({ estado: "Completado" }),
+    Reporte.countDocuments({ estado: "Abierto" }),
+    Usuario.countDocuments({ verificado: false }),
+  ]);
+  const ingresos = await Pedido.aggregate([{ $match: { estado: "Completado" } }, { $group: { _id: null, total: { $sum: "$precio_final" } } }]);
+  return { usuarios, prestadores, servicios, pedidosActivos, pedidosCompletados, reportesAbiertos, pendientes, ingresos: ingresos[0]?.total || 0 };
+}
+
+export async function listarServiciosAdmin(estado: string | undefined, page = 1, limit = 20) {
+  const filtro: any = {};
+  if (estado) filtro.estado = estado;
+  const [data, total] = await Promise.all([
+    Servicio.find(filtro)
+      .sort({ fecha_creacion: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("categoria_id", "nombre")
+      .populate({ path: "prestador_id", populate: { path: "usuario_id", select: "nombre email foto_perfil_url" } })
+      .lean(),
+    Servicio.countDocuments(filtro),
+  ]);
+  return { data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+}
+
+export async function cambiarEstadoServicioAdmin(adminId: Types.ObjectId, servicioId: Types.ObjectId, estado: "Activo" | "Pausado") {
+  const admin = await Usuario.findById(adminId);
+  if (!admin || !admin.tipo_usuario.includes("Admin" as any)) throw new AppError(403, "FORBIDDEN", "Solo administradores");
+  const servicio = await Servicio.findByIdAndUpdate(servicioId, { estado, fecha_actualizacion: new Date() }, { new: true });
+  if (!servicio) throw new AppError(404, "SERVICIO_NOT_FOUND", "Servicio no encontrado");
+  return servicio;
 }

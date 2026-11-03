@@ -7,6 +7,7 @@ import {
   eliminarCategoria,
 } from "../api/categorias";
 import { getErrorMessage } from "../utils/errores";
+import AdminNav from "../components/AdminNav";
 import "../styles/cards.css";
 
 const LIMITE = 8;
@@ -90,7 +91,8 @@ export default function AdminCategorias() {
   }
 
   return (
-    <main className="container">
+    <main className="container admin-page">
+      <AdminNav />
       <div className="page-head">
         <div>
           <h1 className="page-title">Categorías</h1>

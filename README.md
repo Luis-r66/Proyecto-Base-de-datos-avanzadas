@@ -131,6 +131,14 @@ para demostrar el flujo en vivo. Tambien un reporte abierto, un favorito, una
 busqueda y notificaciones. Para registrar en vivo usa un email nuevo; repetir
 uno existente responde 409.
 
+## Alcance del proyecto
+
+- Nucleo evaluable: historias H001-H017.
+- Extension opcional: servicios, paquetes, pedidos, resenas, cuenta editable y favoritos de servicios.
+- Fuera de alcance: feed social, conexiones, pagos reales, subida de archivos y app movil nativa.
+
+Detalle completo y matriz de trazabilidad en `docs/ALCANCE.md`.
+
 ## Documentacion de la API
 
 - `docs/ENDPOINTS.md`: tabla exacta (metodo, ruta, rol, cuerpo, respuesta).

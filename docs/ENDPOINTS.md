@@ -314,3 +314,13 @@ Se reevalúa al registrarse, crear/editar perfil, crear/eliminar trabajos, compl
 | GET | `/api/favoritos/servicios/ids` | Autenticado | - | `{data:[servicio_id]}` |
 | POST | `/api/favoritos/servicios` | Autenticado | `{servicio_id}` | 201 o `{message}` |
 | DELETE | `/api/favoritos/servicios/:servicioId` | Autenticado | - | `{removed:true}` |
+
+## Admin ampliado
+
+| Metodo | Ruta | Rol | Respuesta |
+|--------|------|-----|-----------|
+| GET | `/api/admin/resumen` | Admin | m?tricas generales |
+| GET | `/api/admin/servicios?estado&page&limit` | Admin | servicios con prestador |
+| PATCH | `/api/admin/servicios/:id/estado` | Admin | `{estado:"Activo"|"Pausado"}` |
+
+Las notificaciones ahora guardan `titulo`, `texto`, `url` y `actor_id` cuando est?n disponibles. Las antiguas siguen funcionando con el texto por tipo.

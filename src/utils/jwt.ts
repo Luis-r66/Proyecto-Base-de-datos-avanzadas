@@ -7,6 +7,7 @@ export interface TokenPayload {
   sub: Types.ObjectId;
   email: string;
   tipo_usuario: TipoUsuario[];
+  tv?: number;
 }
 
 export interface RefreshTokenPayload extends TokenPayload {

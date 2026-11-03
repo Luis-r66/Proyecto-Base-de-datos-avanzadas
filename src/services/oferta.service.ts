@@ -78,6 +78,10 @@ export async function crearOferta(
   await Notificacion.create({
     usuario_id: otro,
     tipo: "oferta",
+    titulo: "Nueva oferta",
+    texto: `${data.monto} COP ? ${data.forma_pago}`,
+    url: `/mensajes/${conv._id}`,
+    actor_id: userId,
     referencia_id: oferta._id,
     conversacion_id: conv._id,
     leido: false,
@@ -195,6 +199,10 @@ export async function aceptarOferta(userId: Types.ObjectId, ofertaId: Types.Obje
         {
           usuario_id: oferta.emisor_id,
           tipo: "oferta",
+          titulo: "Oferta aceptada",
+          texto: `Acuerdo por ${oferta.monto} COP`,
+          url: `/negociaciones/${negociacion[0]._id}`,
+          actor_id: userId,
           referencia_id: oferta._id,
           conversacion_id: conv._id,
           leido: false,
@@ -202,6 +210,10 @@ export async function aceptarOferta(userId: Types.ObjectId, ofertaId: Types.Obje
         {
           usuario_id: oferta.emisor_id,
           tipo: "negociacion",
+          titulo: "Nuevo acuerdo",
+          texto: `Se cre? el acuerdo ${codigo}`,
+          url: `/negociaciones/${negociacion[0]._id}`,
+          actor_id: userId,
           referencia_id: negociacion[0]._id,
           conversacion_id: conv._id,
           leido: false,
@@ -312,6 +324,10 @@ export async function contraofertar(
   await Notificacion.create({
     usuario_id: original.emisor_id,
     tipo: "oferta",
+    titulo: "Contraoferta",
+    texto: `${data.monto} COP ? ${data.forma_pago}`,
+    url: `/mensajes/${original.conversacion_id}`,
+    actor_id: userId,
     referencia_id: nueva._id,
     conversacion_id: original.conversacion_id,
     leido: false,

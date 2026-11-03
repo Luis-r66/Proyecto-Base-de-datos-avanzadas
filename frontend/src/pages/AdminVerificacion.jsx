@@ -4,6 +4,7 @@ import Avatar from "../components/Avatar";
 import VerificadoBadge from "../components/VerificadoBadge";
 import { listarPrestadoresVerificacion, verificarUsuario } from "../api/admin";
 import { getErrorMessage } from "../utils/errores";
+import AdminNav from "../components/AdminNav";
 import { formatearFecha } from "../utils/fechas";
 import "../styles/cards.css";
 
@@ -67,7 +68,8 @@ export default function AdminVerificacion() {
   }
 
   return (
-    <main className="container">
+    <main className="container admin-page">
+      <AdminNav />
       <div className="page-head">
         <div>
           <h1 className="page-title">Verificaciones</h1>

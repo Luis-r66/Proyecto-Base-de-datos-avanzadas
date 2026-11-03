@@ -30,6 +30,7 @@ export interface IUsuario extends Document {
   verificado: boolean;
   verificado_override: boolean | null;
   estado_cuenta: "activo" | "inactivo" | "suspendido";
+  token_version: number;
   fecha_registro: Date;
   compararPassword(password: string): Promise<boolean>;
 }
@@ -63,6 +64,7 @@ const usuarioSchema = new Schema<IUsuario>(
     verificado: { type: Boolean, default: false },
     verificado_override: { type: Boolean, default: null },
     estado_cuenta: { type: String, enum: ["activo", "inactivo", "suspendido"], default: "activo" },
+    token_version: { type: Number, default: 0, min: 0 },
     fecha_registro: { type: Date, default: Date.now },
   },
   { timestamps: false, versionKey: false }

@@ -11,6 +11,10 @@ import { SendMessageInput } from "../utils/mensaje.validation";
 import { actualizarActividad, crearOConseguirConversacion } from "./conversacion.service";
 import { emitirAConversacion, emitirAUsuario } from "../config/socket";
 
+function createdPreview(texto?: string) {
+  return (texto || "Nuevo mensaje").slice(0, 120);
+}
+
 async function esParte(neg: any, userId: Types.ObjectId, session?: any): Promise<boolean> {
   if (neg.solicitante_id.toString() === userId.toString()) return true;
   if (neg.prestador_id.toString() === userId.toString()) return true;
@@ -84,6 +88,10 @@ export async function sendMessage(remitenteId: Types.ObjectId, negId: Types.Obje
         {
           usuario_id: dest,
           tipo: "mensaje",
+          titulo: "Nuevo mensaje",
+          texto: createdPreview(contenido),
+          url: `/mensajes/${conversacionId}`,
+          actor_id: remitenteId,
           referencia_id: mensaje[0]._id,
           conversacion_id: conversacionId,
           leido: false,
@@ -144,6 +152,10 @@ export async function sendConversacionMessage(
   await Notificacion.create({
     usuario_id: dest,
     tipo: "mensaje",
+    titulo: "Nuevo mensaje",
+    texto: created.contenido.slice(0, 120),
+    url: `/mensajes/${convId}`,
+    actor_id: remitenteId,
     referencia_id: created._id,
     conversacion_id: convId,
     leido: false,
@@ -201,7 +213,12 @@ export async function getNotificaciones(userId: Types.ObjectId, page = 1, limit 
   const filter: any = { usuario_id: userId };
   if (leido !== undefined) filter.leido = leido;
   const [data, total, no_leidas] = await Promise.all([
-    Notificacion.find(filter).sort({ fecha: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+    Notificacion.find(filter)
+      .sort({ fecha: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("actor_id", "nombre foto_perfil_url")
+      .lean(),
     Notificacion.countDocuments(filter),
     Notificacion.countDocuments({ usuario_id: userId, leido: false }),
   ]);

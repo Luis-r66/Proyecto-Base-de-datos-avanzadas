@@ -1,93 +1,81 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { listarCategorias } from "../api/categorias";
-import { listarPrestadoresVerificacion, listarReportes } from "../api/admin";
+import AdminNav from "../components/AdminNav";
+import { resumenAdmin } from "../api/admin";
 import { getErrorMessage } from "../utils/errores";
-import "../styles/cards.css";
+import { formatearCOP } from "../utils/moneda";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    let activo = true;
-    Promise.all([
-      listarPrestadoresVerificacion({ verificado: false, page: 1, limit: 1 }),
-      listarPrestadoresVerificacion({ verificado: true, page: 1, limit: 1 }),
-      listarReportes({ estado: "Abierto", page: 1, limit: 1 }),
-      listarReportes({ estado: "En_revision", page: 1, limit: 1 }),
-      listarCategorias({ page: 1, limit: 1 }),
-    ])
-      .then(([pend, ver, ab, rev, cats]) => {
-        if (!activo) return;
-        setStats({
-          pendientes: pend.pagination.total,
-          verificados: ver.pagination.total,
-          abiertos: ab.pagination.total,
-          enRevision: rev.pagination.total,
-          categorias: cats.pagination.total,
-        });
-      })
-      .catch((err) => {
-        if (activo) setError(getErrorMessage(err));
-      });
-    return () => {
-      activo = false;
-    };
+    resumenAdmin()
+      .then(setStats)
+      .catch((err) => setError(getErrorMessage(err)));
   }, []);
 
   return (
-    <main className="container">
-      <h1 className="page-title">Panel de administración</h1>
-      <p className="muted">Gestiona verificaciones, reportes y el catálogo de categorías.</p>
+    <main className="container admin-page">
+      <AdminNav />
+      <div className="page-head">
+        <div>
+          <span className="eyebrow">Control general</span>
+          <h1 className="page-title">Panel de administración</h1>
+          <p className="muted">Estado del marketplace, verificaciones, reportes y moderación.</p>
+        </div>
+      </div>
 
-      {error && (
-        <p className="alert alert--error" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <p className="alert alert--error">{error}</p>}
 
       {!stats ? (
-        <p className="muted">Cargando metricas...</p>
+        <p className="muted">Cargando métricas...</p>
       ) : (
-        <div className="stat-grid">
-          <Link to="/admin/verificacion?tab=pendientes" className="stat">
-            <span className="stat__valor">{stats.pendientes}</span>
-            <span className="stat__texto">Prestadores pendientes</span>
-          </Link>
-          <Link to="/admin/verificacion?tab=verificados" className="stat">
-            <span className="stat__valor">{stats.verificados}</span>
-            <span className="stat__texto">Prestadores verificados</span>
-          </Link>
-          <Link to="/admin/reportes?estado=Abierto" className="stat">
-            <span className="stat__valor">{stats.abiertos}</span>
-            <span className="stat__texto">Reportes abiertos</span>
-          </Link>
-          <Link to="/admin/reportes?estado=En_revision" className="stat">
-            <span className="stat__valor">{stats.enRevision}</span>
-            <span className="stat__texto">Reportes en revisión</span>
-          </Link>
-          <Link to="/admin/categorias" className="stat">
-            <span className="stat__valor">{stats.categorias}</span>
-            <span className="stat__texto">Categorías</span>
-          </Link>
-        </div>
-      )}
+        <>
+          <div className="admin-stats">
+            <Link to="/admin/verificacion" className="admin-stat">
+              <span>Estudiantes activos</span>
+              <strong>{stats.usuarios}</strong>
+            </Link>
+            <Link to="/admin/verificacion?tab=pendientes" className="admin-stat">
+              <span>Verificaciones pendientes</span>
+              <strong>{stats.pendientes}</strong>
+            </Link>
+            <Link to="/admin/servicios" className="admin-stat">
+              <span>Servicios activos</span>
+              <strong>{stats.servicios}</strong>
+            </Link>
+            <Link to="/admin/reportes?estado=Abierto" className="admin-stat">
+              <span>Reportes abiertos</span>
+              <strong>{stats.reportesAbiertos}</strong>
+            </Link>
+            <Link to="/pedidos" className="admin-stat">
+              <span>Pedidos activos</span>
+              <strong>{stats.pedidosActivos}</strong>
+            </Link>
+            <div className="admin-stat admin-stat--money">
+              <span>Acuerdos completados</span>
+              <strong>{stats.pedidosCompletados}</strong>
+              <small>{formatearCOP(stats.ingresos)}</small>
+            </div>
+          </div>
 
-      <section className="section">
-        <h2 className="section__title">Accesos rápidos</h2>
-        <div className="acciones">
-          <Link to="/admin/verificacion" className="btn btn--primary">
-            Verificaciones
-          </Link>
-          <Link to="/admin/reportes" className="btn btn--ghost">
-            Reportes
-          </Link>
-          <Link to="/admin/categorias" className="btn btn--ghost">
-            Categorías
-          </Link>
-        </div>
-      </section>
+          <section className="section">
+            <div className="admin-panel">
+              <div>
+                <h2 className="admin-panel__title">Accesos rápidos</h2>
+                <p className="muted">Revisa y modera las áreas principales de TutorLink.</p>
+              </div>
+              <div className="admin-quick">
+                <Link to="/admin/verificacion" className="btn btn--primary">Verificaciones</Link>
+                <Link to="/admin/servicios" className="btn btn--ghost">Moderar servicios</Link>
+                <Link to="/admin/reportes" className="btn btn--ghost">Reportes</Link>
+                <Link to="/admin/categorias" className="btn btn--ghost">Categorías</Link>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
     </main>
   );
 }

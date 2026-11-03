@@ -1,21 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Avatar from "../components/Avatar";
 import EstadoBadge from "../components/EstadoBadge";
+import VerificadoBadge from "../components/VerificadoBadge";
 import { listarNegociaciones } from "../api/negociaciones";
 import { getErrorMessage } from "../utils/errores";
 import { formatearFecha } from "../utils/fechas";
-import "../styles/cards.css";
+import { formatearCOP } from "../utils/moneda";
 
 const LIMITE = 10;
 const VACIO = { data: [], pagination: { page: 1, totalPages: 1, total: 0 } };
 const ESTADOS = [
-  ["", "Todas"],
-  ["Propuesta", "Propuesta"],
-  ["Negociando", "Negociando"],
-  ["Acordado", "Acordado"],
-  ["En_progreso", "En progreso"],
-  ["Completado", "Completado"],
-  ["Cancelado", "Cancelado"],
+  ["", "Todas"], ["Propuesta", "Propuesta"], ["Negociando", "Negociando"],
+  ["Acordado", "Acordado"], ["En_progreso", "En progreso"],
+  ["Completado", "Completado"], ["Cancelado", "Cancelado"],
 ];
 
 export default function Negociaciones() {
@@ -49,83 +47,63 @@ export default function Negociaciones() {
     <main className="container">
       <div className="page-head">
         <div>
-          <h1 className="page-title">Mis negociaciones</h1>
-          <p className="muted">Total: {negociaciones.pagination.total}</p>
+          <span className="eyebrow">Acuerdos personalizados</span>
+          <h1 className="page-title">Negociaciones</h1>
+          <p className="muted">Solicitudes y acuerdos creados fuera del catálogo de servicios. Total: {negociaciones.pagination.total}.</p>
         </div>
         <div className="field field--inline">
           <label htmlFor="nestado">Estado</label>
           <select id="nestado" value={estado} onChange={(e) => setEstado(e.target.value)}>
-            {ESTADOS.map(([valor, texto]) => (
-              <option key={valor || "todas"} value={valor}>
-                {texto}
-              </option>
-            ))}
+            {ESTADOS.map(([valor, texto]) => <option key={valor || "todas"} value={valor}>{texto}</option>)}
           </select>
         </div>
       </div>
 
-      {error && (
-        <p className="alert alert--error" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <p className="alert alert--error">{error}</p>}
 
       {cargando ? (
-        <p className="muted">Cargando...</p>
+        <p className="muted">Cargando negociaciones...</p>
       ) : negociaciones.data.length === 0 ? (
-        <p className="empty">
-          No tienes negociaciones {estado ? "en este estado" : "todavia"}.{" "}
-          <Link to="/buscar">Busca un prestador</Link> para empezar.
-        </p>
+        <div className="empty">
+          <p>No tienes negociaciones {estado ? "en este estado" : "todavía"}.</p>
+          <Link to="/buscar" className="btn btn--primary" style={{ marginTop: 14 }}>Buscar prestadores</Link>
+        </div>
       ) : (
-        <ul className="rows">
-          {negociaciones.data.map((neg) => (
-            <li key={neg._id} className="row">
-              <div className="row__main">
-                <div>
-                  <h3 className="row__title">
-                    {neg.codigo_seguimiento} · {neg.otra_parte?.nombre || "Usuario"}{" "}
-                    <EstadoBadge estado={neg.estado} />
-                  </h3>
-                  <p className="row__sub">
-                    {neg.categoria_id?.nombre || "Sin categoría"} ·{" "}
-                    {neg.descripcion_trabajo.slice(0, 90)}
-                    {neg.descripcion_trabajo.length > 90 ? "..." : ""}
-                  </p>
-                  <p className="row__sub">
-                    Como {neg.rol_usuario} · Creada el {formatearFecha(neg.fecha_creacion)}
-                  </p>
+        <div className="neg-grid">
+          {negociaciones.data.map((neg) => {
+            const otro = neg.otra_parte || {};
+            const precio = neg.precio_acordado ?? neg.precio_propuesto;
+            return (
+              <article key={neg._id} className="neg-card">
+                <div className="neg-card__head">
+                  <Avatar nombre={otro.nombre} url={otro.foto_perfil_url} size={44} />
+                  <div className="neg-card__id">
+                    <strong>{otro.nombre || "Usuario"} <VerificadoBadge verificado={otro.verificado} /></strong>
+                    <span className="muted">{neg.codigo_seguimiento} · {neg.rol_usuario}</span>
+                  </div>
+                  <EstadoBadge estado={neg.estado} />
                 </div>
-                <Link to={`/negociaciones/${neg._id}`} className="btn btn--primary btn--sm">
-                  Abrir
-                </Link>
-              </div>
-            </li>
-          ))}
-        </ul>
+                <h2>{neg.categoria_id?.nombre || "Acuerdo personalizado"}</h2>
+                <p className="neg-card__desc">{neg.descripcion_trabajo}</p>
+                <div className="neg-card__meta">
+                  <div><span>Precio</span><strong>{precio != null ? formatearCOP(precio) : "Por definir"}</strong></div>
+                  <div><span>Pago</span><strong>{neg.forma_pago || "Por definir"}</strong></div>
+                </div>
+                <div className="neg-card__footer">
+                  <span className="muted">{formatearFecha(neg.fecha_creacion)}</span>
+                  <Link to={`/negociaciones/${neg._id}`} className="btn btn--primary btn--sm">Abrir acuerdo</Link>
+                </div>
+              </article>
+            );
+          })}
+        </div>
       )}
 
       {negociaciones.pagination.totalPages > 1 && (
         <div className="pagination">
-          <button
-            type="button"
-            className="btn btn--sm"
-            disabled={pagina <= 1 || cargando}
-            onClick={() => cargar(pagina - 1, estado)}
-          >
-            Anterior
-          </button>
-          <span className="muted">
-            Página {pagina} de {negociaciones.pagination.totalPages}
-          </span>
-          <button
-            type="button"
-            className="btn btn--sm"
-            disabled={pagina >= negociaciones.pagination.totalPages || cargando}
-            onClick={() => cargar(pagina + 1, estado)}
-          >
-            Siguiente
-          </button>
+          <button type="button" className="btn btn--sm" disabled={pagina <= 1 || cargando} onClick={() => cargar(pagina - 1, estado)}>Anterior</button>
+          <span className="muted">Página {pagina} de {negociaciones.pagination.totalPages}</span>
+          <button type="button" className="btn btn--sm" disabled={pagina >= negociaciones.pagination.totalPages || cargando} onClick={() => cargar(pagina + 1, estado)}>Siguiente</button>
         </div>
       )}
     </main>

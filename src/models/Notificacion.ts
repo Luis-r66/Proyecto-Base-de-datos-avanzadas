@@ -3,7 +3,11 @@ import { Schema, model, models, Document, Types } from "mongoose";
 export interface INotificacion extends Document {
   _id: Types.ObjectId;
   usuario_id: Types.ObjectId;
-  tipo: "mensaje" | "negociacion" | "calificacion" | "oferta" | "pedido";
+  tipo: "mensaje" | "negociacion" | "calificacion" | "oferta" | "pedido" | "sistema";
+  titulo?: string;
+  texto?: string;
+  url?: string;
+  actor_id?: Types.ObjectId;
   referencia_id: Types.ObjectId;
   conversacion_id?: Types.ObjectId;
   leido: boolean;
@@ -13,7 +17,11 @@ export interface INotificacion extends Document {
 const s = new Schema<INotificacion>(
   {
     usuario_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
-    tipo: { type: String, enum: ["mensaje", "negociacion", "calificacion", "oferta", "pedido"], required: true },
+    tipo: { type: String, enum: ["mensaje", "negociacion", "calificacion", "oferta", "pedido", "sistema"], required: true },
+    titulo: { type: String, trim: true, maxlength: 160 },
+    texto: { type: String, trim: true, maxlength: 500 },
+    url: { type: String, trim: true, maxlength: 1000 },
+    actor_id: { type: Schema.Types.ObjectId, ref: "Usuario" },
     referencia_id: { type: Schema.Types.ObjectId, required: true },
     conversacion_id: { type: Schema.Types.ObjectId, ref: "Conversacion" },
     leido: { type: Boolean, default: false },

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { listarReportes, actualizarReporte } from "../api/admin";
 import { getErrorMessage } from "../utils/errores";
+import AdminNav from "../components/AdminNav";
 import { formatearFechaHora } from "../utils/fechas";
 import "../styles/cards.css";
 
@@ -74,7 +75,8 @@ export default function AdminReportes() {
   }
 
   return (
-    <main className="container">
+    <main className="container admin-page">
+      <AdminNav />
       <div className="page-head">
         <div>
           <h1 className="page-title">Reportes</h1>

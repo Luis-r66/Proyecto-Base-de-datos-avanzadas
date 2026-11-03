@@ -31,6 +31,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminVerificacion from "./pages/AdminVerificacion";
 import AdminReportes from "./pages/AdminReportes";
 import AdminCategorias from "./pages/AdminCategorias";
+import AdminServicios from "./pages/AdminServicios";
 import "./styles/global.css";
 import "./styles/theme.css";
 
@@ -207,6 +208,14 @@ export default function App() {
             element={
               <ProtectedRoute roles={["Admin"]}>
                 <AdminReportes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/servicios"
+            element={
+              <ProtectedRoute roles={["Admin"]}>
+                <AdminServicios />
               </ProtectedRoute>
             }
           />

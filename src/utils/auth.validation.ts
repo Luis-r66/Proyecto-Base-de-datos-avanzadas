@@ -58,8 +58,24 @@ export const updateMeSchema = z.object({
   nombre: z.string().trim().min(2).max(100).optional(),
   titular: z.string().trim().max(220).optional(),
   biografia: z.string().trim().max(1000).optional(),
-  banner_url: z.union([z.string().trim().url("URL de portada inv?lida").max(1000), z.literal("")]).optional(),
-  foto_perfil_url: z.union([z.string().trim().url("URL de foto inv?lida").max(1000), z.literal("")]).optional(),
+  banner_url: z.union([z.string().trim().url("URL de portada inválida").max(1000), z.literal("")]).optional(),
+  foto_perfil_url: z.union([z.string().trim().url("URL de foto inválida").max(1000), z.literal("")]).optional(),
   habilidades: z.array(z.string().trim().min(1).max(40)).max(30).optional(),
 });
 export type UpdateMeInput = z.infer<typeof updateMeSchema>;
+
+export const changePasswordSchema = z
+  .object({
+    password_actual: z.string().min(1, "Ingresa tu contraseña actual"),
+    password_nueva: z
+      .string()
+      .min(8, "Mínimo 8 caracteres")
+      .regex(/[A-Z]/, "Mayúscula requerida")
+      .regex(/[a-z]/, "Minúscula requerida")
+      .regex(/[0-9]/, "Número requerido"),
+    confirmar_password: z.string(),
+  })
+  .refine((d) => d.password_nueva === d.confirmar_password, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirmar_password"],
+  });

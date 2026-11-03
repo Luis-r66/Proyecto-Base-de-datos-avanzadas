@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 
 export default function Cuenta() {
-  const { recargarUsuario } = useAuth();
+  const { recargarUsuario, cambiarPassword } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     nombre: "",
@@ -20,6 +20,10 @@ export default function Cuenta() {
   const [guardando, setGuardando] = useState(false);
   const [aviso, setAviso] = useState("");
   const [error, setError] = useState("");
+  const [seguridad, setSeguridad] = useState({ password_actual: "", password_nueva: "", confirmar_password: "" });
+  const [errorPassword, setErrorPassword] = useState("");
+  const [avisoPassword, setAvisoPassword] = useState("");
+  const [guardandoPassword, setGuardandoPassword] = useState(false);
 
   useEffect(() => {
     me()
@@ -62,6 +66,26 @@ export default function Cuenta() {
     } finally {
       setGuardando(false);
     }
+  }
+
+  async function cambiarClave(evento) {
+    evento.preventDefault();
+    setGuardandoPassword(true);
+    setErrorPassword("");
+    setAvisoPassword("");
+    try {
+      await cambiarPassword(seguridad);
+      setSeguridad({ password_actual: "", password_nueva: "", confirmar_password: "" });
+      setAvisoPassword("Contrase?a actualizada. Las dem?s sesiones quedaron cerradas.");
+    } catch (err) {
+      setErrorPassword(getErrorMessage(err));
+    } finally {
+      setGuardandoPassword(false);
+    }
+  }
+
+  function cambiarSeguridad(campo, valor) {
+    setSeguridad((actual) => ({ ...actual, [campo]: valor }));
   }
 
   if (cargando) return <main className="container"><p className="muted">Cargando cuenta...</p></main>;
@@ -129,6 +153,33 @@ export default function Cuenta() {
           </div>
         </aside>
       </div>
+
+      <section className="card cuenta-security">
+        <div>
+          <span className="eyebrow">Seguridad</span>
+          <h2>Cambiar contraseña</h2>
+          <p className="muted">Al cambiarla se cierran las dem?s sesiones. La sesión actual seguir? activa.</p>
+        </div>
+        <form className="form" onSubmit={cambiarClave}>
+          {errorPassword && <p className="alert alert--error">{errorPassword}</p>}
+          {avisoPassword && <p className="alert alert--ok">{avisoPassword}</p>}
+          <div className="field">
+            <label htmlFor="pactual">Contrase?a actual</label>
+            <input id="pactual" type="password" autoComplete="current-password" value={seguridad.password_actual} onChange={(e) => cambiarSeguridad("password_actual", e.target.value)} required />
+          </div>
+          <div className="grid-2">
+            <div className="field">
+              <label htmlFor="pnueva">Nueva contraseña</label>
+              <input id="pnueva" type="password" autoComplete="new-password" value={seguridad.password_nueva} onChange={(e) => cambiarSeguridad("password_nueva", e.target.value)} placeholder="Mínimo 8, may?scula, min?scula y n?mero" required />
+            </div>
+            <div className="field">
+              <label htmlFor="pconf">Confirmar nueva contraseña</label>
+              <input id="pconf" type="password" autoComplete="new-password" value={seguridad.confirmar_password} onChange={(e) => cambiarSeguridad("confirmar_password", e.target.value)} required />
+            </div>
+          </div>
+          <button type="submit" className="btn btn--primary" disabled={guardandoPassword}>{guardandoPassword ? "Actualizando..." : "Cambiar contraseña"}</button>
+        </form>
+      </section>
     </main>
   );
 }

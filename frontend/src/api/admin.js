@@ -11,3 +11,7 @@ export const listarReportes = (params) =>
 
 export const actualizarReporte = (id, estado) =>
   client.patch(`/reportes/${id}`, { estado }).then((r) => r.data);
+
+export const resumenAdmin = () => client.get("/admin/resumen").then((r) => r.data);
+export const listarServiciosAdmin = (params) => client.get("/admin/servicios", { params }).then((r) => r.data);
+export const cambiarEstadoServicioAdmin = (id, estado) => client.patch(`/admin/servicios/${id}/estado`, { estado }).then((r) => r.data);

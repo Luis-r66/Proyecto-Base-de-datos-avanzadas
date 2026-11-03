@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { registerUser, loginUser, refreshTokens, getMe, updateMe } from "../services/auth.service";
-import { registerSchema, loginSchema, refreshSchema, updateMeSchema } from "../utils/auth.validation";
+import { registerUser, loginUser, refreshTokens, getMe, updateMe, cambiarPassword } from "../services/auth.service";
+import { registerSchema, loginSchema, refreshSchema, updateMeSchema, changePasswordSchema } from "../utils/auth.validation";
 
 export async function register(req: Request, res: Response) {
   const data = registerSchema.parse(req.body);
@@ -28,4 +28,9 @@ export async function me(req: Request, res: Response) {
 export async function updateMeHandler(req: Request, res: Response) {
   const data = updateMeSchema.parse(req.body);
   res.json(await updateMe(req.user!.sub, data));
+}
+
+export async function changePasswordHandler(req: Request, res: Response) {
+  const data = changePasswordSchema.parse(req.body);
+  res.json(await cambiarPassword(req.user!.sub, data.password_actual, data.password_nueva));
 }

@@ -29,7 +29,7 @@ export async function registerUser(data: RegisterInput): Promise<AuthTokens> {
   await evaluarVerificacionSilenciosa(user._id);
   const fresh = await Usuario.findById(user._id);
 
-  const payload: TokenPayload = { sub: user._id, email: user.email, tipo_usuario: user.tipo_usuario };
+  const payload: TokenPayload = { sub: user._id, email: user.email, tipo_usuario: user.tipo_usuario, tv: user.token_version ?? 0 };
   return {
     accessToken: generateAccessToken(payload),
     refreshToken: generateRefreshToken(payload),
@@ -51,7 +51,7 @@ export async function loginUser(data: LoginInput): Promise<AuthTokens> {
   await evaluarVerificacionSilenciosa(user._id);
   const fresh = await Usuario.findById(user._id);
 
-  const payload: TokenPayload = { sub: user._id, email: user.email, tipo_usuario: user.tipo_usuario };
+  const payload: TokenPayload = { sub: user._id, email: user.email, tipo_usuario: user.tipo_usuario, tv: user.token_version ?? 0 };
   return {
     accessToken: generateAccessToken(payload),
     refreshToken: generateRefreshToken(payload),
@@ -69,7 +69,8 @@ export async function refreshTokens(token: string) {
   if (p.type !== "refresh") throw new AppError(401, "INVALID_TOKEN_TYPE", "Tipo de token inválido");
   const user = await Usuario.findById(p.sub);
   if (!user || user.estado_cuenta !== "activo") throw new AppError(401, "USER_NOT_FOUND", "Usuario no encontrado o inactivo");
-  const payload: TokenPayload = { sub: user._id, email: user.email, tipo_usuario: user.tipo_usuario };
+  if ((p.tv ?? 0) !== (user.token_version ?? 0)) throw new AppError(401, "SESSION_REVOKED", "La sesión fue cerrada");
+  const payload: TokenPayload = { sub: user._id, email: user.email, tipo_usuario: user.tipo_usuario, tv: user.token_version ?? 0 };
   return { accessToken: generateAccessToken(payload), refreshToken: generateRefreshToken(payload) };
 }
 
@@ -101,4 +102,20 @@ export async function updateMe(userId: Types.ObjectId, data: { nombre?: string; 
   if (data.habilidades !== undefined) user.habilidades = data.habilidades;
   await user.save();
   return getMe(userId);
+}
+
+export async function cambiarPassword(userId: Types.ObjectId, actual: string, nueva: string) {
+  const user = await Usuario.findById(userId).select("+password_hash");
+  if (!user) throw new AppError(404, "USER_NOT_FOUND", "Usuario no encontrado");
+  if (!(await user.compararPassword(actual))) {
+    throw new AppError(401, "INVALID_PASSWORD", "La contraseña actual no es correcta");
+  }
+  if (await user.compararPassword(nueva)) {
+    throw new AppError(400, "SAME_PASSWORD", "La nueva contraseña debe ser diferente");
+  }
+  user.password_hash = await bcrypt.hash(nueva, env.BCRYPT_ROUNDS);
+  user.token_version = (user.token_version ?? 0) + 1;
+  await user.save();
+  const payload: TokenPayload = { sub: user._id, email: user.email, tipo_usuario: user.tipo_usuario, tv: user.token_version };
+  return { accessToken: generateAccessToken(payload), refreshToken: generateRefreshToken(payload) };
 }

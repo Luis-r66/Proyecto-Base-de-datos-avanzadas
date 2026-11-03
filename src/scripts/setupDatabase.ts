@@ -39,6 +39,7 @@ const USUARIOS_VALIDATION = {
       biografia: { bsonType: "string", maxLength: 1000 },
       titular: { bsonType: "string", maxLength: 220 },
       banner_url: { bsonType: "string", maxLength: 1000 },
+      token_version: { bsonType: "number", minimum: 0 },
       habilidades: { bsonType: "array", items: { bsonType: "string" } },
       educacion: { bsonType: "array" },
       calificacion_promedio: { bsonType: "number", minimum: 0, maximum: 5 },
