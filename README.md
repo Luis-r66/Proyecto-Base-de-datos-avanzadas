@@ -140,6 +140,7 @@ uno existente responde 409.
 
 ## Documentacion de la API
 
+- `historias-usuarios.md`: historias de usuario H001-H017 (n?cleo) y extensi?n de producto.
 - `postman_collection.json`: coleccion lista para importar en Postman.
 - `frontend/README.md`: instalacion y variables del frontend.
 
