@@ -47,7 +47,10 @@ export async function mensajesHandler(req: Request, res: Response) {
 
 export async function enviarHandler(req: Request, res: Response) {
   const data = sendMessageSchema.parse(req.body);
-  res.status(201).json(await sendConversacionMessage(req.user!.sub, isObjectIdOr400(req.params.id), data));
+  const archivos = Array.isArray(req.files) ? req.files : [];
+  res
+    .status(201)
+    .json(await sendConversacionMessage(req.user!.sub, isObjectIdOr400(req.params.id), data, archivos));
 }
 
 export async function ofertasHandler(req: Request, res: Response) {

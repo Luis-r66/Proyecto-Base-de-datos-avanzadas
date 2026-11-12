@@ -2278,6 +2278,78 @@
           }
         }
       ]
+    },
+    {
+      "name": "Archivos",
+      "item": [
+        {
+          "name": "Subir imagen (Cloudinary)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/archivos/imagen",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "archivos",
+                "imagen"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "archivo",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "carpeta",
+                  "value": "perfiles",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mensaje con adjuntos (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/conversaciones/{{conversacion_id}}/mensajes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "conversaciones",
+                "{{conversacion_id}}",
+                "mensajes"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "contenido",
+                  "value": "Adjunto mi tarea",
+                  "type": "text"
+                },
+                {
+                  "key": "adjuntos",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

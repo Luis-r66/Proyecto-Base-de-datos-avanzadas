@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { listarCategorias } from "../api/categorias";
 import { actualizarServicio, crearServicio, obtenerServicio } from "../api/servicios";
 import { useAuth } from "../context/AuthContext";
+import { SubirImagen } from "../components/SubirImagen";
 import { getErrorMessage } from "../utils/errores";
 
 const PAQUETES_INICIALES = [
@@ -97,6 +98,9 @@ export default function FormServicio({ modo = "crear" }) {
       if (!paquetes.some((p) => p.codigo === "basico")) {
         throw new Error("El paquete Básico es obligatorio.");
       }
+      if (!form.imagen_portada_url.trim()) {
+        throw new Error("Sube una imagen de portada para el servicio.");
+      }
       const payload = {
         categoria_id: form.categoria_id,
         titulo: form.titulo.trim(),
@@ -161,8 +165,14 @@ export default function FormServicio({ modo = "crear" }) {
 
         <div className="grid-2">
           <div className="field">
-            <label htmlFor="simg">URL de portada</label>
-            <input id="simg" type="url" value={form.imagen_portada_url} onChange={(e) => cambiar("imagen_portada_url", e.target.value)} placeholder="https://..." required />
+            <SubirImagen
+              id="simg"
+              label="Portada del servicio"
+              value={form.imagen_portada_url}
+              onChange={(url) => cambiar("imagen_portada_url", url)}
+              carpeta="servicios"
+              forma="panoramica"
+            />
           </div>
           <div className="field">
             <label htmlFor="setiquetas">Etiquetas (separadas por coma)</label>

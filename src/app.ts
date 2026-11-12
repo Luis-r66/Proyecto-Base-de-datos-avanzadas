@@ -23,6 +23,7 @@ import conversacionRoutes from "./routes/conversacion.routes";
 import ofertaRoutes from "./routes/oferta.routes";
 import servicioRoutes from "./routes/servicio.routes";
 import pedidoRoutes from "./routes/pedido.routes";
+import archivoRoutes from "./routes/archivo.routes";
 import { setSocketServer } from "./config/socket";
 import { setupSocket } from "./socket";
 
@@ -55,6 +56,7 @@ app.use("/api/conversaciones", conversacionRoutes);
 app.use("/api/ofertas", ofertaRoutes);
 app.use("/api/servicios", servicioRoutes);
 app.use("/api/pedidos", pedidoRoutes);
+app.use("/api/archivos", archivoRoutes);
 app.use("/api", calificacionRoutes);
 app.use("/api", favoritoRoutes);
 

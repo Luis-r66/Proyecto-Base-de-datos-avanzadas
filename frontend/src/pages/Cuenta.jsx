@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Avatar from "../components/Avatar";
+import { SubirImagen } from "../components/SubirImagen";
 import { actualizarMe, me } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
@@ -120,14 +121,22 @@ export default function Cuenta() {
             <textarea id="cbio" rows={5} value={form.biografia} onChange={(e) => cambiar("biografia", e.target.value)} maxLength={1000} placeholder="Cuenta qué haces, qué te gusta enseñar y cómo trabajas." />
           </div>
           <div className="grid-2">
-            <div className="field">
-              <label htmlFor="cfoto">URL de foto</label>
-              <input id="cfoto" type="url" value={form.foto_perfil_url} onChange={(e) => cambiar("foto_perfil_url", e.target.value)} placeholder="https://..." />
-            </div>
-            <div className="field">
-              <label htmlFor="cbanner">URL de portada</label>
-              <input id="cbanner" type="url" value={form.banner_url} onChange={(e) => cambiar("banner_url", e.target.value)} placeholder="https://..." />
-            </div>
+            <SubirImagen
+              id="cfoto"
+              label="Foto de perfil"
+              value={form.foto_perfil_url}
+              onChange={(url) => cambiar("foto_perfil_url", url)}
+              carpeta="perfiles"
+              forma="redonda"
+            />
+            <SubirImagen
+              id="cbanner"
+              label="Portada"
+              value={form.banner_url}
+              onChange={(url) => cambiar("banner_url", url)}
+              carpeta="perfiles"
+              forma="panoramica"
+            />
           </div>
           <div className="field">
             <label htmlFor="chab">Habilidades (separadas por coma)</label>

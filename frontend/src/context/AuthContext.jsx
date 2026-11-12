@@ -15,7 +15,13 @@ export function AuthProvider({ children }) {
     const guardado = localStorage.getItem(USER_KEY);
     return guardado ? JSON.parse(guardado) : null;
   });
-  const [loading, setLoading] = useState(true);
+  // Si ya hay sesion guardada, no bloqueamos la interfaz esperando /auth/me:
+  // se pinta con los datos locales y se revalidan en segundo plano.
+  const [loading, setLoading] = useState(() => {
+    const guardado = localStorage.getItem(USER_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
+    return Boolean(token) && !guardado;
+  });
 
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY);

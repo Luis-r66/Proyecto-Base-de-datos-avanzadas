@@ -10,9 +10,18 @@ import { withTransaction } from "../config/db";
 import { SendMessageInput } from "../utils/mensaje.validation";
 import { actualizarActividad, crearOConseguirConversacion } from "./conversacion.service";
 import { emitirAConversacion, emitirAUsuario } from "../config/socket";
+import { subirAdjuntoChat, AdjuntoSubido } from "./archivo.service";
 
 function createdPreview(texto?: string) {
   return (texto || "Nuevo mensaje").slice(0, 120);
+}
+
+function previewDe(contenido: string | undefined, adjuntos: AdjuntoSubido[]) {
+  const texto = contenido?.trim();
+  if (texto) return texto.slice(0, 120);
+  if (adjuntos.length === 1) return `Archivo: ${adjuntos[0].nombre}`;
+  if (adjuntos.length > 1) return `${adjuntos.length} archivos adjuntos`;
+  return "Nuevo mensaje";
 }
 
 async function esParte(neg: any, userId: Types.ObjectId, session?: any): Promise<boolean> {
@@ -42,6 +51,9 @@ export async function sendMessage(remitenteId: Types.ObjectId, negId: Types.Obje
   if (!neg) throw new AppError(404, "NEGOCIACION_NOT_FOUND", "Negociación no encontrada");
   if (!(await esParte(neg, remitenteId))) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de esta negociación");
+  }
+  if (!data.contenido?.trim() && !data.mensaje_predeterminado_id) {
+    throw new AppError(400, "EMPTY_MESSAGE", "Escribe un mensaje");
   }
 
   let conversacionId = neg.conversacion_id;
@@ -114,12 +126,16 @@ export async function sendMessage(remitenteId: Types.ObjectId, negId: Types.Obje
 export async function sendConversacionMessage(
   remitenteId: Types.ObjectId,
   convId: Types.ObjectId,
-  data: SendMessageInput
+  data: SendMessageInput,
+  archivos: Express.Multer.File[] = []
 ) {
   const conv: any = await Conversacion.findById(convId);
   if (!conv) throw new AppError(404, "CONVERSACION_NOT_FOUND", "Conversación no encontrada");
   if (!(await esParteConversacion(conv, remitenteId))) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de esta conversación");
+  }
+  if (!data.contenido?.trim() && !data.mensaje_predeterminado_id && archivos.length === 0) {
+    throw new AppError(400, "EMPTY_MESSAGE", "Escribe un mensaje o adjunta un archivo");
   }
 
   const dest =
@@ -138,22 +154,27 @@ export async function sendConversacionMessage(
     predId = pred._id;
   }
 
+  const adjuntos = archivos.length ? await Promise.all(archivos.map(subirAdjuntoChat)) : [];
+  const texto = (contenido || "").trim();
+
   const created = await Mensaje.create({
     conversacion_id: convId,
     remitente_id: remitenteId,
-    contenido: contenido!,
-    tipo: "texto",
+    contenido: texto,
+    tipo: adjuntos.length ? "archivo" : "texto",
+    adjuntos: adjuntos.length ? adjuntos : undefined,
     es_predeterminado: esPred,
     mensaje_predeterminado_id: predId,
     leido: false,
   });
 
-  await actualizarActividad(convId, created.contenido, created.fecha_envio);
+  const preview = previewDe(texto, adjuntos);
+  await actualizarActividad(convId, preview, created.fecha_envio);
   await Notificacion.create({
     usuario_id: dest,
     tipo: "mensaje",
     titulo: "Nuevo mensaje",
-    texto: created.contenido.slice(0, 120),
+    texto: preview,
     url: `/mensajes/${convId}`,
     actor_id: remitenteId,
     referencia_id: created._id,
@@ -181,15 +202,17 @@ export async function getMensajesConversacion(
   if (!(await esParteConversacion(conv, userId))) {
     throw new AppError(403, "FORBIDDEN", "No eres parte de esta conversación");
   }
-  const [data, total] = await Promise.all([
+  const [recientes, total] = await Promise.all([
     Mensaje.find({ conversacion_id: convId })
-      .sort({ fecha_envio: 1 })
+      .sort({ fecha_envio: -1, _id: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .populate("remitente_id", "nombre foto_perfil_url")
       .lean(),
     Mensaje.countDocuments({ conversacion_id: convId }),
   ]);
+  // La pagina 1 trae los ultimos mensajes; se invierten para pintarlos en orden cronologico.
+  const data = recientes.reverse();
   return { data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
 }
 

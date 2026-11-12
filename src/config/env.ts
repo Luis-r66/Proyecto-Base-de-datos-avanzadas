@@ -18,6 +18,12 @@ const envSchema = z.object({
   BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
   CORS_ORIGIN: z.string().default("http://localhost:5173"),
 
+  // Cloudinary: subida de imagenes del marketplace y adjuntos del chat
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
+  MAX_UPLOAD_MB: z.coerce.number().int().min(1).max(20).default(10),
+
   // Verificacion institucional automatica
   AUTO_VERIFY: boolFromEnv(true),
   INSTITUTIONAL_EMAIL_DOMAINS: z.string().default("uniautonoma.edu.co"),

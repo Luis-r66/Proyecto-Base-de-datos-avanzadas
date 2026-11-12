@@ -34,6 +34,7 @@ import AdminCategorias from "./pages/AdminCategorias";
 import AdminServicios from "./pages/AdminServicios";
 import "./styles/global.css";
 import "./styles/theme.css";
+import "./styles/upload.css";
 
 export default function App() {
   return (

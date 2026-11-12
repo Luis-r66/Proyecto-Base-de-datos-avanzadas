@@ -2,11 +2,8 @@
 import { optionalObjectId } from "./validators";
 
 export const sendMessageSchema = z.object({
-  contenido: z.string().min(1).max(5000).trim().optional(),
+  contenido: z.string().max(5000).trim().optional(),
   mensaje_predeterminado_id: optionalObjectId("ID inválido"),
-}).refine((d) => d.contenido || d.mensaje_predeterminado_id, {
-  message: "Debe proporcionar contenido o mensaje_predeterminado_id",
-  path: ["contenido"],
 });
 
 export type SendMessageInput = z.infer<typeof sendMessageSchema>;

@@ -38,6 +38,10 @@ npm run dev            # http://localhost:3001
 | `NODE_ENV` | `development` / `production` / `test` |
 | `BCRYPT_ROUNDS` | Rondas de bcrypt (10 a 15) |
 | `CORS_ORIGIN` | Origenes permitidos, separados por coma (por defecto `http://localhost:5173`) |
+| `CLOUDINARY_CLOUD_NAME` | Cloud name de Cloudinary (subida de imagenes y adjuntos) |
+| `CLOUDINARY_API_KEY` | API key de Cloudinary |
+| `CLOUDINARY_API_SECRET` | API secret de Cloudinary (solo en el servidor) |
+| `MAX_UPLOAD_MB` | Peso maximo por archivo en MB (por defecto `10`) |
 | `AUTO_VERIFY` | Activa la verificacion automatica (`true` por defecto) |
 | `INSTITUTIONAL_EMAIL_DOMAINS` | Dominios institucionales permitidos, separados por coma (`uniautonoma.edu.co`) |
 | `VERIFY_REQUIRE_ACTIVE_ACCOUNT` | Exige cuenta `activo` para verificar |
@@ -131,11 +135,25 @@ para demostrar el flujo en vivo. Tambien un reporte abierto, un favorito, una
 busqueda y notificaciones. Para registrar en vivo usa un email nuevo; repetir
 uno existente responde 409.
 
+## Archivos e imagenes (Cloudinary)
+
+- Las imagenes del marketplace (foto de perfil, portada, portada de servicio y portafolio)
+  se suben desde el frontend y se guardan como URL de Cloudinary.
+- El chat acepta hasta **5 adjuntos por mensaje** de **10 MB** cada uno: imagenes,
+  PDF, Word, Excel, PowerPoint, codigo (`.py`, `.java`, `.js`, `.sql`, `.c`, `.cpp`,
+  `.cs`, `.ts`, `.ipynb` y mas) y comprimidos (`.zip`, `.rar`, `.7z`).
+- Los ejecutables (`.exe`, `.bat`, `.msi`) estan bloqueados por extension.
+- Endpoint de imagenes: `POST /api/archivos/imagen` (`multipart/form-data`, campo
+  `archivo` y `carpeta` opcional: `perfiles`, `servicios`, `portafolio`).
+- Mensajes con adjuntos: `POST /api/conversaciones/:id/mensajes` con
+  `multipart/form-data`, campos `contenido` (opcional) y `adjuntos`.
+- El modelo `Mensaje` guarda `adjuntos[]` con nombre, tipo, tamano, URL y `public_id`.
+
 ## Alcance del proyecto
 
 - Nucleo evaluable: historias H001-H017.
 - Extension opcional: servicios, paquetes, pedidos, resenas, cuenta editable y favoritos de servicios.
-- Fuera de alcance: feed social, conexiones, pagos reales, subida de archivos y app movil nativa.
+- Fuera de alcance: feed social, conexiones, pagos reales y app movil nativa.
 
 
 ## Documentacion de la API

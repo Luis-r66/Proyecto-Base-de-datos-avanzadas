@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SubirGaleria } from "./SubirImagen";
 
 export default function TrabajoForm({
   categorias = [],
@@ -12,7 +13,7 @@ export default function TrabajoForm({
   const [titulo, setTitulo] = useState(initialData.titulo || "");
   const [descripcion, setDescripcion] = useState(initialData.descripcion || "");
   const [habilidades, setHabilidades] = useState((initialData.habilidades_usadas || []).join(", "));
-  const [imagenes, setImagenes] = useState((initialData.imagenes_urls || []).join(", "));
+  const [imagenes, setImagenes] = useState(initialData.imagenes_urls || []);
 
   const completo = categoriaId && titulo.trim() && descripcion.trim();
 
@@ -24,7 +25,7 @@ export default function TrabajoForm({
       titulo: titulo.trim(),
       descripcion: descripcion.trim(),
       habilidades_usadas: separarLista(habilidades),
-      imagenes_urls: separarLista(imagenes),
+      imagenes_urls: imagenes,
     });
   }
 
@@ -87,15 +88,13 @@ export default function TrabajoForm({
         />
       </div>
 
-      <div className="field">
-        <label htmlFor="timagenes">URLs de imagenes (separadas por coma)</label>
-        <input
-          id="timagenes"
-          value={imagenes}
-          onChange={(e) => setImagenes(e.target.value)}
-          placeholder="https://.../foto1.jpg, https://.../foto2.jpg"
-        />
-      </div>
+      <SubirGaleria
+        id="timagenes"
+        label="Imágenes del trabajo"
+        valores={imagenes}
+        onChange={setImagenes}
+        carpeta="portafolio"
+      />
 
       <div className="form__actions">
         <button type="submit" className="btn btn--primary" disabled={!completo || saving}>

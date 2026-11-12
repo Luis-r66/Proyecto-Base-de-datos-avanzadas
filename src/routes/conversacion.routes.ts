@@ -14,6 +14,7 @@ import { authenticate } from "../middleware/auth";
 import { validate } from "../middleware/validateBody";
 import { crearConversacionSchema, crearOfertaSchema } from "../utils/conversacion.validation";
 import { sendMessageSchema } from "../utils/mensaje.validation";
+import { subirAdjuntosMiddleware } from "../middleware/upload";
 
 const router = Router();
 router.use(authenticate);
@@ -24,7 +25,7 @@ router.patch("/leer-todas", leerTodasHandler);
 router.get("/:id", obtenerHandler);
 router.patch("/:id/leer", leerHandler);
 router.get("/:id/mensajes", mensajesHandler);
-router.post("/:id/mensajes", validate(sendMessageSchema, "body"), enviarHandler);
+router.post("/:id/mensajes", subirAdjuntosMiddleware, validate(sendMessageSchema, "body"), enviarHandler);
 router.get("/:id/ofertas", ofertasHandler);
 router.post("/:id/ofertas", validate(crearOfertaSchema, "body"), crearOfertaHandler);
 

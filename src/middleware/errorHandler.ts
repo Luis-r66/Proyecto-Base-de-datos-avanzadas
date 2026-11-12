@@ -27,7 +27,9 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     err instanceof mongoose.Error.ValidationError ||
     err instanceof mongoose.Error.CastError ||
     e.code === 11000 ||
-    e.code === 121;
+    e.code === 121 ||
+    e.type === "entity.parse.failed" ||
+    e.type === "entity.too.large";
 
   if (!expected) console.error("Error:", err);
   if (e.code === 121 && e.errInfo?.details) {
@@ -39,6 +41,12 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
       error: "Datos de entrada inválidos",
       code: "VALIDATION_ERROR",
       details: err.flatten().fieldErrors,
+    });
+  }
+  if (e.type === "entity.parse.failed" || e.type === "entity.too.large") {
+    return res.status(e.statusCode || 400).json({
+      error: e.type === "entity.too.large" ? "El cuerpo de la petición es demasiado grande" : "JSON inválido",
+      code: e.type === "entity.too.large" ? "PAYLOAD_TOO_LARGE" : "INVALID_JSON",
     });
   }
   if (isApp) {

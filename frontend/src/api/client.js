@@ -8,7 +8,6 @@ export const USER_KEY = "tl_user";
 
 export const client = axios.create({
   baseURL,
-  headers: { "Content-Type": "application/json" },
 });
 
 client.interceptors.request.use((config) => {
