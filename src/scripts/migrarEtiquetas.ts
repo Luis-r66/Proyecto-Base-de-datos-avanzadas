@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { connectDB, getConnection } from "../config/db";
 import { Etiqueta } from "../models/Etiqueta";
-import { normalizarEtiqueta, slugDeEtiqueta } from "../utils/etiquetas";
+import { slugDeEtiqueta } from "../utils/etiquetas";
 
 /**
  * Migra las etiquetas de texto libre (Servicio.etiquetas y Usuario.habilidades)
@@ -69,7 +69,7 @@ async function main() {
       const etiqueta = await Etiqueta.create({
         nombre,
         slug,
-        sinonimos: [normalizarEtiqueta(nombre)],
+        sinonimos: [],
         tipo: "tema",
         estado: "activa",
       });

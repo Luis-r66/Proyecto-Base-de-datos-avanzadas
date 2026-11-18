@@ -15,12 +15,19 @@ import {
   slugDeEtiqueta,
 } from "../utils/etiquetas";
 
+function sinonimosVisibles(etiqueta: any) {
+  const propios = new Set([normalizarEtiqueta(etiqueta.nombre || ""), etiqueta.slug]);
+  return (etiqueta.sinonimos || []).filter(
+    (sinonimo: string) => sinonimo && !propios.has(normalizarEtiqueta(sinonimo))
+  );
+}
+
 function publica(etiqueta: any) {
   return {
     _id: etiqueta._id,
     nombre: etiqueta.nombre,
     slug: etiqueta.slug,
-    sinonimos: etiqueta.sinonimos || [],
+    sinonimos: sinonimosVisibles(etiqueta),
     tipo: etiqueta.tipo,
     uso_count: etiqueta.uso_count || 0,
     estado: etiqueta.estado,
@@ -107,10 +114,14 @@ export async function crearEtiqueta(
     });
   }
 
+  const sinonimos = (data.sinonimos || [])
+    .map((s) => normalizarEtiqueta(s))
+    .filter((s) => s && s !== clave && s !== slug);
+
   const etiqueta = await Etiqueta.create({
     nombre,
     slug,
-    sinonimos: (data.sinonimos || []).map((s) => normalizarEtiqueta(s)).filter(Boolean),
+    sinonimos: Array.from(new Set(sinonimos)),
     tipo: data.tipo || "tema",
     estado: esAdmin ? data.estado || "activa" : "pendiente",
     creada_por: usuarioId,
@@ -139,8 +150,13 @@ export async function actualizarEtiqueta(id: Types.ObjectId, data: ActualizarEti
     etiqueta.slug = slug;
   }
   if (data.sinonimos !== undefined) {
+    const propios = new Set([normalizarEtiqueta(etiqueta.nombre), etiqueta.slug]);
     etiqueta.sinonimos = Array.from(
-      new Set(data.sinonimos.map((s) => normalizarEtiqueta(s)).filter(Boolean))
+      new Set(
+        data.sinonimos
+          .map((s) => normalizarEtiqueta(s))
+          .filter((s) => s && !propios.has(s))
+      )
     ).slice(0, 12);
   }
   if (data.tipo !== undefined) etiqueta.tipo = data.tipo;
