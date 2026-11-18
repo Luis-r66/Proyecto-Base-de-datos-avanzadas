@@ -6,6 +6,7 @@ import VerificadoBadge from "./VerificadoBadge";
 import { formatearCOP } from "../utils/moneda";
 import { useAuth } from "../context/AuthContext";
 import { toggleFavoritoServicio } from "../api/favoritos";
+import "../styles/etiquetas.css";
 
 const NIVELES = {
   nuevo: "Nuevo",
@@ -77,6 +78,23 @@ export default function TarjetaServicio({ servicio, esFavorito = false }) {
             <span className="muted">({prestador.total_calificaciones})</span>
           )}
         </div>
+
+        {servicio.etiquetas?.length > 0 && (
+          <div className="tag-chip-list gig-card__tags">
+            {servicio.etiquetas.slice(0, 4).map((etiqueta) => {
+              const tag = typeof etiqueta === "string" ? { slug: etiqueta, nombre: etiqueta } : etiqueta;
+              return (
+                <Link
+                  key={tag._id || tag.slug}
+                  to={`/buscar?tags=${encodeURIComponent(tag.slug || tag.nombre)}`}
+                  className="tag-chip tag-chip--link"
+                >
+                  {tag.nombre}
+                </Link>
+              );
+            })}
+          </div>
+        )}
 
         <div className="gig-card__footer">
           <span className="gig-card__delivery">{dias ? `${dias} día${dias === 1 ? "" : "s"}` : "A convenir"}</span>

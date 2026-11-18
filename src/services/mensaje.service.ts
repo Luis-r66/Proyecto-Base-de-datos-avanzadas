@@ -154,7 +154,12 @@ export async function sendConversacionMessage(
     predId = pred._id;
   }
 
-  const adjuntos = archivos.length ? await Promise.all(archivos.map(subirAdjuntoChat)) : [];
+  // Subida secuencial: con 5 archivos de 10 MB se evita mantener todos los
+  // buffers y las peticiones a Cloudinary en memoria al mismo tiempo.
+  const adjuntos: AdjuntoSubido[] = [];
+  for (const archivo of archivos) {
+    adjuntos.push(await subirAdjuntoChat(archivo));
+  }
   const texto = (contenido || "").trim();
 
   const created = await Mensaje.create({

@@ -32,6 +32,8 @@ import AdminVerificacion from "./pages/AdminVerificacion";
 import AdminReportes from "./pages/AdminReportes";
 import AdminCategorias from "./pages/AdminCategorias";
 import AdminServicios from "./pages/AdminServicios";
+import AdminEtiquetas from "./pages/AdminEtiquetas";
+import EtiquetaDetalle from "./pages/EtiquetaDetalle";
 import "./styles/global.css";
 import "./styles/theme.css";
 import "./styles/upload.css";
@@ -46,6 +48,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/prestador/:id" element={<PrestadorPublico />} />
+            <Route path="/etiquetas/:slug" element={<EtiquetaDetalle />} />
             <Route path="/portafolio/:id" element={<PortafolioDetalle />} />
             <Route path="/track" element={<Track />} />
             <Route path="/track/:codigo" element={<Track />} />
@@ -225,6 +228,14 @@ export default function App() {
             element={
               <ProtectedRoute roles={["Admin"]}>
                 <AdminCategorias />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/etiquetas"
+            element={
+              <ProtectedRoute roles={["Admin"]}>
+                <AdminEtiquetas />
               </ProtectedRoute>
             }
           />

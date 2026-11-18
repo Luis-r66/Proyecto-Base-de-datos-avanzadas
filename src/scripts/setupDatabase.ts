@@ -17,6 +17,7 @@ import "../models/Servicio";
 import "../models/Pedido";
 import "../models/ResenaPedido";
 import "../models/FavoritoServicio";
+import "../models/Etiqueta";
 import { MensajePredeterminado } from "../models/MensajePredeterminado";
 
 const USUARIOS_VALIDATION = {
@@ -81,6 +82,7 @@ const COLLECTIONS = [
   "negociaciones", "mensajes", "mensajes_predeterminados", "busquedas",
   "calificaciones", "favoritos", "notificaciones", "reportes",
   "conversaciones", "ofertas", "servicios", "pedidos", "resenas_pedido", "favoritos_servicio",
+  "etiquetas",
 ];
 
 const MENSAJES = [

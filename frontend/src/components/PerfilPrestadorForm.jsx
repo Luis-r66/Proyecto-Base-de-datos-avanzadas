@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MONTO_MINIMO_COP, MONTO_MAXIMO_COP, formatearCOP } from "../utils/moneda";
+import SelectorEtiquetas from "./SelectorEtiquetas";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -22,6 +23,7 @@ export default function PerfilPrestadorForm({
   error = "",
 }) {
   const [seleccion, setSeleccion] = useState(() => idsCategorias(perfil));
+  const [etiquetas, setEtiquetas] = useState(() => perfil?.etiquetas || []);
   const [tipos, setTipos] = useState((perfil?.tipos_actividad || []).join(", "));
   const [descripcion, setDescripcion] = useState(perfil?.descripcion || "");
   const [monto, setMonto] = useState(
@@ -98,6 +100,9 @@ export default function PerfilPrestadorForm({
 
     const payload = {
       categorias_ids: seleccion,
+      etiquetas: etiquetas
+        .map((etiqueta) => (typeof etiqueta === "string" ? etiqueta : etiqueta._id))
+        .filter(Boolean),
       tipos_actividad: separarLista(tipos),
       descripcion: descripcion.trim() || undefined,
       metodos_pago_aceptados: separarLista(metodos),
@@ -166,6 +171,15 @@ export default function PerfilPrestadorForm({
             ))}
         </div>
       </fieldset>
+
+      <SelectorEtiquetas
+        valor={etiquetas}
+        onChange={setEtiquetas}
+        max={15}
+        label="Tus especialidades"
+        placeholder="Python, cálculo, estadística..."
+        ayuda="Máximo 15. Son las etiquetas con las que te encuentran los solicitantes."
+      />
 
       <div className="field">
         <label htmlFor="ptipos">Tipos de actividad (separados por coma)</label>

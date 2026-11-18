@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 import { formatearCOP } from "../utils/moneda";
 import { nivelPrestador } from "../components/TarjetaServicio";
+import "../styles/etiquetas.css";
 
 const NOMBRES = { basico: "Básico", estandar: "Estándar", premium: "Premium" };
 
@@ -130,8 +131,19 @@ export default function ServicioDetalle() {
             <h2>Acerca de este servicio</h2>
             <p style={{ whiteSpace: "pre-wrap" }}>{servicio.descripcion}</p>
             {servicio.etiquetas?.length > 0 && (
-              <div className="gig-features">
-                {servicio.etiquetas.map((tag) => <span key={tag} className="chip">{tag}</span>)}
+              <div className="gig-features tag-chip-list">
+                {servicio.etiquetas.map((etiqueta) => {
+                  const tag = typeof etiqueta === "string" ? { slug: etiqueta, nombre: etiqueta } : etiqueta;
+                  return (
+                    <Link
+                      key={tag._id || tag.slug}
+                      to={`/buscar?tags=${encodeURIComponent(tag.slug || tag.nombre)}`}
+                      className="tag-chip tag-chip--link"
+                    >
+                      {tag.nombre}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </section>

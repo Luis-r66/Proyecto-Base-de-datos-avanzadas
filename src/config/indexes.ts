@@ -18,6 +18,7 @@ export const indexDefinitions: Record<string, IndexDef[]> = {
   ],
   perfiles_prestador: [
     { key: { categorias_ids: 1 }, name: "idx_perfiles_categorias" },
+    { key: { etiquetas: 1 }, name: "idx_perfiles_etiquetas" },
     { key: { usuario_id: 1 }, unique: true, name: "idx_perfiles_usuario" },
   ],
   trabajos_portafolio: [
@@ -56,7 +57,13 @@ export const indexDefinitions: Record<string, IndexDef[]> = {
   servicios: [
     { key: { prestador_id: 1, fecha_creacion: -1 }, name: "idx_servicios_prestador" },
     { key: { categoria_id: 1, estado: 1 }, name: "idx_servicios_categoria_estado" },
+    { key: { etiquetas: 1, estado: 1 }, name: "idx_servicios_etiquetas_estado" },
     { key: { prestador_id: 1, titulo: 1 }, unique: true, name: "idx_servicios_prestador_titulo_unique" },
+  ],
+  etiquetas: [
+    { key: { slug: 1 }, unique: true, name: "idx_etiquetas_slug_unique" },
+    { key: { estado: 1, uso_count: -1 }, name: "idx_etiquetas_estado_populares" },
+    { key: { nombre: 1 }, name: "idx_etiquetas_nombre" },
   ],
   pedidos: [
     { key: { codigo_seguimiento: 1 }, unique: true, name: "idx_pedidos_codigo_unique" },

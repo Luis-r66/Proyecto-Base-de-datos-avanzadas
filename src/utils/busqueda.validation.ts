@@ -7,6 +7,7 @@ export const searchSchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(10),
   sort: z.enum(["rating", "reciente"]).default("rating"),
   termino: z.string().trim().max(100).optional(),
+  etiqueta: z.string().trim().max(60).optional(),
 });
 
 export const destacadosSchema = z.object({

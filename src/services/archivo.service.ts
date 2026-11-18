@@ -1,6 +1,7 @@
 import path from "path";
 import { subirBuffer } from "../config/cloudinary";
 import { AppError } from "../middleware/errorHandler";
+import { validarZip } from "../utils/zip";
 
 export interface ImagenSubida {
   url: string;
@@ -49,6 +50,9 @@ export async function subirAdjuntoChat(archivo: Express.Multer.File): Promise<Ad
       : "raw";
 
   const nombre = path.basename(archivo.originalname || "archivo");
+  if (path.extname(nombre).toLowerCase() === ".zip") {
+    validarZip(archivo.buffer);
+  }
 
   const resultado = await subirBuffer(archivo.buffer, {
     folder: "tutorlink/chat",

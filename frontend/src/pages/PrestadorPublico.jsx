@@ -13,6 +13,7 @@ import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 import { formatearFecha } from "../utils/fechas";
 import { useFavoritosServicioIds } from "../hooks/useFavoritosServicioIds";
+import "../styles/etiquetas.css";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -196,11 +197,19 @@ export default function PrestadorPublico() {
           <section className="profile-card">
             <h2>Acerca de</h2>
             <p>{u.biografia || perfil.descripcion || "Este estudiante todavía no ha escrito su presentación."}</p>
-            {u.habilidades?.length > 0 && (
+            {perfil.etiquetas?.length > 0 && (
               <>
-                <h2 style={{ marginTop: 20 }}>Habilidades</h2>
-                <div className="profile-chip-list">
-                  {u.habilidades.map((h) => <span key={h}>{h}</span>)}
+                <h2 style={{ marginTop: 20 }}>Especialidades</h2>
+                <div className="tag-chip-list">
+                  {perfil.etiquetas.map((etiqueta) => (
+                    <Link
+                      key={etiqueta._id}
+                      to={`/buscar?tags=${encodeURIComponent(etiqueta.slug)}`}
+                      className="tag-chip tag-chip--link"
+                    >
+                      {etiqueta.nombre}
+                    </Link>
+                  ))}
                 </div>
               </>
             )}

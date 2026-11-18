@@ -1,0 +1,233 @@
+.tag-selector {
+  position: relative;
+}
+
+.tag-selector__contador {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+.tag-selector__box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tag-selector__box:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-weak);
+}
+
+.tag-selector__box--error {
+  border-color: var(--danger);
+}
+
+.tag-selector__box input {
+  flex: 1 1 160px;
+  min-width: 140px;
+  border: 0;
+  padding: 6px 4px;
+  background: transparent;
+  outline: none;
+  font: inherit;
+  color: var(--text);
+}
+
+.tag-selector__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 10px;
+  border-radius: 999px;
+  background: var(--primary-weak);
+  color: var(--primary-text-soft);
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 100%;
+}
+
+.tag-selector__chip button {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.tag-selector__chip button:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.tag-selector__sugerencias {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--raised);
+}
+
+.tag-selector__sugerencia {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.tag-selector__sugerencia:hover,
+.tag-selector__sugerencia:focus-visible {
+  background: var(--surface-2);
+}
+
+.tag-selector__sugerencia span {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tag-selector__sugerencia small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.tag-selector__sugerencia--nueva {
+  border-top: 1px solid var(--border);
+  color: var(--primary-text-soft);
+}
+
+.tag-selector__estado {
+  margin: 0;
+  padding: 8px 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.tag-selector__error {
+  display: block;
+  margin-top: 4px;
+  color: var(--danger);
+}
+
+.tag-selector__aviso {
+  display: block;
+  margin-top: 4px;
+  color: var(--primary-text-soft);
+}
+
+.tag-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.tag-chip--link:hover {
+  border-color: var(--primary);
+  background: var(--primary-weak);
+  color: var(--primary-text-soft);
+}
+
+button.tag-chip {
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.gig-card__tags {
+  margin-top: 8px;
+}
+
+.tag-chip--active {
+  border-color: var(--primary);
+  background: var(--primary-weak);
+  color: var(--primary-text-soft);
+}
+
+.tag-detail__hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.tag-detail__hero h1 {
+  margin: 0;
+}
+
+.tag-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 12px 0 22px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.tag-detail__relacionadas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.filtros-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.filtros-tags__modo {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.filtros-tags__modo label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

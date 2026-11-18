@@ -306,8 +306,9 @@ export default function ChatConversacion({ conversacionId, rol, onEvento }) {
         </button>
       </form>
       <small className="chat__ayuda muted">
-        Hasta {MAX_ARCHIVOS} archivos de {MAX_MB} MB: imágenes, PDF, Word, Excel, PowerPoint y código
-        (.py, .java, .js, .sql y más).
+        Hasta {MAX_ARCHIVOS} archivos de {MAX_MB} MB cada uno: imágenes, PDF, Word, Excel, PowerPoint y código
+        (.py, .java, .js, .sql y más). Para proyectos pesados usa un .zip de máximo {MAX_MB} MB, con hasta 200
+        archivos y 100 MB descomprimidos.
       </small>
     </section>
   );

@@ -12,9 +12,12 @@ import {
   CreateTrabajoInput,
   UpdateTrabajoInput,
 } from "../utils/perfil.validation";
+import { ajustarUsoEtiquetas, resolverEtiquetas } from "../utils/etiquetas";
 
 const USUARIO_PUBLIC_FIELDS =
-  "nombre foto_perfil_url carrera semestre institucion verificado calificacion_promedio total_calificaciones biografia habilidades titular banner_url";
+  "nombre foto_perfil_url carrera semestre institucion verificado calificacion_promedio total_calificaciones biografia titular banner_url";
+
+const ETIQUETAS_PUBLICAS = "nombre slug tipo";
 
 export async function createPerfil(usuarioId: Types.ObjectId, data: CreatePerfilInput) {
   const user = await Usuario.findById(usuarioId);
@@ -27,12 +30,19 @@ export async function createPerfil(usuarioId: Types.ObjectId, data: CreatePerfil
   if (count !== data.categorias_ids.length)
     throw new AppError(400, "INVALID_CATEGORIES", "Una o más categorías no existen");
 
+  const etiquetas = await resolverEtiquetas(data.etiquetas || [], {
+    max: 15,
+    creadaPor: usuarioId,
+    permitirNuevas: true,
+  });
+
   const perfil = await withTransaction(async (s) => {
     const created = await PerfilPrestador.create(
       [
         {
           usuario_id: usuarioId,
           categorias_ids: data.categorias_ids,
+          etiquetas,
           tipos_actividad: data.tipos_actividad || [],
           descripcion: data.descripcion,
           tarifa_referencia: data.tarifa_referencia,
@@ -46,6 +56,7 @@ export async function createPerfil(usuarioId: Types.ObjectId, data: CreatePerfil
     await Usuario.findByIdAndUpdate(usuarioId, { $addToSet: { tipo_usuario: "Prestador" } }, { session: s });
     return created[0];
   });
+  await ajustarUsoEtiquetas([], etiquetas);
   await evaluarVerificacionSilenciosa(usuarioId);
   return perfil;
 }
@@ -53,6 +64,7 @@ export async function createPerfil(usuarioId: Types.ObjectId, data: CreatePerfil
 export async function getMyPerfil(usuarioId: Types.ObjectId) {
   const p = await PerfilPrestador.findOne({ usuario_id: usuarioId })
     .populate("categorias_ids", "nombre carrera_asociada")
+    .populate("etiquetas", ETIQUETAS_PUBLICAS)
     .lean();
   if (!p) throw new AppError(404, "PERFIL_NOT_FOUND", "No tienes perfil de prestador");
   return p;
@@ -62,12 +74,14 @@ export async function getPerfilPublico(id: Types.ObjectId) {
   const p: any = await PerfilPrestador.findById(id)
     .populate("usuario_id", USUARIO_PUBLIC_FIELDS)
     .populate("categorias_ids", "nombre carrera_asociada")
+    .populate("etiquetas", ETIQUETAS_PUBLICAS)
     .lean();
   if (!p || p.estado !== "Activo") throw new AppError(404, "PERFIL_NOT_FOUND", "Perfil no encontrado");
   return {
     _id: p._id,
     usuario: p.usuario_id,
     categorias: p.categorias_ids,
+    etiquetas: p.etiquetas || [],
     tipos_actividad: p.tipos_actividad,
     disponibilidad: p.disponibilidad,
     descripcion: p.descripcion,
@@ -86,8 +100,25 @@ export async function updateMiPerfil(usuarioId: Types.ObjectId, data: UpdatePerf
     if (count !== data.categorias_ids.length)
       throw new AppError(400, "INVALID_CATEGORIES", "Una o más categorías no existen");
   }
-  Object.assign(p, data);
+
+  const anteriores = (p.etiquetas || []).map(String);
+  let etiquetasNuevas: Types.ObjectId[] | undefined;
+  if (data.etiquetas !== undefined) {
+    etiquetasNuevas = await resolverEtiquetas(data.etiquetas, {
+      max: 15,
+      creadaPor: usuarioId,
+      permitirNuevas: true,
+    });
+  }
+
+  const { etiquetas: _etiquetas, ...resto } = data;
+  Object.assign(p, resto);
+  if (etiquetasNuevas) p.etiquetas = etiquetasNuevas;
   await p.save();
+
+  if (etiquetasNuevas) {
+    await ajustarUsoEtiquetas(anteriores, etiquetasNuevas.map(String));
+  }
   await evaluarVerificacionSilenciosa(usuarioId);
   return p;
 }

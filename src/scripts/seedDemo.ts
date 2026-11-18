@@ -5,6 +5,7 @@ import { Categoria } from "../models/Categoria";
 import { MensajePredeterminado } from "../models/MensajePredeterminado";
 import { PerfilPrestador } from "../models/PerfilPrestador";
 import { Servicio } from "../models/Servicio";
+import { Etiqueta } from "../models/Etiqueta";
 import { TrabajoPortafolio } from "../models/TrabajoPortafolio";
 import { Busqueda } from "../models/Busqueda";
 import { Favorito } from "../models/Favorito";
@@ -13,6 +14,7 @@ import { Reporte } from "../models/Reporte";
 import { createCategoria } from "../services/categoria.service";
 import { createPerfil as crearPerfil, createTrabajo as crearTrabajo } from "../services/perfil.service";
 import { searchPrestadores } from "../services/busqueda.service";
+import { resolverEtiquetas, slugDeEtiqueta, normalizarEtiqueta, ajustarUsoEtiquetas } from "../utils/etiquetas";
 import { toggleFavorito } from "../services/favorito.service";
 import { iniciar, acordar, aEnProgreso, completar, cancelar } from "../services/negociacion.service";
 import { sendMessage } from "../services/mensaje.service";
@@ -93,6 +95,59 @@ async function main() {
   const metodologia: any = await ensureCat("Metodología de la Investigación", "Todas", pTransversal._id.toString());
   const redaccion: any = await ensureCat("Redacción de Trabajos Académicos", "Todas", pTransversal._id.toString());
 
+  // --- Catálogo curado de etiquetas ---
+  const CATALOGO_ETIQUETAS: Array<{ nombre: string; tipo: "tema" | "herramienta" | "habilidad"; sinonimos?: string[] }> = [
+    { nombre: "Python", tipo: "herramienta", sinonimos: ["py"] },
+    { nombre: "Java", tipo: "herramienta" },
+    { nombre: "JavaScript", tipo: "herramienta", sinonimos: ["js"] },
+    { nombre: "React", tipo: "herramienta" },
+    { nombre: "Node.js", tipo: "herramienta", sinonimos: ["node"] },
+    { nombre: "SQL", tipo: "herramienta" },
+    { nombre: "MongoDB", tipo: "herramienta", sinonimos: ["mongo"] },
+    { nombre: "Bases de Datos", tipo: "tema", sinonimos: ["base de datos"] },
+    { nombre: "Programación", tipo: "tema", sinonimos: ["programacion", "código"] },
+    { nombre: "Lógica de Programación", tipo: "tema", sinonimos: ["lógica", "algoritmos"] },
+    { nombre: "Desarrollo Web", tipo: "tema" },
+    { nombre: "Cálculo", tipo: "tema", sinonimos: ["calculo"] },
+    { nombre: "Derivadas", tipo: "tema" },
+    { nombre: "Integrales", tipo: "tema" },
+    { nombre: "Álgebra Lineal", tipo: "tema", sinonimos: ["algebra"] },
+    { nombre: "Estadística", tipo: "tema", sinonimos: ["estadistica"] },
+    { nombre: "Probabilidad", tipo: "tema" },
+    { nombre: "Análisis de Datos", tipo: "tema", sinonimos: ["datos", "data science"] },
+    { nombre: "Excel", tipo: "herramienta" },
+    { nombre: "Power BI", tipo: "herramienta" },
+    { nombre: "Física", tipo: "tema", sinonimos: ["fisica"] },
+    { nombre: "Química", tipo: "tema", sinonimos: ["quimica"] },
+    { nombre: "Inglés", tipo: "habilidad", sinonimos: ["english"] },
+    { nombre: "Speaking", tipo: "habilidad", sinonimos: ["pronunciación"] },
+    { nombre: "Writing", tipo: "habilidad", sinonimos: ["escritura"] },
+    { nombre: "Exposiciones", tipo: "habilidad", sinonimos: ["presentaciones"] },
+    { nombre: "Redacción Académica", tipo: "habilidad", sinonimos: ["redaccion", "ensayos"] },
+    { nombre: "Metodología de la Investigación", tipo: "tema", sinonimos: ["investigación"] },
+    { nombre: "Parciales", tipo: "tema", sinonimos: ["exámenes"] },
+    { nombre: "Talleres", tipo: "tema", sinonimos: ["tareas"] },
+    { nombre: "Principiantes", tipo: "habilidad", sinonimos: ["básico", "desde cero"] },
+    { nombre: "Contabilidad", tipo: "tema" },
+    { nombre: "Finanzas", tipo: "tema" },
+    { nombre: "Derecho", tipo: "tema" },
+    { nombre: "Pedagogía", tipo: "tema" },
+  ];
+
+  for (const item of CATALOGO_ETIQUETAS) {
+    const slug = slugDeEtiqueta(item.nombre);
+    if (await Etiqueta.exists({ slug })) continue;
+    await Etiqueta.create({
+      nombre: item.nombre,
+      slug,
+      sinonimos: (item.sinonimos || []).map(normalizarEtiqueta),
+      tipo: item.tipo,
+      estado: "activa",
+      uso_count: 0,
+    });
+  }
+  console.log("  Catálogo de etiquetas listo");
+
   // --- Cuentas previamente registradas desde la aplicación ---
   const santiago = await requireUser(`santiago.morales@${DOMINIO}`);
   const luis = await requireUser(`luis.riascos@${DOMINIO}`);
@@ -103,6 +158,12 @@ async function main() {
   if (!perfilSantiago) {
     const r: any = await crearPerfil(santiago._id, {
       categorias_ids: [prog._id.toString(), ingles._id.toString(), bases._id.toString(), calculo1._id.toString()],
+      etiquetas: (
+        await resolverEtiquetas(["Python", "Cálculo", "Inglés", "Bases de Datos"], {
+          permitirNuevas: true,
+          estadoInicial: "activa",
+        })
+      ).map(String),
       tipos_actividad: ["Tutorías", "Trabajos escritos"],
       descripcion: "Ayudo con programación, cálculo e inglés académico.",
       tarifa_referencia: { monto: 30000, moneda: "COP", unidad: "hora" },
@@ -120,7 +181,7 @@ async function main() {
       titulo: "Sistema de inventario en Python",
       descripcion: "Aplicación de consola con CRUD y reportes, documentada paso a paso.",
       habilidades_usadas: ["Python", "SQLite"],
-      imagenes_urls: ["https://ejemplo.com/inventario.png"],
+      imagenes_urls: ["https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80"],
     });
     await crearTrabajo(santiago._id, {
       categoria_id: ingles._id.toString(),
@@ -136,6 +197,12 @@ async function main() {
   if (!perfilAndres) {
     const r: any = await crearPerfil(andres._id, {
       categorias_ids: [prog._id.toString(), estadistica._id.toString(), metodologia._id.toString()],
+      etiquetas: (
+        await resolverEtiquetas(["Programación", "Estadística", "Análisis de Datos"], {
+          permitirNuevas: true,
+          estadoInicial: "activa",
+        })
+      ).map(String),
       descripcion: "Apoyo en fundamentos de programación.",
       tarifa_referencia: { monto: 25000, moneda: "COP", unidad: "hora" },
     });
@@ -151,14 +218,20 @@ async function main() {
       console.log("  Servicio \"" + data.titulo + "\" (ya existe)");
       return existente;
     }
+    const { etiquetas, ...resto } = data;
+    const etiquetasIds = etiquetas?.length
+      ? await resolverEtiquetas(etiquetas, { permitirNuevas: true, estadoInicial: "activa" })
+      : [];
     const servicio = await Servicio.create({
       prestador_id: prestadorId,
       categoria_id: categoriaId,
-      ...data,
+      ...resto,
+      etiquetas: etiquetasIds,
       estado: "Activo",
       fecha_creacion: new Date(),
       fecha_actualizacion: new Date(),
     });
+    await ajustarUsoEtiquetas([], etiquetasIds);
     console.log("  Servicio \"" + data.titulo + "\" creado");
     return servicio;
   }
@@ -301,7 +374,7 @@ async function main() {
   const andresFinal = await Usuario.findById(andres._id);
 
   console.log("\n=== RESUMEN ===");
-  for (const n of ["usuarios","perfiles_prestador","trabajos_portafolio","categorias","servicios","negociaciones","pedidos","mensajes","mensajes_predeterminados","busquedas","calificaciones","favoritos","notificaciones","reportes"]) {
+  for (const n of ["usuarios","perfiles_prestador","trabajos_portafolio","categorias","etiquetas","servicios","negociaciones","pedidos","mensajes","mensajes_predeterminados","busquedas","calificaciones","favoritos","notificaciones","reportes"]) {
     console.log(`  ${n}: ${await db.collection(n).countDocuments()}`);
   }
   console.log(`  Santiago verificado: ${santiagoFinal?.verificado}`);

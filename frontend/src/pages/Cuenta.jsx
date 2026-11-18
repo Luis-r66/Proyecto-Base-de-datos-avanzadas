@@ -15,7 +15,6 @@ export default function Cuenta() {
     biografia: "",
     banner_url: "",
     foto_perfil_url: "",
-    habilidades: "",
   });
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
@@ -35,7 +34,6 @@ export default function Cuenta() {
           biografia: u.biografia || "",
           banner_url: u.banner_url || "",
           foto_perfil_url: u.foto_perfil_url || "",
-          habilidades: (u.habilidades || []).join(", "),
         });
       })
       .catch((err) => setError(getErrorMessage(err)))
@@ -58,7 +56,6 @@ export default function Cuenta() {
         biografia: form.biografia.trim(),
         banner_url: form.banner_url.trim(),
         foto_perfil_url: form.foto_perfil_url.trim(),
-        habilidades: form.habilidades.split(",").map((x) => x.trim()).filter(Boolean),
       });
       await recargarUsuario();
       setAviso("Presentación actualizada.");
@@ -139,8 +136,11 @@ export default function Cuenta() {
             />
           </div>
           <div className="field">
-            <label htmlFor="chab">Habilidades (separadas por coma)</label>
-            <input id="chab" value={form.habilidades} onChange={(e) => cambiar("habilidades", e.target.value)} placeholder="Python, Cálculo, Inglés" />
+            <label>Especialidades</label>
+            <p className="muted" style={{ margin: 0 }}>
+              Las etiquetas de tu perfil se administran en{" "}
+              <Link to="/convertirme-prestador">tu perfil de prestador</Link>.
+            </p>
           </div>
           <button type="submit" className="btn btn--primary" disabled={guardando}>{guardando ? "Guardando..." : "Guardar presentación"}</button>
         </form>
@@ -155,9 +155,6 @@ export default function Cuenta() {
             <h2>{form.nombre || "Tu nombre"}</h2>
             <p className="profile-headline">{form.titular || "Tu titular aparecerá aquí"}</p>
             <p>{form.biografia || "Tu presentación aparecerá aquí."}</p>
-            <div className="profile-chip-list">
-              {form.habilidades.split(",").map((h) => h.trim()).filter(Boolean).map((h) => <span key={h}>{h}</span>)}
-            </div>
             <Link to="/mi-perfil" className="btn btn--ghost btn--block" style={{ marginTop: 14 }}>Ver perfil completo</Link>
           </div>
         </aside>

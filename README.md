@@ -22,6 +22,8 @@ cp .env.example .env   # completa los valores reales
 npm run build
 npm run db:setup       # colecciones, indices, $jsonSchema y catalogo (idempotente)
 npm run db:seed        # contenido de prueba (requiere cuentas ya registradas)
+npm run db:backup      # respalda la base actual en backups/ (EJSON)
+npm run db:migrar-etiquetas -- --dry-run   # revisa la migracion de etiquetas
 npm run dev            # http://localhost:3001
 ```
 
@@ -57,27 +59,33 @@ npm run dev            # http://localhost:3001
 El frontend usa una capa tipo Fiverr para descubrir servicios academicos y una capa tipo LinkedIn-portafolio para el perfil estudiantil.
 
 - Cada prestador publica **servicios** con portada, categorias, etiquetas y hasta 3 paquetes (Basico, Estandar, Premium).
+- Las **etiquetas** viven en un catalogo normalizado (`etiquetas`) con `slug` unico, sinonimos, tipo y estado. Los servicios usan hasta 10 y el perfil del prestador hasta 15.
+- Cualquier usuario autenticado puede proponer etiquetas; quedan en estado `pendiente` hasta que el Administrador las apruebe, renombre, fusione u oculte.
+- La busqueda acepta `?tags=python,calculo` (todas por defecto) y `?modo=any` (cualquiera). Con varias coincidencias, primero aparecen los servicios que comparten mas etiquetas.
+- Cada etiqueta tiene una pagina publica en `/etiquetas/:slug` con servicios, conteos y etiquetas relacionadas.
 - Cada paquete define precio, dias de entrega, revisiones e incluye.
 - El cliente puede comprar al precio publicado o enviar una **oferta** con precio y medio de pago.
 - El receptor puede aceptar, rechazar o contraofertar. La aceptacion crea un **pedido**.
 - El medio de pago se acuerda entre las partes: Nequi, Daviplata, transferencia, efectivo u otro. TutorLink no procesa dinero.
 - El pedido avanza por `Acordado -> En_progreso -> Entregado -> Completado`, con opcion de revision.
-- El perfil publico muestra servicios, proyectos del portafolio, resenas, habilidades, educacion, disponibilidad y logros.
+- El perfil publico muestra servicios, proyectos del portafolio, resenas, etiquetas de especialidad, educacion, disponibilidad y logros.
 - El flujo anterior de `Negociacion` se conserva para acuerdos personalizados.
 
 Rutas principales del frontend:
 
 ```text
 /                       Home tipo marketplace
-/buscar                 Busqueda de servicios
+/buscar                 Busqueda de servicios y filtros por etiquetas
+/etiquetas/:slug        Pagina publica de una etiqueta
 /servicio/:id           Detalle del servicio y paquetes
 /confirmar/:id/:paquete Confirmar acuerdo y medio de pago
 /pedidos                Compras y ventas
 /pedidos/:id            Detalle y timeline del pedido
 /mis-servicios          Servicios publicados por el prestador
 /mi-perfil              Perfil estudiantil tipo portfolio
-/cuenta                 Editar presentaci?n, foto, portada y habilidades
+/cuenta                 Editar presentacion, foto y portada
 /prestador/:id          Perfil publico
+/admin/etiquetas        Moderacion del catalogo de etiquetas
 ```
 
 Endpoints nuevos:
@@ -99,6 +107,15 @@ PATCH  /api/pedidos/:id/entregar
 PATCH  /api/pedidos/:id/revision
 PATCH  /api/pedidos/:id/completar
 PATCH  /api/pedidos/:id/cancelar
+GET    /api/etiquetas
+GET    /api/etiquetas/populares
+GET    /api/etiquetas/sugerencias?q=py
+GET    /api/etiquetas/:slug
+POST   /api/etiquetas
+POST   /api/etiquetas/resolver
+PATCH  /api/etiquetas/:id
+DELETE /api/etiquetas/:id
+POST   /api/etiquetas/:id/fusionar
 ```
 
 ## Verificacion institucional (automatica)
@@ -143,6 +160,9 @@ uno existente responde 409.
   PDF, Word, Excel, PowerPoint, codigo (`.py`, `.java`, `.js`, `.sql`, `.c`, `.cpp`,
   `.cs`, `.ts`, `.ipynb` y mas) y comprimidos (`.zip`, `.rar`, `.7z`).
 - Los ejecutables (`.exe`, `.bat`, `.msi`) estan bloqueados por extension.
+- Los `.zip` se validan antes de subir: maximo 200 entradas, 100 MB descomprimidos,
+  rutas seguras y sin ejecutables internos. Para proyectos pesados se recomienda `.zip`.
+- Los adjuntos se suben en serie para reducir el pico de memoria del servidor.
 - Endpoint de imagenes: `POST /api/archivos/imagen` (`multipart/form-data`, campo
   `archivo` y `carpeta` opcional: `perfiles`, `servicios`, `portafolio`).
 - Mensajes con adjuntos: `POST /api/conversaciones/:id/mensajes` con
@@ -168,10 +188,10 @@ src/
 ├── app.ts                  # Express, CORS, rutas, puerto
 ├── config/                 # env (Zod), db (conexion + transacciones), indexes
 ├── middleware/             # auth JWT, validate (body/query/params), errorHandler
-├── models/                 # modelos Mongoose
-├── routes/                 # routers (auth, categorias, perfiles, portafolio,
-│                           # negociaciones, mensajes, calificaciones, favoritos,
-│                           # busquedas, reportes, admin)
+├── models/                 # modelos Mongoose (incluye Etiqueta)
+├── routes/                 # routers (auth, categorias, etiquetas, perfiles,
+│                           # portafolio, negociaciones, mensajes, calificaciones,
+│                           # favoritos, busquedas, reportes, admin)
 ├── controllers/            # Adaptadores HTTP -> servicios
 ├── services/               # Logica de negocio y transacciones
 ├── utils/                  # jwt, trackingCode, validadores y schemas Zod
@@ -199,6 +219,9 @@ src/
 | `npm start` | Ejecuta `dist/app.js` |
 | `npm run db:setup` | Crea colecciones, indices, validaciones y catalogo |
 | `npm run db:seed` | Carga contenido de prueba sobre cuentas ya registradas |
+| `npm run db:backup` | Respalda todas las colecciones en `backups/<fecha>/` (EJSON, acepta ruta opcional) |
+| `npm run db:migrar-etiquetas` | Migra etiquetas de texto libre y `Usuario.habilidades` al catalogo (`--dry-run` para revisar) |
+| `npm run db:verificar-etiquetas` | Revisa el catalogo y que las referencias sean ObjectId |
 
 ## Frontend
 

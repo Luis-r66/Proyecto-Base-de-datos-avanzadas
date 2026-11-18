@@ -19,6 +19,7 @@ const disponibilidadSchema = z.array(disponibilidadItem).optional();
 
 export const createPerfilSchema = z.object({
   categorias_ids: z.array(objectId("ID de categoría inválido")).min(1),
+  etiquetas: z.array(objectId("ID de etiqueta inválido")).max(15).optional(),
   tipos_actividad: z.array(z.string().trim().min(1)).optional(),
   descripcion: z.string().max(2000).optional(),
   tarifa_referencia: z.object({
@@ -32,6 +33,7 @@ export const createPerfilSchema = z.object({
 
 export const updatePerfilSchema = z.object({
   categorias_ids: z.array(objectId()).min(1).optional(),
+  etiquetas: z.array(objectId("ID de etiqueta inválido")).max(15).optional(),
   tipos_actividad: z.array(z.string().trim().min(1)).optional(),
   descripcion: z.string().max(2000).optional(),
   tarifa_referencia: z.object({

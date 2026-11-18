@@ -22,7 +22,7 @@ const serviciosBase = z.object({
   categoria_id: objectId("ID de categoría inválido"),
   titulo: z.string().trim().min(5, "El título debe tener al menos 5 caracteres").max(120),
   descripcion: z.string().trim().min(20, "Describe el servicio con al menos 20 caracteres").max(5000),
-  etiquetas: z.array(z.string().trim().min(1).max(40)).max(10).default([]),
+  etiquetas: z.array(objectId("ID de etiqueta inválido")).max(10).default([]),
   imagen_portada_url: urlSchema,
   galeria_urls: z.array(urlSchema).max(5).default([]),
   paquetes: z.array(paqueteSchema).min(1).max(3),
@@ -50,11 +50,18 @@ const validarPaquetes = (data: { paquetes?: { codigo: string }[] }, ctx: z.Refin
 };
 
 export const crearServicioSchema = serviciosBase.superRefine(validarPaquetes);
-export const actualizarServicioSchema = serviciosBase.partial().superRefine(validarPaquetes);
+export const actualizarServicioSchema = serviciosBase
+  .partial()
+  .extend({
+    etiquetas: z.array(objectId("ID de etiqueta inválido")).max(10).optional(),
+  })
+  .superRefine(validarPaquetes);
 
 export const buscarServiciosSchema = z.object({
   categoria_id: objectId("ID de categoría inválido").optional(),
   termino: z.string().trim().max(100).optional(),
+  tags: z.string().trim().max(400).optional(),
+  modo: z.enum(["all", "any"]).default("all"),
   precio_min: z.coerce.number().int().min(MONTO_MINIMO_COP).optional(),
   precio_max: z.coerce.number().int().max(MONTO_MAXIMO_COP).optional(),
   dias_max: z.coerce.number().int().min(1).max(60).optional(),

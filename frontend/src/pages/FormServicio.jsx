@@ -4,6 +4,7 @@ import { listarCategorias } from "../api/categorias";
 import { actualizarServicio, crearServicio, obtenerServicio } from "../api/servicios";
 import { useAuth } from "../context/AuthContext";
 import { SubirImagen } from "../components/SubirImagen";
+import SelectorEtiquetas from "../components/SelectorEtiquetas";
 import { getErrorMessage } from "../utils/errores";
 
 const PAQUETES_INICIALES = [
@@ -21,7 +22,7 @@ export default function FormServicio({ modo = "crear" }) {
     categoria_id: "",
     titulo: "",
     descripcion: "",
-    etiquetas: "",
+    etiquetas: [],
     imagen_portada_url: "",
     estado: "Activo",
     paquetes: PAQUETES_INICIALES,
@@ -44,7 +45,7 @@ export default function FormServicio({ modo = "crear" }) {
             categoria_id: servicio.categoria_id?._id || servicio.categoria_id || "",
             titulo: servicio.titulo,
             descripcion: servicio.descripcion,
-            etiquetas: (servicio.etiquetas || []).join(", "),
+            etiquetas: servicio.etiquetas || [],
             imagen_portada_url: servicio.imagen_portada_url,
             estado: servicio.estado,
             paquetes: PAQUETES_INICIALES.map((base) => {
@@ -105,7 +106,9 @@ export default function FormServicio({ modo = "crear" }) {
         categoria_id: form.categoria_id,
         titulo: form.titulo.trim(),
         descripcion: form.descripcion.trim(),
-        etiquetas: form.etiquetas.split(",").map((x) => x.trim()).filter(Boolean),
+        etiquetas: form.etiquetas
+          .map((etiqueta) => (typeof etiqueta === "string" ? etiqueta : etiqueta._id))
+          .filter(Boolean),
         imagen_portada_url: form.imagen_portada_url.trim(),
         estado: form.estado,
         paquetes,
@@ -175,8 +178,14 @@ export default function FormServicio({ modo = "crear" }) {
             />
           </div>
           <div className="field">
-            <label htmlFor="setiquetas">Etiquetas (separadas por coma)</label>
-            <input id="setiquetas" value={form.etiquetas} onChange={(e) => cambiar("etiquetas", e.target.value)} placeholder="Python, cálculo, parciales" />
+            <SelectorEtiquetas
+              valor={form.etiquetas}
+              onChange={(etiquetas) => cambiar("etiquetas", etiquetas)}
+              max={5}
+              label="Etiquetas del servicio"
+              placeholder="Python, parciales, bases de datos..."
+              ayuda="Máximo 5. Usa temas concretos: así te encuentran en la búsqueda."
+            />
           </div>
         </div>
 

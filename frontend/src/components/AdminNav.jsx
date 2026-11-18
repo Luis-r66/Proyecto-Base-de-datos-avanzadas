@@ -6,6 +6,7 @@ const LINKS = [
   { to: "/admin/reportes", label: "Reportes" },
   { to: "/admin/servicios", label: "Servicios" },
   { to: "/admin/categorias", label: "Categorías" },
+  { to: "/admin/etiquetas", label: "Etiquetas" },
 ];
 
 export default function AdminNav() {

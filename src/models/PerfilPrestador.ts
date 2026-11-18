@@ -11,6 +11,7 @@ export interface IPerfilPrestador extends Document {
   _id: Types.ObjectId;
   usuario_id: Types.ObjectId;
   categorias_ids: Types.ObjectId[];
+  etiquetas: Types.ObjectId[];
   tipos_actividad: string[];
   disponibilidad: IDisponibilidad[];
   descripcion?: string;
@@ -33,6 +34,14 @@ const perfilSchema = new Schema<IPerfilPrestador>(
   {
     usuario_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true, unique: true },
     categorias_ids: [{ type: Schema.Types.ObjectId, ref: "Categoria", required: true }],
+    etiquetas: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Etiqueta" }],
+      default: [],
+      validate: {
+        validator: (valor: Types.ObjectId[]) => valor.length <= 15,
+        message: "Un perfil puede tener máximo 15 etiquetas",
+      },
+    },
     tipos_actividad: [{ type: String, trim: true }],
     disponibilidad: { type: [dispSchema], default: [] },
     descripcion: { type: String, maxlength: 2000 },

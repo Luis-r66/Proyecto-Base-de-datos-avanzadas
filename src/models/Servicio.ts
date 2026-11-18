@@ -25,7 +25,7 @@ export interface IServicio extends Document {
   categoria_id: Types.ObjectId;
   titulo: string;
   descripcion: string;
-  etiquetas: string[];
+  etiquetas: Types.ObjectId[];
   imagen_portada_url: string;
   galeria_urls: string[];
   paquetes: IPaquete[];
@@ -69,7 +69,14 @@ const servicioSchema = new Schema<IServicio>(
     categoria_id: { type: Schema.Types.ObjectId, ref: "Categoria", required: true },
     titulo: { type: String, required: true, trim: true, maxlength: 120 },
     descripcion: { type: String, required: true, trim: true, maxlength: 5000 },
-    etiquetas: [{ type: String, trim: true, maxlength: 40 }],
+    etiquetas: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Etiqueta" }],
+      default: [],
+      validate: {
+        validator: (valor: Types.ObjectId[]) => valor.length <= 10,
+        message: "Un servicio puede tener máximo 10 etiquetas",
+      },
+    },
     imagen_portada_url: { type: String, required: true, trim: true, maxlength: 1000 },
     galeria_urls: [{ type: String, trim: true, maxlength: 1000 }],
     paquetes: {

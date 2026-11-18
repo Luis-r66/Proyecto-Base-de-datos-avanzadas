@@ -11,6 +11,7 @@ import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../utils/errores";
 import { formatearFecha } from "../utils/fechas";
 import { useFavoritosServicioIds } from "../hooks/useFavoritosServicioIds";
+import "../styles/etiquetas.css";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -68,7 +69,7 @@ export default function MiPerfil() {
   const completitud = [
     datos.foto_perfil_url,
     datos.biografia,
-    datos.habilidades?.length,
+    perfil?.etiquetas?.length,
     isPrestador && servicios.length,
     portafolio.length,
   ].filter(Boolean).length;
@@ -96,7 +97,7 @@ export default function MiPerfil() {
             <div className="profile-cover__actions">
               {perfil && <Link to="/mis-servicios" className="btn btn--primary">Mis servicios</Link>}
               {perfil && <Link to="/mi-portafolio" className="btn btn--ghost">Mi portafolio</Link>}
-              <Link to="/cuenta" className="btn btn--ghost">Editar presentaci?n</Link>
+              <Link to="/cuenta" className="btn btn--ghost">Editar presentación</Link>
               <Link to="/convertirme-prestador" className="btn btn--ghost">
                 {isPrestador ? "Editar perfil de prestador" : "Quiero vender"}
               </Link>
@@ -132,11 +133,19 @@ export default function MiPerfil() {
           <section className="profile-card">
             <h2>Acerca de</h2>
             <p>{datos.biografia || perfil?.descripcion || "Cuéntale a otros estudiantes quién eres, qué estudias y cómo puedes ayudar."}</p>
-            {datos.habilidades?.length > 0 && (
+            {perfil?.etiquetas?.length > 0 && (
               <>
-                <h2 style={{ marginTop: 20 }}>Habilidades</h2>
-                <div className="profile-chip-list">
-                  {datos.habilidades.map((h) => <span key={h}>{h}</span>)}
+                <h2 style={{ marginTop: 20 }}>Especialidades</h2>
+                <div className="tag-chip-list">
+                  {perfil.etiquetas.map((etiqueta) => (
+                    <Link
+                      key={etiqueta._id}
+                      to={`/buscar?tags=${encodeURIComponent(etiqueta.slug)}`}
+                      className="tag-chip tag-chip--link"
+                    >
+                      {etiqueta.nombre}
+                    </Link>
+                  ))}
                 </div>
               </>
             )}
@@ -193,7 +202,7 @@ export default function MiPerfil() {
           <section className="profile-card">
             <h2>Fortaleza del perfil</h2>
             <div className="profile-strength"><span style={{ width: `${fuerza}%` }} /></div>
-            <p className="muted">{fuerza}% completo. Un perfil con foto, bio, habilidades, servicios y proyectos genera más confianza.</p>
+            <p className="muted">{fuerza}% completo. Un perfil con foto, bio, etiquetas, servicios y proyectos genera más confianza.</p>
           </section>
 
           {perfil && (

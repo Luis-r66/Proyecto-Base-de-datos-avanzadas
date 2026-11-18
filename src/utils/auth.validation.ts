@@ -60,7 +60,6 @@ export const updateMeSchema = z.object({
   biografia: z.string().trim().max(1000).optional(),
   banner_url: z.union([z.string().trim().url("URL de portada inválida").max(1000), z.literal("")]).optional(),
   foto_perfil_url: z.union([z.string().trim().url("URL de foto inválida").max(1000), z.literal("")]).optional(),
-  habilidades: z.array(z.string().trim().min(1).max(40)).max(30).optional(),
 });
 export type UpdateMeInput = z.infer<typeof updateMeSchema>;
 

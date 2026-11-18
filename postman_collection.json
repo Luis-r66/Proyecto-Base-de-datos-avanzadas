@@ -2280,6 +2280,168 @@
       ]
     },
     {
+      "name": "Etiquetas",
+      "item": [
+        {
+          "name": "Listar etiquetas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/etiquetas?estado=activa&page=1&limit=30",
+              "host": ["{{base_url}}"],
+              "path": ["etiquetas"],
+              "query": [
+                { "key": "estado", "value": "activa" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "30" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Etiquetas populares",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/etiquetas/populares?limit=12",
+              "host": ["{{base_url}}"],
+              "path": ["etiquetas", "populares"],
+              "query": [{ "key": "limit", "value": "12" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sugerencias por texto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/etiquetas/sugerencias?q=py&limit=8",
+              "host": ["{{base_url}}"],
+              "path": ["etiquetas", "sugerencias"],
+              "query": [
+                { "key": "q", "value": "py" },
+                { "key": "limit", "value": "8" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detalle de etiqueta por slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/etiquetas/python",
+              "host": ["{{base_url}}"],
+              "path": ["etiquetas", "python"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Proponer etiqueta",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Machine Learning\",\n  \"tipo\": \"tema\",\n  \"sinonimos\": [\"ml\", \"aprendizaje automatico\"]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/etiquetas",
+              "host": ["{{base_url}}"],
+              "path": ["etiquetas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resolver nombres a IDs",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": [\"Python\", \"Bases de Datos\"]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/etiquetas/resolver",
+              "host": ["{{base_url}}"],
+              "path": ["etiquetas", "resolver"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar etiqueta (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"activa\",\n  \"tipo\": \"tema\",\n  \"sinonimos\": [\"ml\"]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/etiquetas/{{etiqueta_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["etiquetas", "{{etiqueta_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ocultar etiqueta (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/etiquetas/{{etiqueta_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["etiquetas", "{{etiqueta_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fusionar etiqueta (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destino_id\": \"{{etiqueta_destino_id}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/etiquetas/{{etiqueta_id}}/fusionar",
+              "host": ["{{base_url}}"],
+              "path": ["etiquetas", "{{etiqueta_id}}", "fusionar"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Archivos",
       "item": [
         {
